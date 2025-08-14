@@ -1,17 +1,54 @@
 'use client';
 
-type TLoadingProps = {
+import { useEffect, useState } from 'react';
+
+import LoadingIcon from '@/core/components/ui/LoadingIcon';
+import { cn } from '@/core/utils';
+
+interface LoadingFragmentProps {
   size?: number;
   thickness?: number;
   className?: string;
-};
+  showOverlay?: boolean;
+  delay?: number;
+}
 
-const Loading = ({ size = 24, thickness = 3 }: TLoadingProps) => {
+const Loading = ({
+  className,
+  size = 24,
+  thickness,
+  showOverlay,
+  delay = 0,
+}: LoadingFragmentProps) => {
+  const [showLoading, setShowLoading] = useState(delay === 0);
+
+  useEffect(() => {
+    if (delay > 0) {
+      const timer = setTimeout(() => {
+        setShowLoading(true);
+      }, delay);
+
+      return () => clearTimeout(timer);
+    }
+  }, [delay]);
+
   return (
     <div
-      className="border-accent border-t-transparent rounded-full animate-spin"
-      style={{ width: size, height: size, borderWidth: thickness }}
-    />
+      className={cn(
+        'loading w-full flex-center',
+        showOverlay && 'bg-background/70',
+        className
+      )}
+    >
+      <div
+        className={cn(
+          'transition-opacity duration-300',
+          showLoading ? 'opacity-100' : 'opacity-0'
+        )}
+      >
+        <LoadingIcon size={size} thickness={thickness} />
+      </div>
+    </div>
   );
 };
 

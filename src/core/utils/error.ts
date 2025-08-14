@@ -71,7 +71,7 @@ export const configureCasualServerActionError = (
   if (err) console.error(err);
 
   // Use a casual error message to improve user engagement
-  const randomErrMsg = getRandom<string>(ERROR_MESSAGES);
+  const randomErrMsg = getRandom(ERROR_MESSAGES, 14);
 
   return {
     success: false,
@@ -89,6 +89,6 @@ export const getCasualErrorMessage = (err?: unknown): string => {
   if (err) console.error(err);
 
   // Use a casual error message to improve user engagement
-  const randomErrMsg = getRandom<string>(ERROR_MESSAGES);
+  const randomErrMsg = getRandom(ERROR_MESSAGES, 14);
   return randomErrMsg;
 };

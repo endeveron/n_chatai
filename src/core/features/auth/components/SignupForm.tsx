@@ -1,6 +1,7 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -72,14 +73,18 @@ const SignUpForm = () => {
             )}
           />
           <Button
-            // variant="accent"
             loading={isPending}
             className="auth-form_button"
             type="submit"
+            variant="accent"
           >
             Continue
           </Button>
-          <FormLoading loadigIconClassName="-mt-14" isPending={isPending} />
+          <div className="auth-form_link">
+            <Link href="/signin" scroll={false}>
+              Already have an account ?
+            </Link>
+          </div>
         </form>
         <FormLoading loadigIconClassName="-mt-14" isPending={isPending} />
       </div>

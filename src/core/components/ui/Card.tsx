@@ -15,7 +15,7 @@ const Card = forwardRef<HTMLDivElement, CardProps>(
       <div
         ref={ref}
         className={cn(
-          'px-4 py-6 sm:px-6 rounded-2xl bg-card cursor-default',
+          'px-4 py-6 sm:px-6 rounded-2xl bg-card transition-colors duration-300 cursor-default',
           className
         )}
         {...props}
@@ -46,7 +46,7 @@ const AnimatedCard = forwardRef<HTMLDivElement, AnimatedCardProps>(
 
     return (
       <div
-        className="fixed inset-0 flex items-center justify-center"
+        className="fixed inset-0 ab flex items-center justify-center"
         onClick={(e) => {
           if (e.target === e.currentTarget && onClose) {
             onClose();
@@ -56,7 +56,7 @@ const AnimatedCard = forwardRef<HTMLDivElement, AnimatedCardProps>(
         <div
           ref={ref}
           className={cn(
-            'relative max-w-md flex-center flex-col px-4 sm:px-8 py-8 rounded-2xl bg-card transition-all duration-300 cursor-default',
+            'relative max-w-md flex-center flex-col px-4 sm:px-8 py-8 rounded-2xl bg-card transition-all cursor-default',
             isVisible
               ? 'scale-100 opacity-100 translate-y-0'
               : 'scale-95 opacity-0 translate-y-2',
@@ -81,7 +81,7 @@ const CardTitle = forwardRef<
     <h3
       ref={ref}
       className={cn(
-        'mb-6 title text-3xl text-title font-bold leading-none',
+        'mb-6 title text-3xl dark:text-accent font-black leading-none',
         className
       )}
       {...props}

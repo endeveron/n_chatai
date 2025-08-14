@@ -3,6 +3,11 @@ import { JWT } from 'next-auth/jwt';
 
 import { UserRole } from '@/core/types/user';
 
+export interface JwtEmailPayload {
+  userId: string;
+  exp: number;
+}
+
 export interface GlobalAuthState {
   isSigningOut: boolean;
   isSignedOut: boolean;

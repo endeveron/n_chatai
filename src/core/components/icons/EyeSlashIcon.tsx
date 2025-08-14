@@ -1,3 +1,5 @@
+// https://www.svgrepo.com/svg/532465/eye-slash
+
 export function EyeSlashIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
     <svg

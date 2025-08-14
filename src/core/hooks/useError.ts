@@ -38,7 +38,6 @@ export const useError = () => {
       title = 'An error occurred';
       console.error('Unknown error type:', err);
     }
-    console.log('title', title);
 
     toast(title);
   }, []);

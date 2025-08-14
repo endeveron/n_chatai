@@ -2,73 +2,172 @@
 
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import mongoose from 'mongoose';
+import { Types } from 'mongoose';
 import { AuthError } from 'next-auth';
 
 import { signIn as nextSignIn } from '~/auth';
 
-import { createUser } from '@/core/actions/user';
-import { mongoDB } from '@/core/lib/mongo';
-import UserModel from '@/core/models/user';
+import { BASE_URL, DEFAULT_REDIRECT, EMAIL_JWT } from '@/core/constants';
 import {
+  CreateUserArgs,
   Credentials,
+  JwtEmailPayload,
+  OnboardUserArgs,
   SignInArgs,
   SignInSocialArgs,
   SignUpArgs,
 } from '@/core/features/auth/types';
-import { EmailType, ServerActionResult } from '@/core/types/common';
-import { User, UserRole } from '@/core/types/user';
+import { mongoDB } from '@/core/lib/mongo';
 import {
   configureVerificationEmail,
   sendEmail,
   SendEmailArgs,
 } from '@/core/lib/nodemailer';
-import { DEFAULT_REDIRECT } from '@/core/constants';
+import UserModel from '@/core/models/user';
+import { EmailType, ServerActionResult } from '@/core/types/common';
+import { User, UserRole } from '@/core/types/user';
 import { handleActionError } from '@/core/utils/error';
-import { BASE_URL, EMAIL_JWT } from '@/core/constants';
+import { configureUser } from '@/core/utils/user';
 
-type TJwtEmailPayload = {
-  userId: string;
-  exp: number;
+/**
+ * Creates a new user in a database and returns the user's object ID.
+ *
+ * @param {string} params.email An email address of the user.
+ * @returns A Promise that resolves to either a ServerActionResult object or undefined.
+ */
+export const createUser = async ({
+  email,
+}: CreateUserArgs): Promise<ServerActionResult | undefined> => {
+  if (!email) {
+    return handleActionError('createUser: No user email provided');
+  }
+
+  try {
+    await mongoDB.connect();
+
+    const userData = configureUser({ email });
+
+    await UserModel.create(userData);
+
+    return {
+      success: true,
+      data: { userId: userData.id },
+    };
+  } catch (err: unknown) {
+    return handleActionError('Unable to create a new user', err);
+  }
 };
 
-// // Function to refresh the access token
-// export const refreshAccessToken = async (
-//   token: CustomToken
-// ): Promise<CustomToken> => {
+/**
+ * Creates a new user in a database, hash their password, and add stringified.
+ * Used in the `OnboardingForm` client component.
+ *
+ * @param {string} userId user._id, a mongoDb ObjectId prop of the user object.
+ * @param {string} params.name name of the user.
+ * @param {string} params.password password to the user account.
+ * @returns A Promise that resolves to a ServerActionResult object or undefined.
+ */
+export const onboardUser = async ({
+  userId,
+  name,
+  password,
+}: OnboardUserArgs): Promise<ServerActionResult | undefined> => {
+  if (!userId || !password) {
+    return handleActionError('onboardUser: Invalid input data provided');
+  }
+
+  try {
+    await mongoDB.connect();
+
+    // Find the user
+    const user = await UserModel.findById(userId);
+    if (!user) {
+      handleActionError('Invalid user ID', null, true);
+    }
+
+    // Hash the password
+    const hashedPassword = await bcrypt.hash(password, 12);
+
+    // Save password hash
+    if (user?.password !== hashedPassword) {
+      user.id = userId; // Add a stringified version of userId
+      if (name) user.name = name;
+      user.password = hashedPassword;
+      await user.save();
+    }
+
+    return {
+      success: true,
+    };
+  } catch (err: unknown) {
+    return handleActionError('Unable to onboard user', err);
+  }
+};
+
+/**
+ * Retrieves a user from the database by their email.
+ *
+ * @param {string} email user's email address.
+ * @returns a Promise that resolves to a `TServerActionResult` object or `undefined`.
+ */
+export const getUserIdByEmail = async (
+  email: string
+): Promise<ServerActionResult<string | null> | undefined> => {
+  try {
+    await mongoDB.connect();
+
+    const user = await UserModel.findOne<User>({ email: email }).select('id');
+    if (!user) {
+      return handleActionError('Unable to find user for the provided email');
+    }
+
+    return {
+      success: true,
+      data: user._id.toString(),
+    };
+  } catch (err: unknown) {
+    return handleActionError('Unable to fetch user id', err);
+  }
+};
+
+// /**
+//  * Retrieves a user from the database by their email.
+//  *
+//  * @param {string} email user's email address.
+//  * @param {boolean} checkHasChats check if the user has chats.
+//  * @returns a Promise that resolves to a `TServerActionResult` object or `undefined`.
+//  */
+// export const fetchUserByEmail = async (
+//   email: string,
+//   checkHasChats?: boolean
+// ): Promise<ServerActionResult<{user: User; hasChats?: boolean}> | undefined> => {
 //   try {
-//     const response = await fetch(
-//       `${process.env.NEXT_PUBLIC_BASE_URL}/api/auth/refresh`,
-//       {
-//         method: 'POST',
-//         headers: {
-//           'Content-Type': 'application/json',
+//     await mongoDB.connect();
+
+//     const user = await UserModel.findOne<User>({ email: email }).select('id');
+//     if (!user) {
+//       return handleActionError('Could not find a user for the provided email');
+//     }
+
+//     if (checkHasChats) {
+//       const userChats = await ChatModel.find({ user: user._id }).select('_id');
+//       return {
+//         success: true,
+//         data: {
+//           user,
+//           hasChats: !!userChats.length,
 //         },
-//         body: JSON.stringify({
-//           refreshToken: token.refreshToken,
-//         }),
-//       }
-//     );
-
-//     const refreshedTokens = await response.json();
-
-//     if (!response.ok) {
-//       throw new Error('Failed to refresh token');
+//       };
 //     }
 
 //     return {
-//       ...token,
-//       accessToken: refreshedTokens.accessToken,
-//       accessTokenExpires: Date.now() + refreshedTokens.expiresIn * 1000,
-//       refreshToken: refreshedTokens.refreshToken ?? token.refreshToken,
+//       success: true,
+//       data: {
+//         user,
+//       },
 //     };
-//   } catch (error) {
-//     console.error('Error refreshing access token:', error);
-
-//     return {
-//       ...token,
-//       error: 'RefreshAccessTokenError',
-//     };
+//   } catch (err: unknown) {
+//     return handleActionError('Could not retrieve user', err);
 //   }
 // };
 
@@ -182,7 +281,7 @@ export const verifyEmailToken = async ({
   const { userId: UserIdFromToken, exp } = jwt.verify(
     token,
     EMAIL_JWT
-  ) as TJwtEmailPayload;
+  ) as JwtEmailPayload;
 
   // Check if token expired.
   if (Date.now() >= exp * 1000) {
@@ -242,7 +341,7 @@ export const verifyUserId = async (
 ): Promise<ServerActionResult | undefined> => {
   try {
     // Check the `userId` validity
-    if (!mongoose.Types.ObjectId.isValid(userId)) {
+    if (!Types.ObjectId.isValid(userId)) {
       handleActionError('Invalid ID data', null, true);
       return;
     }
@@ -419,7 +518,7 @@ export const signInSocial = async ({
       if (!email) handleActionError('No email provided', null, true);
 
       // Create a new user in the database
-      const _id = new mongoose.Types.ObjectId();
+      const _id = new Types.ObjectId();
       user = new UserModel({
         _id,
         id: _id.toString(),

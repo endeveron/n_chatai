@@ -4,7 +4,8 @@ import { useCallback } from 'react';
 
 export function useLocalStorage(): [
   getItem: <T>(key: string) => T | null,
-  setItem: <T>(key: string, item: T) => void
+  setItem: <T>(key: string, item: T) => void,
+  removeItem: (key: string) => void
 ] {
   const getItem = useCallback<<T>(key: string) => T | null>((key) => {
     if (typeof window === 'undefined') return null;
@@ -26,5 +27,14 @@ export function useLocalStorage(): [
     }
   }, []);
 
-  return [getItem, setItem];
+  const removeItem = useCallback((key: string) => {
+    if (typeof window === 'undefined') return;
+    try {
+      localStorage.removeItem(key);
+    } catch (error) {
+      console.error(error);
+    }
+  }, []);
+
+  return [getItem, setItem, removeItem];
 }

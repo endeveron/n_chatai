@@ -5,24 +5,23 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/core/utils';
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-full text-sm font-medium tracking-wide transition-all duration-300 cursor-pointer disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-full text-sm font-medium tracking-wide transition-colors duration-300 cursor-pointer disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
   {
     variants: {
       variant: {
         default:
-          'text-btn-foreground font-semibold bg-btn-background hover:bg-btn-background-hover',
+          'text-btn-foreground font-semibold bg-btn-background hover:text-btn-foreground-hover hover:bg-btn-background-hover',
         accent:
-          'text-accent-foreground font-semibold bg-accent hover:bg-accent/85',
+          'text-btn-accent-foreground font-semibold bg-btn-accent-background hover:text-btn-accent-foreground-hover hover:bg-btn-accent-background-hover duration-700',
         secondary:
-          'text-btn-secondary-foreground bg-btn-secondary-background hover:bg-btn-secondary-background-hover',
+          'text-btn-secondary-foreground bg-btn-secondary-background hover:text-btn-secondary-foreground-hover hover:bg-btn-secondary-background-hover shadow-xs dark:shadow-none',
         outline:
-          'border border-border text-btn-secondary-foreground hover:bg-btn-secondary-background hover:text-foreground',
+          'border border-border text-muted hover:border-transparent hover:bg-btn-secondary-background hover:text-foreground',
         ghost:
           'hover:bg-btn-secondary-background hover:text-btn-secondary-foreground',
-        action: 'opacity-60 hover:opacity-100 transition-opacity',
       },
       size: {
-        default: 'h-12 px-6 has-[>svg]:px-3',
+        default: 'h-11 px-4 has-[>svg]:px-3',
         sm: 'h-8 text-xs gap-1.5 px-4 has-[>svg]:px-2.5',
         lg: 'h-14 px-8 has-[>svg]:px-4',
       },

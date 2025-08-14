@@ -97,7 +97,7 @@ function FormLabel({
       data-slot="form-label"
       data-error={!!error}
       className={cn(
-        'text-sm text-muted tracking-wide flex items-center gap-2 leading-none select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50',
+        'text-sm font-semibold text-muted flex items-center gap-2 leading-none select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50',
         className
       )}
       htmlFor={formItemId}
@@ -116,7 +116,7 @@ function FormInput({
       type={type}
       data-slot="input"
       className={cn(
-        'h-11 flex items-center w-full rounded-sm border-2 border-input-border bg-input px-2 file:border-0 file:text-foreground file:bg-transparent file:text-sm file:font-medium placeholder:text-muted focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-error aria-invalid:ring-error transition-colors',
+        'h-10 px-2 pb-0.5 flex font-semibold items-center w-full rounded-sm border-2 border-input-border bg-input file:border-0 file:text-foreground file:bg-transparent file:text-sm file:font-medium placeholder:text-muted focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-error aria-invalid:ring-error transition-colors duration-300',
         className
       )}
       {...props}
@@ -190,10 +190,7 @@ function FormMessage({ className, ...props }: React.ComponentProps<'p'>) {
     <p
       data-slot="form-message"
       id={formMessageId}
-      className={cn(
-        'text-xs text-white tracking-wide p-2 bg-error rounded-xs',
-        className
-      )}
+      className={cn('text-sm font-bold text-error tracking-wide', className)}
       {...props}
     >
       {body}

@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 
-import { onboardUser } from '@/core/actions/user';
 import { Button } from '@/core/components/ui/Button';
 import {
   Form,
@@ -20,6 +19,7 @@ import {
 } from '@/core/components/ui/Form';
 import FormLoading from '@/core/components/ui/FormLoading';
 import { DEFAULT_REDIRECT } from '@/core/constants';
+import { onboardUser } from '@/core/features/auth/actions';
 import VisibilityToggle from '@/core/features/auth/components/VisibilityToggle';
 import {
   OnboardingSchema,
@@ -135,10 +135,10 @@ const OnboardingForm = ({ userId }: TOnboardingFormProps) => {
             )}
           />
           <Button
-            variant="accent"
             loading={isPending}
             className="auth-form_button"
             type="submit"
+            variant="accent"
           >
             Create an account
           </Button>

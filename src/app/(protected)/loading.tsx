@@ -1,5 +1,5 @@
-import LoadingFragment from '@/core/components/ui/LoadingFragment';
+import Loading from '@/core/components/ui/Loading';
 
-const Loading = () => <LoadingFragment />;
+const LoadingPage = () => <Loading delay={2000} />;
 
-export default Loading;
+export default LoadingPage;

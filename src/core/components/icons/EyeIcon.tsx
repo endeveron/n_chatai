@@ -1,3 +1,5 @@
+// https://www.svgrepo.com/svg/532493/eye
+
 export function EyeIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
     <svg

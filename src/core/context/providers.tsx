@@ -7,7 +7,12 @@ import { LangProvider } from '@/core/context/lang';
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
-    <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+    <ThemeProvider
+      attribute="class"
+      defaultTheme="system"
+      enableSystem
+      storageKey="theme"
+    >
       <SessionProvider>
         <LangProvider>{children}</LangProvider>
       </SessionProvider>

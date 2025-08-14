@@ -1,4 +1,3 @@
-import { ShortTermMemoryNode } from '@/core/features/chat/types';
 import { HarmBlockThreshold, HarmCategory } from '@google/generative-ai';
 import { ChatGoogleGenerativeAI } from '@langchain/google-genai';
 
@@ -14,5 +13,3 @@ export const llm = new ChatGoogleGenerativeAI({
     },
   ],
 });
-
-export const shortTermMemory: ShortTermMemoryNode[] = [];

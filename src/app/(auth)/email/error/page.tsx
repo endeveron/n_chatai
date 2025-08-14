@@ -6,10 +6,10 @@ import {
   CardTitle,
 } from '@/core/components/ui/Card';
 import { APP_NAME } from '@/core/constants';
-import { emailErrors } from '@/core/data/errors';
 import GenerateTokenButton from '@/core/features/auth/components/GenerateTokenButton';
 import { SearchParams } from '@/core/types/common';
 import { getErrorMessageFromSearchParams } from '@/core/utils/error';
+import { EMAIL_ERRORS } from '@/core/features/auth/constants';
 
 export const metadata: Metadata = {
   title: `Email error — ${APP_NAME}`,
@@ -31,7 +31,7 @@ export default async function EmailErrorPage({
 
   const errorMessage = getErrorMessageFromSearchParams(
     errCodeStr as string,
-    emailErrors
+    EMAIL_ERRORS
   );
 
   return (
@@ -45,7 +45,6 @@ export default async function EmailErrorPage({
             email={email}
             className="mt-6"
             btnTitle="Generate a new token"
-            variant="accent"
           />
         </div>
       </CardContent>

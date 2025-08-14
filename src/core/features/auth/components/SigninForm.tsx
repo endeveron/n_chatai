@@ -1,13 +1,11 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
+import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 
-import { signIn } from '@/core/features/auth/actions';
-import VisibilityToggle from '@/core/features/auth/components/VisibilityToggle';
-import FormLoading from '@/core/components/ui/FormLoading';
 import { Button } from '@/core/components/ui/Button';
 import {
   Form,
@@ -20,9 +18,12 @@ import {
   FormLabel,
   FormMessage,
 } from '@/core/components/ui/Form';
-import { useError } from '@/core/hooks/useError';
+import FormLoading from '@/core/components/ui/FormLoading';
+import { signIn } from '@/core/features/auth/actions';
+import VisibilityToggle from '@/core/features/auth/components/VisibilityToggle';
 import { SignInSchema, signInSchema } from '@/core/features/auth/schemas';
 import { SignInArgs } from '@/core/features/auth/types';
+import { useError } from '@/core/hooks/useError';
 import { cn } from '@/core/utils';
 
 const SignInForm = () => {
@@ -105,18 +106,16 @@ const SignInForm = () => {
             )}
           />
           <Button
-            // variant="accent"
             loading={isPending}
             className="auth-form_button"
             type="submit"
+            variant="accent"
           >
             Sign In
           </Button>
-          {/* <div className="flex justify-center">
-          <Link href="/signup" className="auth-form_link">
+          <Link href="/signup" scroll={false} className="auth-form_link">
             Create an account
           </Link>
-        </div> */}
         </form>
         <FormLoading loadigIconClassName="-mt-14" isPending={isPending} />
       </div>

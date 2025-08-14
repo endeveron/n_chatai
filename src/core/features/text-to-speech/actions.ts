@@ -94,7 +94,7 @@ export async function convertTextToSpeech(
     if (!response.audioContent) {
       return {
         success: false,
-        error: 'No audio content received from Google Cloud TTS',
+        error: 'No audio content retrieved from Google Cloud TTS',
       };
     }
 

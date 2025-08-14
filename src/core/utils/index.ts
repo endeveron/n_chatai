@@ -87,8 +87,9 @@ export function round(value: number, decimals: number = 2): number {
 /**
  * Returns a random element from that array.
  * @param {T[]} array - An array of type `T`.
+ * @param {number} length - The length of the array.
  * @returns A random element from the input array is being returned.
  */
-export const getRandom = <T>(array: T[]) => {
-  return array[Math.floor(Math.random() * array.length)];
+export const getRandom = <T>(array: T[], length?: number) => {
+  return array[Math.floor(Math.random() * (length ?? array.length))];
 };
