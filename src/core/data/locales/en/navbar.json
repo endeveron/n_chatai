@@ -1,0 +1,9 @@
+{
+  "itemMap": [
+    ["test", "Test"],
+    ["types", "Types"],
+    ["main", "Main"],
+    ["ask-ai", "Ask AI"],
+    ["logout", "Log Out"]
+  ]
+}
