@@ -111,7 +111,7 @@ const SignInForm = () => {
             type="submit"
             variant="accent"
           >
-            Sign In
+            Sign in
           </Button>
           <Link href="/signup" scroll={false} className="auth-form_link">
             Create an account

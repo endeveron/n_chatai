@@ -28,6 +28,7 @@ const chatSchema = new Schema<Chat>({
     type: Schema.Types.ObjectId,
     ref: 'Person',
   },
+  heatLevel: { type: Number, require: true },
   memory: [memorySchema],
   tokens: {
     input: { type: Number },

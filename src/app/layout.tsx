@@ -48,7 +48,7 @@ export const metadata: Metadata = {
   icons: {
     icon: {
       // url: 'https://chatai-sigma-three.vercel.app/favicon.ico',
-      url: 'https://chataiapp.pages.dev/favicon.ico',
+      url: 'https://chataiapp.pages.dev/images/favicon.ico',
       type: 'image/image/ico',
     },
   },

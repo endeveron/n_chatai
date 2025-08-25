@@ -8,7 +8,7 @@ import { ScrollArea } from '@/core/components/ui/ScrollArea';
 import ChatItem from '@/core/features/chat/components/ChatItem';
 import MainMenu from '@/core/features/chat/components/MainMenu';
 import NewChatButton from '@/core/features/chat/components/NewChatButton';
-import Topbar from '@/core/features/chat/components/Topbar';
+import Topbar, { TopbarContent } from '@/core/features/chat/components/Topbar';
 import {
   ChatItem as TChatItem,
   UserData,
@@ -55,9 +55,9 @@ const ChatListClient = ({ chatItems, userData }: ChatListClientProps) => {
     >
       <Topbar>
         <MainMenu userData={userData} />
-        <div className="w-full flex justify-center">
+        <TopbarContent>
           <NewChatButton />
-        </div>
+        </TopbarContent>
       </Topbar>
 
       {chatItems ? (
@@ -67,6 +67,7 @@ const ChatListClient = ({ chatItems, userData }: ChatListClientProps) => {
               chatId={c.chatId}
               title={c.title}
               person={c.person}
+              heatLevel={c.heatLevel}
               key={c.chatId}
             />
           ))}

@@ -12,7 +12,7 @@ const buttonVariants = cva(
         default:
           'text-btn-foreground font-semibold bg-btn-background hover:text-btn-foreground-hover hover:bg-btn-background-hover',
         accent:
-          'text-btn-accent-foreground font-semibold bg-btn-accent-background hover:text-btn-accent-foreground-hover hover:bg-btn-accent-background-hover duration-700',
+          'text-btn-accent-foreground font-semibold bg-btn-accent-background hover:text-btn-accent-foreground-hover hover:bg-btn-accent-background-hover duration-500',
         secondary:
           'text-btn-secondary-foreground bg-btn-secondary-background hover:text-btn-secondary-foreground-hover hover:bg-btn-secondary-background-hover shadow-xs dark:shadow-none',
         outline:

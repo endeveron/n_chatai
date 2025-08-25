@@ -70,12 +70,12 @@ const MainMenu = ({ userData, className }: MainMenuProps) => {
 
           <DropdownMenuItem onClick={handleToggleTheme}>
             {themeIcon}
-            {theme === 'light' ? 'Dark' : 'Light'} Theme
+            {theme === 'light' ? 'Dark' : 'Light'} theme
           </DropdownMenuItem>
 
           <DropdownMenuItem onClick={handleSignOut}>
             <SignOutIcon className="icon--menu flip-x" />
-            Sign Out
+            Sign out
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

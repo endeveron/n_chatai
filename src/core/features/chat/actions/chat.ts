@@ -50,6 +50,7 @@ export const createChat = async ({
       personName,
       humanName: null,
       messages: [],
+      heatLevel: 0,
       memory: [],
       tokens: {
         input: 0,
@@ -136,6 +137,7 @@ export const getUserChats = async ({
       {
         chatId: string;
         title: string;
+        heatLevel: number;
         person: {
           name: string;
           status: string;
@@ -169,6 +171,7 @@ export const getUserChats = async ({
     const chats = fetchedChats.map((c) => ({
       chatId: c._id.toString(),
       title: c.title || c.personName,
+      heatLevel: c.heatLevel,
       person: {
         name: c.personName,
         status: c.person.status,
@@ -277,6 +280,7 @@ export const getChat = async ({
         bio: person.bio,
         accuracy: person.accuracy,
       },
+      heatLevel: chat.heatLevel,
       memory: parsedMemory,
       messages: parsedMessages,
     };
@@ -457,6 +461,7 @@ export const saveChatMemory = async ({
 
     console.log('\n\n[Debug] saveChatMemory > summary:', normalizedContent);
     console.log('[Debug] saveChatMemory > usageMetadata:', usageMetadata);
+    console.log('');
 
     chat.memory.push({
       context: normalizedContent,
@@ -563,5 +568,33 @@ export const getUsageStatistics = async (
     };
   } catch (err: unknown) {
     return handleActionError('Unable to retrieve statistics', err);
+  }
+};
+
+export const updateHeatLevel = async ({
+  chatId,
+  heatLevel,
+}: {
+  chatId: string;
+  heatLevel: number;
+}): Promise<ServerActionResult | undefined> => {
+  try {
+    await mongoDB.connect();
+
+    // Retrieve chat document from db
+    const chat = await ChatModel.findById(chatId);
+    if (!chat) {
+      handleActionError('Unable to retrieve chat document from db', null, true);
+      return;
+    }
+
+    chat.heatLevel = heatLevel;
+    await chat.save();
+
+    return {
+      success: true,
+    };
+  } catch (err: unknown) {
+    return handleActionError(`Unable to update the chat heat level in db`, err);
   }
 };

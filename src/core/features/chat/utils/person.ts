@@ -419,13 +419,13 @@ export const getMongoVectorStoreForPerson = async ({
   personContext: string[];
 }): Promise<MongoDBAtlasVectorSearch | undefined> => {
   // Try to get the vector store from the vectorStoreMap
-  // const storeFromMap = vectorStoreMap.get('person');
-  // if (storeFromMap) {
-  //   console.log(
-  //     `[Debug] getMongoVectorStoreForPerson: Vector store retrieved from vectorStoreMap`
-  //   );
-  //   return storeFromMap;
-  // }
+  const storeFromMap = vectorStoreMap.get('person');
+  if (storeFromMap) {
+    console.log(
+      `[Debug] getMongoVectorStoreForPerson: Vector store retrieved from vectorStoreMap`
+    );
+    return storeFromMap;
+  }
 
   try {
     // Get MongoDB database
@@ -510,10 +510,10 @@ export const getMongoVectorStoreForPerson = async ({
     }
 
     // Save to map for future requests
-    // vectorStoreMap.set('person', vectorStore);
-    // console.log(
-    //   `[Debug] getMongoVectorStoreForPerson: Vector store 'person' cached in vectorStoreMap`
-    // );
+    vectorStoreMap.set('person', vectorStore);
+    console.log(
+      `[Debug] getMongoVectorStoreForPerson: Vector store 'person' cached in vectorStoreMap`
+    );
 
     return vectorStore;
   } catch (err: unknown) {

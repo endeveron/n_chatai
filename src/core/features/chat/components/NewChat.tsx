@@ -6,8 +6,7 @@ import { useState } from 'react';
 import { createChat } from '@/core/features/chat/actions/chat';
 import NewChatForm from '@/core/features/chat/components/NewChatForm';
 import PeopleList from '@/core/features/chat/components/PeopleList';
-import Topbar from '@/core/features/chat/components/Topbar';
-import TopbarHeader from '@/core/features/chat/components/TopbarHeader';
+import Topbar, { TopbarTitle } from '@/core/features/chat/components/Topbar';
 import { CreateChatSchema } from '@/core/features/chat/schemas/chat';
 import {
   Gender,
@@ -73,10 +72,10 @@ const NewChat = ({ userId, people }: CreateChatProps) => {
   return (
     <section className="new-chat fade">
       <Topbar>
-        <TopbarHeader title="New Chat"></TopbarHeader>
+        <TopbarTitle>New Chat</TopbarTitle>
       </Topbar>
 
-      <h3 className="mt-4 py-4">Choose an AI person</h3>
+      <h3 className="mt-4 py-4 text-accent">Select an AI personality</h3>
       <PeopleList
         people={people}
         currentPersonId={personId}

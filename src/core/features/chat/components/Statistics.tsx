@@ -36,16 +36,18 @@ const Statistics = () => {
   if (userRole !== UserRole.admin) return null;
 
   return (
-    <div
-      className={cn(
-        'fixed z-20 bottom-80 left-4 flex-center gap-2 text-muted text-sm cursor-default transition-opacity duration-300',
-        fetching && 'opacity-20 pointer-events-none'
-      )}
-    >
-      <Button variant="secondary" className="h-9 w-9" onClick={handleRefresh}>
-        <ChartLine size={20} />
-      </Button>
-      {tokens}
+    <div className="relative w-6 h-9">
+      <div
+        className={cn(
+          'absolute left-0 flex-center gap-2 text-muted text-sm cursor-default transition-opacity duration-300',
+          fetching && 'opacity-20 pointer-events-none'
+        )}
+      >
+        <Button variant="secondary" className="h-9 w-9" onClick={handleRefresh}>
+          <ChartLine size={20} />
+        </Button>
+        {tokens}
+      </div>
     </div>
   );
 };

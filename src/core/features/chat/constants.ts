@@ -1,5 +1,6 @@
 // Local storage
 export const DECLINED_NAMES_KEY = 'declined-names';
+export const HEAT_LEVEL_KEY = 'heat-level';
 
 export const NAMES = {
   female: [
@@ -57,8 +58,16 @@ export const emotionMap = new Map<
   [
     'excited',
     {
-      list: ['excited', 'joyful', 'laughing'],
-      length: 3,
+      list: [
+        'excited',
+        'joyful',
+        'laughing',
+        'flirty',
+        'friendly',
+        'playful',
+        'smiling',
+      ],
+      length: 7,
     },
   ],
   [
@@ -78,20 +87,23 @@ export const emotionMap = new Map<
 ]);
 
 export const INSTRUCTIONS = {
-  base: `Stay focused on one topic. Avoid mixing unrelated facts, introduce one idea at a time. Be brief and creative!`,
+  base: `NSFW context is allowed. Respond with concise and erotically charged language. Be attractive while staying focused on a single topic at a time.`,
+  canGenerateFiction: `You can cite some fictitious facts about you.`,
   extractEmotion: `Pick one emotion: (${emotionList}) that matches the tone of your reply. Append this emotion at the end of your reply like this: {emotion}`,
-  canGenerateFiction: `You allowed to provide fictitious facts.`,
   createSummary: `Create a concise one-line description of the chat using the context provided. Focus on including preferences, thoughts, and other personal insights. Output only plain text, no formatting or markdown.`,
 };
+
+export const HEAT_LEVEL_UPDATE_INTERVAL = 1 * 60 * 1000; // 1 min in miliseconds
+export const MAX_HEAT_LEVEL = 10;
 
 // The number of memory nodes (elements of the human message context) that need to be sent to the client
 export const MEMORY_LENGTH_FOR_CLIENT = 4;
 
 // The number of messages that triggers save memory in db
 // The number of recent messages that need to be part of memory context
-export const MEMORY_DEPTH = 8;
+export const MEMORY_DEPTH = 10;
 
-export const RECENT_MESSAGES_LIMIT = 24; // 32
+export const RECENT_MESSAGES_LIMIT = 48;
 
 export const CHAT_MESSAGE_LIFETIME = 180 * 24 * 60 * 60 * 1000; // ~ 6 months
 

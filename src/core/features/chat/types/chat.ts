@@ -25,6 +25,7 @@ export type Chat = {
   humanName: string | null;
   personName: string;
   person: ObjectId;
+  heatLevel: number;
   memory: MemoryNode[];
   tokens: ChatTokens;
 };
@@ -35,13 +36,14 @@ export type ChatResponseData = {
     name: string;
   };
   humanName: string | null;
+  heatLevel: number;
   memory: MemoryNode[];
   messages: ChatMessageItem[];
 };
 
 export type ChatData = Pick<
   ChatResponseData,
-  'title' | 'humanName' | 'memory'
+  'title' | 'humanName' | 'heatLevel' | 'memory'
 > & {
   person: PersonBaseData & {
     _id: string;
@@ -57,6 +59,7 @@ export type ChatClientData = ChatData & {
 export type ChatItem = {
   chatId: string;
   title: string;
+  heatLevel: number;
   person: {
     name: string;
     status: string;

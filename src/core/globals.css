@@ -6,11 +6,12 @@
 :root {
   --radius: 0.5rem;
 
-  --hue: 225; /* 280 */
+  --hue: 225;
+  --accent-hue: 345;
   --brand-primary-hue: 290;
   --brand-secondary-hue: 334;
-  --btn-hover-hue: 330;
-  --error-hue: 347;
+  --btn-hover-hue: 334;
+  --error-hue: 340;
 
   --background: hsl(var(--hue) 10% 98%); /* body */
   --foreground: hsl(var(--hue) 10% 10%); /* main text */
@@ -18,7 +19,7 @@
   --inversed-background: hsl(var(--hue) 10% 10%); /* main text */
   --inversed-foreground: hsl(var(--hue) 10% 98%); /* body */
 
-  --accent: hsl(var(--brand-primary-hue) 100% 60%); /* brand-primary */
+  --accent: hsl(var(--accent-hue), 83%, 52%);
   --accent-foreground: hsl(var(--hue) 10% 100%);
 
   --brand: hsl(
@@ -54,7 +55,7 @@
   --popover-foreground: hsl(var(--hue) 10% 45%);
   --popover-focus: hsl(var(--hue) 10% 95%);
 
-  --error: hsl(var(--error-hue) 100% 50%);
+  --error: hsl(var(--error-hue) 83% 47%);
 
   --topbar: hsla(var(--hue) 10% 100%);
   --area: hsl(var(--hue) 10% 92%); /* auth, sidebar */
@@ -66,20 +67,16 @@
 }
 
 .dark {
-  --background: hsl(var(--hue) 10% 10%); /* body */
-  --foreground: hsl(var(--hue) 10% 95%); /* main text */
+  --background: hsl(var(--hue) 10% 10%);
+  --foreground: hsl(var(--hue) 10% 95%);
 
-  --inversed-background: hsl(var(--hue) 10% 95%); /* main text */
-  --inversed-foreground: hsl(var(--hue) 10% 5%); /* body */
+  --inversed-background: hsl(var(--hue) 10% 95%);
+  --inversed-foreground: hsl(var(--hue) 10% 5%);
 
-  --accent: hsl(var(--brand-primary-hue) 100% 60%); /* brand-primary */
+  --accent: hsl(var(--accent-hue), 83%, 47%);
 
-  --brand: hsl(
-    var(--brand-primary-hue) 83% 31%
-  ); /* human's chat message bg start */
-  --brand-secondary: hsl(
-    var(--brand-secondary-hue) 76% 37%
-  ); /* human's chat message bg stop */
+  --brand: hsl(var(--brand-primary-hue) 83% 31%);
+  --brand-secondary: hsl(var(--brand-secondary-hue) 76% 37%);
   --brand-foreground: hsl(0 0% 100%);
 
   --btn-foreground: hsl(var(--hue) 10% 0%);
@@ -103,15 +100,15 @@
 
   --card: hsl(var(--hue) 10% 10%);
 
-  --popover: hsl(var(--hue) 10% 15%); /* dropdown menu */
+  --popover: hsl(var(--hue) 10% 15%);
   --popover-foreground: hsl(var(--hue) 10% 85%);
   --popover-focus: hsl(var(--hue) 10% 15%);
 
   --error: hsl(var(--error-hue) 100% 50%);
 
   --topbar: hsla(var(--hue) 10% 20%);
-  --area: hsl(var(--hue) 10% 5%); /* auth, sidebar */
-  --blured: hsl(var(--hue) 10% 52%); /* blured card */
+  --area: hsl(var(--hue) 10% 5%);
+  --blured: hsl(var(--hue) 10% 52%);
   --muted: hsl(var(--hue) 10% 45%);
   --border: hsl(var(--hue) 10% 20%);
   --icon: hsl(var(--hue) 10% 75%);
@@ -470,6 +467,12 @@
     @apply bg-background/70;
   }
 
+  .chat-item_avatar {
+    width: var(--avatar);
+    height: var(--avatar);
+    position: relative;
+  }
+
   .chat-item_avatar .avatar {
     width: var(--avatar);
     height: var(--avatar);
@@ -518,7 +521,7 @@
   }
 
   :root.dark .chat-message[data-role='ai'] .chat-message_content {
-    @apply bg-blured/10;
+    @apply bg-blured/8;
     backdrop-filter: blur(10px);
   }
 
@@ -551,15 +554,19 @@
   /* Background */
 
   .chat_bg-image {
-    @apply absolute inset-0 z-0 flex flex-col items-center justify-center overflow-hidden transition-opacity;
+    @apply absolute inset-0 z-0 flex flex-col items-center justify-center overflow-hidden transition-opacity duration-300;
   }
 
-  .chat_bg-image[data-empty-chat='true'] {
+  .light .chat_bg-image[data-messages='true'] {
+    opacity: 0.2;
+  }
+
+  .dark .chat_bg-image[data-messages='true'] {
+    opacity: 0.1;
+  }
+
+  .chat_bg-image[data-messages='false'] {
     opacity: 1;
-  }
-
-  .chat_bg-image[data-empty-chat='false'] {
-    opacity: 0.15;
   }
 
   .chat_bg-image img {
@@ -588,7 +595,7 @@
     align-self: stretch;
   }
 
-  .new-chat .topbar-header {
+  .new-chat .topbar_header {
     @apply justify-center;
   }
 
@@ -686,7 +693,7 @@
       width: 100%;
     }
 
-    .chat .navback {
+    .chat .topbar_navback {
       display: none;
     }
 
@@ -779,7 +786,7 @@
       width: 280px;
     }
 
-    .new-chat .navback {
+    .new-chat .topbar_navback {
       display: none;
     }
 

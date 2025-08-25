@@ -19,13 +19,11 @@ const Avatar = ({
   const src = `/images/people/${avatarKey}/emotions/${emotion}.jpg`;
 
   return (
-    // <div className="avatar relative">
     <div className="avatar">
-      {/* <div className="avatar_image-wrapper text-muted h-full overflow-hidden relative rounded-full bg-muted ring-6 ring-card/80 dark:ring-0"> */}
-      <div className="avatar_image-wrapper text-muted h-full overflow-hidden relative rounded-full bg-muted transition-colors duration-300">
+      <div className="h-full overflow-hidden relative rounded-full bg-muted">
         <Image
           src={src}
-          className="avatar_image object-cover aspect-square h-full w-full"
+          className="object-cover aspect-square h-full w-full"
           placeholder="blur"
           blurDataURL={avatarBlur}
           sizes="56px"
@@ -33,9 +31,6 @@ const Avatar = ({
           alt={emotion}
         />
       </div>
-      {/* <div className="opacity-85 absolute z-10 -bottom-5 left-1/2 -translate-x-1/2 text-[10px] bg-white px-2 py-0.5 rounded-full tracking-wide">
-        {emotion}
-      </div> */}
     </div>
   );
 };

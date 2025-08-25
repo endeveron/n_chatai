@@ -7,16 +7,23 @@ import { useEffect, useRef, useState } from 'react';
 import {
   saveChatMemory,
   saveHumanName,
+  updateHeatLevel,
 } from '@/core/features/chat/actions/chat';
 import { askAI } from '@/core/features/chat/actions/llm';
 import AskForName from '@/core/features/chat/components/AskForName';
 import ChatInput from '@/core/features/chat/components/ChatInput';
 import ChatMenu from '@/core/features/chat/components/ChatMenu';
 import ChatMessages from '@/core/features/chat/components/ChatMessages';
-import Topbar from '@/core/features/chat/components/Topbar';
-import TopbarHeader from '@/core/features/chat/components/TopbarHeader';
+import HeatHeart from '@/core/features/chat/components/HeatHeart';
+import Topbar, {
+  TopbarContent,
+  TopbarNavBack,
+  TopbarTitle,
+} from '@/core/features/chat/components/Topbar';
 import {
   DECLINED_NAMES_KEY,
+  HEAT_LEVEL_KEY,
+  HEAT_LEVEL_UPDATE_INTERVAL,
   MEMORY_DEPTH,
 } from '@/core/features/chat/constants';
 import {
@@ -34,6 +41,7 @@ import {
 } from '@/core/features/chat/utils/chat';
 import { useLocalStorage } from '@/core/hooks/useLocalStorage';
 import { cn } from '@/core/utils';
+import Statistics from '@/core/features/chat/components/Statistics';
 
 interface ChatClientProps extends ChatData {
   chatId: string;
@@ -46,32 +54,37 @@ const ChatClient = ({
   messages: fetchedMessages,
   person,
   humanName,
+  heatLevel: fetchedHeatLevel,
   memory,
 }: ChatClientProps) => {
   const pathname = usePathname();
-  const [
-    getDeclinedNamesFromLS,
-    setDeclinedNamesInLS,
-    removeDeclinedNamesFromLS,
-  ] = useLocalStorage();
+  const [getItemFromLS, setItemInLS, removeItemFromLS] = useLocalStorage();
 
   const [isPending, setPending] = useState(false);
   const [messages, setMessages] = useState<ChatMessageItem[]>([]);
   const [humanNameCandidate, setHumanNameCandidate] = useState<string | null>(
     null
   );
+  const [heatLevel, setHeatLevel] = useState(0);
 
   const memoryMessagesRef = useRef<MemoryMessage[]>([]);
   const humanNameRef = useRef<string | null>(null);
   const memoryInitRef = useRef(false);
+  const prevHeatLevelRef = useRef(0);
+
+  const handleUpHeat = () => {
+    setHeatLevel((prev) => prev + 1);
+  };
+
+  const handleDownHeat = () => {
+    setHeatLevel((prev) => prev - 1);
+  };
 
   const handleInputSubmit = async (input: string) => {
     let updatedMessages: ChatMessageItem[] = [];
 
     try {
       setPending(true);
-
-      console.log('\n');
 
       // Extract human's name
       if (!humanNameRef.current) {
@@ -117,7 +130,7 @@ const ChatClient = ({
         return;
       }
       if (res.data) {
-        const aiMessage: ChatMessageItem = res.data;
+        const { aiMessage, heatIndex } = res.data;
 
         // Add messages to local context memory
         const updContextMemory = [
@@ -135,17 +148,32 @@ const ChatClient = ({
         ];
 
         memoryMessagesRef.current = updContextMemory;
-
-        console.log('memoryMessages', memoryMessagesRef.current);
-
         setMessages([...updatedMessages, aiMessage]);
+
+        if (typeof heatIndex === 'number') {
+          let newHeatLevel;
+
+          if (heatIndex > 0) {
+            newHeatLevel = heatLevel + heatIndex;
+          } else if (heatIndex === 0 && heatLevel > 0) {
+            newHeatLevel = heatLevel - heatIndex;
+          }
+
+          if (newHeatLevel && newHeatLevel >= 0) {
+            setItemInLS<number>(
+              `${HEAT_LEVEL_KEY}_${person.personKey}`,
+              newHeatLevel
+            );
+            setHeatLevel(newHeatLevel);
+          }
+        }
 
         // Periodically save chat memory
         if (updContextMemory.length >= MEMORY_DEPTH) {
           let localMemoryMessages: MemoryMessage[] = [];
 
-          // If person's accuracy = 1 => AI didn't provide fictitious facts, there is no
-          // any sense to keep AI messages. The context will duplicate the person's context.
+          // If person's accuracy = 1 => AI didn't provide fictitious facts, there is no any
+          // sense to keep the AI messages (the context will duplicate the person's context).
           if (person.accuracy === 1) {
             localMemoryMessages = updContextMemory.filter(
               (m) => m.role === MessageRole.human
@@ -208,7 +236,7 @@ const ChatClient = ({
     if (res?.success) {
       console.log(`[Debug] Human name saved in db`);
       // Remove declined names array from local storage
-      removeDeclinedNamesFromLS(`${DECLINED_NAMES_KEY}_${person.personKey}`);
+      removeItemFromLS(`${DECLINED_NAMES_KEY}_${person.personKey}`);
     }
   };
 
@@ -216,17 +244,17 @@ const ChatClient = ({
     if (!humanNameCandidate) return;
 
     // Add declined name to local storage
-    const declinedNamesFromLS: string[] | null = getDeclinedNamesFromLS(
+    const declinedNamesFromLS = getItemFromLS<string[]>(
       `${DECLINED_NAMES_KEY}_${person.personKey}`
     );
     if (!declinedNamesFromLS) {
-      setDeclinedNamesInLS(`${DECLINED_NAMES_KEY}_${person.personKey}`, [
+      setItemInLS(`${DECLINED_NAMES_KEY}_${person.personKey}`, [
         humanNameCandidate,
       ]);
     } else {
       const declinedNamesSet = new Set<string>(declinedNamesFromLS);
       declinedNamesSet.add(humanNameCandidate);
-      setDeclinedNamesInLS(`${DECLINED_NAMES_KEY}_${person.personKey}`, [
+      setItemInLS(`${DECLINED_NAMES_KEY}_${person.personKey}`, [
         ...declinedNamesSet,
       ]);
     }
@@ -277,7 +305,7 @@ const ChatClient = ({
       const nameCandidate = nameCandidates[0];
 
       // Exit if the name-candidate is saved in the local storage as declined
-      const declinedNamesFromLS: string[] | null = getDeclinedNamesFromLS(
+      const declinedNamesFromLS = getItemFromLS<string[]>(
         `${DECLINED_NAMES_KEY}_${person.personKey}`
       );
       if (declinedNamesFromLS && declinedNamesFromLS.includes(nameCandidate)) {
@@ -290,13 +318,58 @@ const ChatClient = ({
       );
       setHumanNameCandidate(nameCandidate);
     }
-  }, [
-    getDeclinedNamesFromLS,
-    humanName,
-    memory,
-    person.name,
-    person.personKey,
-  ]);
+  }, [getItemFromLS, humanName, memory, person.name, person.personKey]);
+
+  // Init heat level
+  useEffect(() => {
+    // Check heat level from the local storage
+    const heatLevelFromLS =
+      getItemFromLS<number>(`${HEAT_LEVEL_KEY}_${person.personKey}`) ?? 0;
+
+    // Get the greater of the heat level values
+    const greaterLevel = Math.max(heatLevelFromLS, fetchedHeatLevel);
+    setHeatLevel(greaterLevel);
+    prevHeatLevelRef.current = greaterLevel;
+
+    // Update heat level value in local storage
+    if (heatLevelFromLS < greaterLevel) {
+      setItemInLS<number>(
+        `${HEAT_LEVEL_KEY}_${person.personKey}`,
+        fetchedHeatLevel
+      );
+    }
+  }, [fetchedHeatLevel, person.personKey, getItemFromLS, setItemInLS]);
+
+  // Update heat level at interval
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      if (prevHeatLevelRef.current === heatLevel) {
+        return;
+      }
+
+      prevHeatLevelRef.current = heatLevel;
+      console.log('[Debug] Updating heat level in db...');
+
+      try {
+        const res = await updateHeatLevel({
+          chatId,
+          heatLevel,
+        });
+
+        if (res?.success) {
+          console.log('[Debug] Heat level updated.');
+        } else {
+          console.error(res?.error.message ?? 'Unable to update heat level.');
+        }
+      } catch (err: unknown) {
+        console.error(err);
+      }
+    }, HEAT_LEVEL_UPDATE_INTERVAL);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, [chatId, heatLevel]);
 
   // Disabled - Bad results: ['Hi', 'Alex', 'Tell']
   // // Extract human name from the chat messages
@@ -327,12 +400,20 @@ const ChatClient = ({
       {chatId ? (
         <>
           <Topbar>
-            <TopbarHeader title={title} navPath="/">
-              <ChatMenu
-                cleanChat={{ show: !!messages.length, chatId, path: pathname }}
-                onCleaned={handleCleanChat}
-              />
-            </TopbarHeader>
+            <TopbarNavBack navPath="/" />
+            <Statistics />
+            <TopbarContent>
+              <div onClick={handleUpHeat}>
+                <HeatHeart heatLevel={heatLevel} />
+              </div>
+              <div onClick={handleDownHeat}>
+                <TopbarTitle>{title}</TopbarTitle>
+              </div>
+            </TopbarContent>
+            <ChatMenu
+              cleanChat={{ show: !!messages.length, chatId, path: pathname }}
+              onCleaned={handleCleanChat}
+            />
           </Topbar>
           <ChatMessages
             messages={messages}
@@ -356,7 +437,7 @@ const ChatClient = ({
           <ChatInput onSubmit={handleInputSubmit} isPending={isPending} />
           <div
             className="chat_bg-image"
-            data-empty-chat={messages.length === 0 ? 'true' : 'false'}
+            data-messages={messages.length ? 'true' : 'false'}
           >
             <Image
               src={`/images/people/${person.avatarKey}/chat-bg.png`}

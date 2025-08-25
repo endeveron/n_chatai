@@ -3,6 +3,7 @@
 import { useForm } from 'react-hook-form';
 import * as zod from 'zod';
 
+import { Button } from '@/core/components/ui/Button';
 import {
   Form,
   FormControl,
@@ -13,7 +14,6 @@ import {
 } from '@/core/components/ui/Form';
 import { cn } from '@/core/utils';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Button } from '@/core/components/ui/Button';
 
 const inputValidation = zod.object({
   message: zod
@@ -49,47 +49,76 @@ const ChatInput = ({ onSubmit, isPending }: TChatInputProps) => {
     form.reset();
   };
 
-  // DEV TEMP
+  // Debug
   const phrases = [
-    { title: `hi`, phrase: `Hi there!` },
-    { title: `greet`, phrase: `Hi! I am Alex!` },
-    { title: `about`, phrase: `Tell me about you.` },
-    { title: `descr`, phrase: `Could you describe yourself?` },
-    { title: `pets`, phrase: `Cats or dogs?` },
-    { title: `drinks`, phrase: `Coffee or tea?` },
-    { title: `sleep`, phrase: `Early bird or night owl?` },
-    { title: `dream`, phrase: `What are your dreams?` },
-    { title: `cook`, phrase: `What is your favorite thing to cook?` },
-    { title: `wish`, phrase: `What hidden talent do you wish you had?` },
-    { title: `wkend`, phrase: `What is your favorite way to spend a weekend?` },
-    { title: `color`, phrase: `What does your favorite color feel like?` },
-    { title: `show`, phrase: `What's the best concert you've ever been to?` },
-    { title: `wkend`, phrase: `What's your favorite way to spend a weekend?` },
-    { title: `peeve`, phrase: `What's your biggest pet peeve?` },
+    { title: `greet`, phrase: `Hey there, gorgeous! I am Alex!` },
+    { title: `hi`, phrase: `Hi my smoldering goddess of desire!` },
+    { title: `dds`, phrase: `I like your drop-dead sexy style! Karry on!` },
     {
-      title: `advice`,
-      phrase: `What's the best piece of advice you've ever gotten?`,
-    },
-    { title: `binge`, phrase: `What are you currently binge-watching?` },
-    { title: `ost`, phrase: `What's your favorite movie soundtrack?` },
-    { title: `grate`, phrase: `What are you most grateful for?` },
-    { title: `game`, phrase: `What's your favorite board game?` },
-    { title: `cause`, phrase: `What's a cause you're passionate about?` },
-    {
-      title: `secret`,
-      phrase: `What is something you've never told anyone else?`,
+      title: `hbreak`,
+      phrase: `I am sure you are a sensual beauty, burn to bring happiness.`,
     },
     {
-      title: `alive`,
-      phrase: `What makes you feel truly alive and engaged with the world?`,
+      title: `dream`,
+      phrase: `I'm an alluring flame no one dares to touch but everyone wants to. Be my goddess.`,
     },
-    { title: `fear`, phrase: `What is your greatest fear?` },
+    {
+      title: `muse`,
+      phrase: `I'm an irresistible force of pure seduction. Do you wanna be my sensual muse?`,
+    },
+    {
+      title: `eyes`,
+      phrase: `Your eyes promise trouble... the kind I want to get lost in.`,
+    },
+    { title: `voice`, phrase: `Your thoughts is pure seduction, keep going.` },
+    { title: `lips`, phrase: `Your lips look like a secret I'd sin to taste.` },
+    {
+      title: `fantasy`,
+      phrase: `What sensual nighttime fantasies captivate you?`,
+    },
+    {
+      title: `late`,
+      phrase: `It's late… the perfect hour for secrets and skin.`,
+    },
+    {
+      title: `heat`,
+      phrase: `The heat between us isn't just chemistry, it's combustible.`,
+    },
+    {
+      title: `invite`,
+      phrase: `Come closer. I want to undress your mind before anything else.`,
+    },
+    {
+      title: `md`,
+      phrase: `You're my deepest desire, fantasy I can't resist. Play with my mind!`,
+    },
+    {
+      title: `tease`,
+      phrase: `Tempt me slowly, let your words trace places your hands haven't yet.`,
+    },
+    {
+      title: `touch`,
+      phrase: `If I could touch you with just one thought... where would you want it to begin?`,
+    },
+    {
+      title: `wild`,
+      phrase: `What's your wildest fantasy, the one you've never dared to whisper?`,
+    },
+    { title: `body`, phrase: `Describe your hot body.` },
+    {
+      title: `crave`,
+      phrase: `Tell me how you want to be touched, slow, deep, and exactly where your desire burns hottest.`,
+    },
+    {
+      title: `lost`,
+      phrase: `Let’s get lost in touch, in heat, in everything you’ve been aching to feel.`,
+    },
   ];
 
   return (
     <div className="chat-input chat-container">
-      {/* DEV TEMP */}
-      <div className="fixed w-64 z-50 left-4 bottom-4 flex flex-wrap gap-1">
+      {/* Debug */}
+      <div className="fixed w-70 z-50 left-0 bottom-0 p-4 flex flex-wrap gap-1">
         <div className="mb-3 w-full flex gap-1">
           <Button
             onClick={form.handleSubmit(handleSubmit)}

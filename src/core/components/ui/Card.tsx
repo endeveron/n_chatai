@@ -80,10 +80,7 @@ const CardTitle = forwardRef<
   return (
     <h3
       ref={ref}
-      className={cn(
-        'mb-6 title text-3xl dark:text-accent font-black leading-none',
-        className
-      )}
+      className={cn('mb-6 title text-3xl font-black leading-none', className)}
       {...props}
     >
       {children}

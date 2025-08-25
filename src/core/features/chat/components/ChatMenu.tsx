@@ -66,7 +66,7 @@ const ChatMenu = ({ cleanChat, onCleaned }: ChatMenuProps) => {
   };
 
   return (
-    <div className="chat-menu h-6">
+    <div className="chat-menu w-6 h-6">
       <DropdownMenu>
         <DropdownMenuTrigger>
           <MenuIcon className="icon--action" />

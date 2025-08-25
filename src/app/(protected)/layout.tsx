@@ -3,7 +3,6 @@ import { redirect } from 'next/navigation';
 import { SIGNIN_REDIRECT } from '@/core/constants';
 import ChatList from '@/core/features/chat/components/ChatList';
 import { auth } from '~/auth';
-import Statistics from '@/core/features/chat/components/Statistics';
 
 export default async function ProtectedLayout({
   children,
@@ -16,7 +15,6 @@ export default async function ProtectedLayout({
   return (
     <>
       <ChatList />
-      <Statistics />
 
       {/* Chat | NewChat components */}
       {children}

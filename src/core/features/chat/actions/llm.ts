@@ -17,7 +17,10 @@ import {
   extractEmotionFromAIMessageContent,
   normalizeText,
 } from '@/core/features/chat/utils/chat';
-import { configureBaseSystemMessage } from '@/core/features/chat/utils/llm';
+import {
+  configureBaseSystemMessage,
+  getAIResHeatIndex,
+} from '@/core/features/chat/utils/llm';
 import {
   getContextFromVectorStore,
   getMongoVectorStoreForPerson,
@@ -44,9 +47,13 @@ export const askAI = async ({
   personKey: PersonKey;
   isChatStart: boolean;
   path?: string;
-}): Promise<ServerActionResult<ChatMessageItem> | undefined> => {
-  // const instructions = PROMPT.baseInstructions;
-
+}): Promise<
+  | ServerActionResult<{
+      aiMessage: ChatMessageItem;
+      heatIndex?: number;
+    }>
+  | undefined
+> => {
   if (!chatId || !message.content || !personKey) {
     return configureCasualServerActionError(`askAI: Invalid arguments.`);
   }
@@ -167,8 +174,11 @@ export const askAI = async ({
       noLineBreaks: true,
     });
 
-    console.log('\n[Debug] askAI > AI Response:', normalizedContent);
+    console.log('[Debug] askAI > AI Response:', normalizedContent);
+    const heatIndex = getAIResHeatIndex(aiMsg);
+    console.log('[Debug] askAI > heatIndex:', heatIndex);
     console.log('[Debug] askAI > usageMetadata:', usageMetadata);
+    console.log('');
 
     const { aiMsgText, emotion } = extractEmotionFromAIMessageContent(content);
 
@@ -176,7 +186,9 @@ export const askAI = async ({
       // Configure an alternative AI message if LLM doesn't provide content
       return {
         success: true,
-        data: createAltMessageItem(),
+        data: {
+          aiMessage: createAltMessageItem(),
+        },
       };
     }
 
@@ -200,7 +212,10 @@ export const askAI = async ({
     if (saveMessagesRes?.success) {
       return {
         success: saveMessagesRes?.success,
-        data: aiMessage,
+        data: {
+          aiMessage,
+          heatIndex,
+        },
       };
     }
 

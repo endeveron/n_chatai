@@ -1,7 +1,17 @@
+import {
+  HarmCategory,
+  HarmProbability,
+  SafetyRating,
+} from '@google/generative-ai';
+import {
+  AIMessageChunk,
+  HumanMessage,
+  SystemMessage,
+} from '@langchain/core/messages';
+
 import { INSTRUCTIONS } from '@/core/features/chat/constants';
 import { MemoryMessage, MessageRole } from '@/core/features/chat/types/chat';
 import { PersonDataForPrompt } from '@/core/features/chat/types/person';
-import { HumanMessage, SystemMessage } from '@langchain/core/messages';
 
 export const configureBaseSystemMessage = ({
   // humanName,
@@ -40,7 +50,7 @@ export const configureBaseSystemMessage = ({
     ? ' Cheerful greet and introduce yourself.'
     : ` No greet.`;
 
-  const instructions = `[INSTRUCTIONS]\n${baseInstructions} Play a role of ${personName} using some details from the provided context. ${INSTRUCTIONS.base}${instructionsGreet}${accuracyInstructions}\n${INSTRUCTIONS.extractEmotion}${context}`;
+  const instructions = `[INSTRUCTIONS]\n${baseInstructions} Play a role of ${personName} using relevant details from the provided context. ${INSTRUCTIONS.base}${instructionsGreet}${accuracyInstructions}\n${INSTRUCTIONS.extractEmotion}${context}`;
 
   console.log(`\n\n[Debug] configureBaseSystemMessage: ${instructions}\n`);
 
@@ -72,11 +82,50 @@ export const createSummaryMessage = ({
     INSTRUCTIONS.createSummary
   }\n\n[CONTEXT]\n${contextLines.join('\n')}`;
 
-  console.log('\n\ncreateSummaryMessage:', instructions);
+  console.log('\n\n[Debug] createSummaryMessage > instructions:', instructions);
 
   return new HumanMessage({
     content: instructions,
   });
+};
+
+export const getAIResHeatIndex = (aiMsg: AIMessageChunk): number => {
+  let heatIndex = 0;
+
+  const safetyRatings: SafetyRating[] | null | undefined =
+    aiMsg?.response_metadata?.safetyRatings;
+  if (!safetyRatings || !safetyRatings?.length) {
+    return heatIndex;
+  }
+
+  const explicitCatItem = safetyRatings.find(
+    (r) => r.category === HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT
+  );
+  if (!explicitCatItem) {
+    return heatIndex;
+  }
+
+  const probability: HarmProbability = explicitCatItem.probability;
+  if (
+    !probability ||
+    probability === HarmProbability.HARM_PROBABILITY_UNSPECIFIED ||
+    probability === HarmProbability.NEGLIGIBLE
+  ) {
+    return heatIndex;
+  }
+
+  switch (probability) {
+    case HarmProbability.LOW:
+      heatIndex = 1;
+      break;
+    case HarmProbability.MEDIUM:
+      heatIndex = 2;
+      break;
+    case HarmProbability.HIGH:
+      heatIndex = 3;
+  }
+
+  return heatIndex;
 };
 
 // export const createExtractNameMessage = ({
