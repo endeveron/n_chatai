@@ -24,7 +24,9 @@ const ChatMessage = ({
   const isAi = role === MessageRole.ai;
   const isHuman = role === MessageRole.human;
 
-  const handleContentClick = () => {
+  const handleContextClick = (e: React.MouseEvent) => {
+    e.preventDefault(); // Prevent the default context menu
+
     copy(content);
     toast('Message text copied to clipboard');
   };
@@ -39,8 +41,8 @@ const ChatMessage = ({
       data-role={isHuman ? 'human' : isAi ? 'ai' : 'system'}
     >
       {avatar}
-      <div className="chat-message_content-wrapper flex items-center">
-        <p onClick={handleContentClick} className="chat-message_content">
+      <div className="flex items-center">
+        <p onContextMenu={handleContextClick} className="chat-message_content">
           {content}
         </p>
       </div>

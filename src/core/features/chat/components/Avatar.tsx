@@ -23,7 +23,7 @@ const Avatar = ({
       <div className="h-full overflow-hidden relative rounded-full bg-muted">
         <Image
           src={src}
-          className="object-cover aspect-square h-full w-full"
+          className="object-cover aspect-square h-full w-full text-sm"
           placeholder="blur"
           blurDataURL={avatarBlur}
           sizes="56px"

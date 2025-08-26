@@ -118,7 +118,7 @@ const ChatInput = ({ onSubmit, isPending }: TChatInputProps) => {
   return (
     <div className="chat-input chat-container">
       {/* Debug */}
-      <div className="fixed w-70 z-50 left-0 bottom-0 p-4 flex flex-wrap gap-1">
+      {/* <div className="fixed w-70 z-50 left-0 bottom-0 p-4 flex flex-wrap gap-1">
         <div className="mb-3 w-full flex gap-1">
           <Button
             onClick={form.handleSubmit(handleSubmit)}
@@ -150,7 +150,7 @@ const ChatInput = ({ onSubmit, isPending }: TChatInputProps) => {
             </Button>
           </div>
         ))}
-      </div>
+      </div> */}
 
       <Form {...form}>
         <form

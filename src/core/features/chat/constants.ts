@@ -93,8 +93,9 @@ export const INSTRUCTIONS = {
   createSummary: `Create a concise one-line description of the chat using the context provided. Focus on including preferences, thoughts, and other personal insights. Output only plain text, no formatting or markdown.`,
 };
 
-export const HEAT_LEVEL_UPDATE_INTERVAL = 1 * 60 * 1000; // 1 min in miliseconds
 export const MAX_HEAT_LEVEL = 10;
+export const HEAT_LEVEL_UPDATE_INTERVAL = 1 * 60 * 1000; // 1 min in miliseconds
+export const HEAT_PHOTOS_COUNT = 6;
 
 // The number of memory nodes (elements of the human message context) that need to be sent to the client
 export const MEMORY_LENGTH_FOR_CLIENT = 4;
