@@ -18,7 +18,7 @@ const buttonVariants = cva(
         outline:
           'border border-border text-muted hover:border-transparent hover:bg-btn-secondary-background hover:text-foreground',
         ghost:
-          'hover:bg-btn-secondary-background hover:text-btn-secondary-foreground',
+          'text-btn-secondary-foreground hover:bg-btn-secondary-background',
       },
       size: {
         default: 'h-11 px-4 has-[>svg]:px-3',

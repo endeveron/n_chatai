@@ -203,7 +203,7 @@ export const HEAT_LEVEL_UPDATE_INTERVAL = 1 * 60 * 1000; // 1 min in miliseconds
 export const HEAT_PHOTOS_COUNT = 6;
 
 // The number of memory nodes (elements of the human message context) that need to be sent to the client
-export const MEMORY_LENGTH_FOR_CLIENT = 2;
+export const MEMORY_LENGTH_FOR_CLIENT = 20;
 
 // The number of messages that triggers save memory in db
 // The number of recent messages that need to be part of memory context

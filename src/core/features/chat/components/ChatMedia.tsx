@@ -53,17 +53,22 @@ const ChatMedia = ({ heatLevel, avatarKey }: ChatMediaProps) => {
   };
 
   const toggleMinimized = () => {
-    const newValue = !minimized;
-    setMinimized(newValue);
-    setItemInLS(`${CHAT_MEDIA_MIN_KEY}_${avatarKey}`, newValue);
+    const value = !minimized;
+    const key = `${CHAT_MEDIA_MIN_KEY}_${avatarKey}`;
+    if (value) {
+      setItemInLS(key, value);
+    } else {
+      removeItemFromLS(key);
+    }
+    setMinimized(value);
   };
 
   useEffect(() => {
-    const minStateFromLS = getItemFromLS<boolean>(
+    const itemInLS = getItemFromLS<boolean>(
       `${CHAT_MEDIA_MIN_KEY}_${avatarKey}`
     );
-    if (minStateFromLS != null) {
-      setMinimized(minStateFromLS);
+    if (itemInLS) {
+      setMinimized(true);
     }
   }, [avatarKey, getItemFromLS]);
 
@@ -329,8 +334,8 @@ const ChatMedia = ({ heatLevel, avatarKey }: ChatMediaProps) => {
               <div className="relative h-4 flex-center leading-none">
                 <div
                   className={cn(
-                    'translate-x-2 transition-opacity ease-out duration-300',
-                    !minimized && 'opacity-0'
+                    'translate-x-2 transition-all ease-out duration-300',
+                    !minimized && 'opacity-0 scale-30'
                   )}
                 >
                   <Button variant="accent" size="sm">
@@ -361,7 +366,7 @@ const ChatMedia = ({ heatLevel, avatarKey }: ChatMediaProps) => {
                   ? 'w-60 h-120 rounded-2xl dark:shadow-2xl dark:shadow-background/50'
                   : 'w-16 h-16 rounded-lg hover:w-30 hover:h-56 hover:translate-y-8',
                 minimized &&
-                  'scale-50 w-0 h-0 -translate-y-4 ease-out opacity-0'
+                  'scale-50 w-1 h-1 -translate-y-4 ease-out opacity-0'
               )}
             >
               <div className="absolute inset-0.25 text-white/20 flex-center rounded-2xl bg-accent/20">

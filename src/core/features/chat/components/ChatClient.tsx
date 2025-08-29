@@ -3,7 +3,10 @@
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
+import { toast } from 'sonner';
 
+import { DeclineIcon } from '@/core/components/icons/DeclineIcon';
+import { ScrollArea } from '@/core/components/ui/ScrollArea';
 import {
   saveChatMemory,
   saveHumanName,
@@ -13,8 +16,14 @@ import { askAI } from '@/core/features/chat/actions/llm';
 import AskForName from '@/core/features/chat/components/AskForName';
 import ChatInput from '@/core/features/chat/components/ChatInput';
 import ChatMedia from '@/core/features/chat/components/ChatMedia';
+import ChatMemoryItem from '@/core/features/chat/components/ChatMemoryItem';
 import ChatMenu from '@/core/features/chat/components/ChatMenu';
 import ChatMessages from '@/core/features/chat/components/ChatMessages';
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+} from '@/core/features/chat/components/Drawer';
 import HeatHeart from '@/core/features/chat/components/HeatHeart';
 import Statistics from '@/core/features/chat/components/Statistics';
 import Topbar, {
@@ -67,6 +76,7 @@ const ChatClient = ({
     null
   );
   const [heatLevel, setHeatLevel] = useState(0);
+  const [isEditMemory, setEditMemory] = useState(false);
 
   const memoryMessagesRef = useRef<MemoryMessage[]>([]);
   const humanNameRef = useRef<string | null>(null);
@@ -292,6 +302,14 @@ const ChatClient = ({
     setHumanNameCandidate(null);
   };
 
+  const handleEditMemory = () => {
+    setEditMemory(true);
+  };
+
+  const handleDelChatMemError = (errMessage: string) => {
+    toast(errMessage);
+  };
+
   // Init messages
   useEffect(() => {
     if (fetchedMessages.length) {
@@ -404,7 +422,7 @@ const ChatClient = ({
   return (
     <section
       className={cn(
-        'chat opacity-0 transition-opacity',
+        'fade chat opacity-0 transition-opacity',
         chatId && 'opacity-100'
       )}
     >
@@ -425,8 +443,10 @@ const ChatClient = ({
               </div>
             </TopbarContent>
             <ChatMenu
+              isMemories={memory.length > 0}
               cleanChat={{ show: !!messages.length, chatId, path: pathname }}
               onCleaned={handleCleanChat}
+              onEditMemory={handleEditMemory}
             />
           </Topbar>
           <ChatMessages
@@ -464,6 +484,33 @@ const ChatClient = ({
               alt={`${person.name} - ${person.title}`}
             />
           </div>
+
+          <Drawer open={isEditMemory} onChange={setEditMemory}>
+            <DrawerContent className="h-80">
+              <div className="flex items-center justify-between">
+                <h3 className="text-title">{person.name}&apos;s memories</h3>
+                <DrawerClose>
+                  {/* <Button variant="ghost">close</Button> */}
+                  <div className="icon--action m-0.5 scale-75">
+                    <DeclineIcon />
+                  </div>
+                </DrawerClose>
+              </div>
+
+              <ScrollArea className="my-4">
+                <div className="flex flex-col gap-2">
+                  {memory.map((m) => (
+                    <ChatMemoryItem
+                      {...m}
+                      chatId={chatId}
+                      onError={handleDelChatMemError}
+                      key={m.timestamp}
+                    />
+                  ))}
+                </div>
+              </ScrollArea>
+            </DrawerContent>
+          </Drawer>
         </>
       ) : null}
     </section>

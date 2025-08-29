@@ -13,106 +13,114 @@
   --btn-hover-hue: 334;
   --error-hue: 340;
 
-  --background: hsl(var(--hue) 10% 98%); /* body */
-  --foreground: hsl(var(--hue) 10% 10%); /* main text */
+  --background: hsl(var(--hue), 10%, 98%); /* body */
+  --foreground: hsl(var(--hue), 10%, 10%); /* main text */
 
-  --inversed-background: hsl(var(--hue) 10% 10%); /* main text */
-  --inversed-foreground: hsl(var(--hue) 10% 98%); /* body */
+  --inversed-background: hsl(var(--hue), 10%, 10%); /* main text */
+  --inversed-foreground: hsl(var(--hue), 10%, 98%); /* body */
 
   --accent: hsl(var(--accent-hue), 83%, 52%);
-  --accent-foreground: hsl(var(--hue) 10% 100%);
+  --accent-foreground: hsl(var(--hue), 10%, 100%);
 
   --brand: hsl(
-    var(--brand-primary-hue) 67% 47%
+    var(--brand-primary-hue),
+    67%,
+    47%
   ); /* human's chat message bg start */
   --brand-secondary: hsl(
-    var(--brand-secondary-hue) 74% 55%
+    var(--brand-secondary-hue),
+    74%,
+    55%
   ); /* human's chat message bg stop */
-  --brand-foreground: hsl(0 0% 100%);
+  --brand-foreground: hsl(0, 0%, 100%);
 
-  --btn-foreground: hsl(var(--hue) 10% 85%);
-  --btn-background: hsl(var(--hue) 10% 15%);
-  --btn-foreground-hover: hsl(var(--hue) 10% 100%);
-  --btn-background-hover: hsl(var(--btn-hover-hue) 65% 50%);
+  --btn-foreground: hsl(var(--hue), 10%, 85%);
+  --btn-background: hsl(var(--hue), 10%, 15%);
+  --btn-foreground-hover: hsl(var(--hue), 10%, 100%);
+  --btn-background-hover: hsl(var(--btn-hover-hue), 65%, 50%);
 
-  --btn-secondary-foreground: hsl(var(--hue) 10% 50%);
-  --btn-secondary-background: hsl(var(--hue) 10% 100%);
-  --btn-secondary-foreground-hover: hsl(var(--hue) 10% 100%);
-  --btn-secondary-background-hover: hsl(var(--btn-hover-hue) 65% 50%);
+  --btn-secondary-foreground: hsl(var(--hue), 10%, 50%);
+  --btn-secondary-background: hsl(var(--hue), 10%, 100%);
+  --btn-secondary-foreground-hover: hsl(var(--hue), 10%, 100%);
+  --btn-secondary-background-hover: hsl(var(--btn-hover-hue), 65%, 50%);
 
-  --btn-accent-foreground: hsl(var(--hue) 10% 100%);
-  --btn-accent-background: hsl(var(--brand-primary-hue) 100% 50%);
-  --btn-accent-foreground-hover: hsl(var(--hue) 10% 100%);
-  --btn-accent-background-hover: hsl(var(--brand-secondary-hue) 75% 55%);
+  --btn-accent-foreground: hsl(var(--hue), 10%, 100%);
+  --btn-accent-background: hsl(var(--brand-primary-hue), 100%, 50%);
+  --btn-accent-foreground-hover: hsl(var(--hue), 10%, 100%);
+  --btn-accent-background-hover: hsl(var(--brand-secondary-hue), 75%, 55%);
 
-  --input: hsl(var(--hue) 10% 100%);
-  --input-border: hsl(var(--hue) 10% 94%);
-  --input-autofill: hsl(var(--hue) 10% 97%);
+  --input: hsl(var(--hue), 10%, 100%);
+  --input-border: hsl(var(--hue), 10%, 94%);
+  --input-autofill: hsl(var(--hue), 10%, 97%);
 
-  --card: hsl(var(--hue) 10% 100%);
+  --card: hsl(var(--hue), 10%, 100%);
+  --ai-message: hsl(var(--hue), 10%, 100%);
 
-  --popover: hsl(var(--hue) 10% 100%); /* dropdown menu */
-  --popover-foreground: hsl(var(--hue) 10% 45%);
-  --popover-focus: hsl(var(--hue) 10% 95%);
+  --popover: hsl(var(--hue), 10%, 100%); /* dropdown menu */
+  --popover-foreground: hsl(var(--hue), 10%, 45%);
+  --popover-focus: hsl(var(--hue), 10%, 95%);
 
-  --error: hsl(var(--error-hue) 83% 47%);
+  --error: hsl(var(--error-hue), 83%, 47%);
 
-  --topbar: hsla(var(--hue) 10% 100%);
-  --area: hsl(var(--hue) 10% 92%); /* auth, sidebar */
-  --blured: hsl(var(--hue) 10% 75%); /* blured card */
-  --muted: hsl(var(--hue) 10% 50%);
-  --border: hsl(var(--hue) 10% 92%);
-  --icon: hsl(var(--hue) 10% 40%);
-  --ring: hsl(var(--hue) 10% 15%);
+  --topbar: hsla(var(--hue), 10%, 100%);
+  --title: hsl(var(--brand-primary-hue), 100%, 45%);
+  --area: hsl(var(--hue), 10%, 92%); /* auth, sidebar */
+  --muted: hsl(var(--hue), 10%, 50%);
+  --border: hsl(var(--hue), 10%, 92%);
+  --icon: hsl(var(--hue), 10%, 40%);
+  --ring: hsl(var(--hue), 10%, 15%);
+  --scroll: hsl(var(--hue), 10%, 85%);
 }
 
 .dark {
-  --background: hsl(var(--hue) 10% 10%);
-  --foreground: hsl(var(--hue) 10% 95%);
+  --background: hsl(var(--hue), 10%, 10%);
+  --foreground: hsl(var(--hue), 10%, 95%);
 
-  --inversed-background: hsl(var(--hue) 10% 95%);
-  --inversed-foreground: hsl(var(--hue) 10% 5%);
+  --inversed-background: hsl(var(--hue), 10%, 95%);
+  --inversed-foreground: hsl(var(--hue), 10%, 5%);
 
   --accent: hsl(var(--accent-hue), 83%, 47%);
 
-  --brand: hsl(var(--brand-primary-hue) 83% 31%);
-  --brand-secondary: hsl(var(--brand-secondary-hue) 76% 37%);
-  --brand-foreground: hsl(0 0% 100%);
+  --brand: hsl(var(--brand-primary-hue), 83%, 31%);
+  --brand-secondary: hsl(var(--brand-secondary-hue), 76%, 37%);
+  --brand-foreground: hsl(0, 0%, 100%);
 
-  --btn-foreground: hsl(var(--hue) 10% 0%);
-  --btn-background: hsl(var(--hue) 10% 90%);
-  --btn-foreground-hover: hsl(var(--hue) 10% 100%);
-  --btn-background-hover: hsl(var(--btn-hover-hue) 65% 45%);
+  --btn-foreground: hsl(var(--hue), 10%, 0%);
+  --btn-background: hsl(var(--hue), 10%, 90%);
+  --btn-foreground-hover: hsl(var(--hue), 10%, 100%);
+  --btn-background-hover: hsl(var(--btn-hover-hue), 65%, 45%);
 
-  --btn-secondary-foreground: hsl(var(--hue) 10% 60%);
-  --btn-secondary-background: hsl(var(--hue) 10% 15%);
-  --btn-secondary-foreground-hover: hsl(var(--hue) 10% 100%);
-  --btn-secondary-background-hover: hsl(var(--btn-hover-hue) 65% 45%);
+  --btn-secondary-foreground: hsl(var(--hue), 10%, 60%);
+  --btn-secondary-background: hsl(var(--hue), 10%, 15%);
+  --btn-secondary-foreground-hover: hsl(var(--hue), 10%, 100%);
+  --btn-secondary-background-hover: hsl(var(--btn-hover-hue), 65%, 45%);
 
-  --btn-accent-foreground: hsl(var(--hue) 10% 100%);
-  --btn-accent-background: hsl(var(--brand-primary-hue) 100% 35%);
-  --btn-accent-foreground-hover: hsl(var(--hue) 10% 100%);
-  --btn-accent-background-hover: hsl(var(--btn-hover-hue) 65% 45%);
+  --btn-accent-foreground: hsl(var(--hue), 10%, 100%);
+  --btn-accent-background: hsl(var(--brand-primary-hue), 100%, 35%);
+  --btn-accent-foreground-hover: hsl(var(--hue), 10%, 100%);
+  --btn-accent-background-hover: hsl(var(--btn-hover-hue), 65%, 45%);
 
-  --input: hsl(var(--hue) 10% 15%);
-  --input-border: hsl(var(--hue) 10% 20%);
-  --input-autofill: hsl(var(--hue) 10% 20%);
+  --input: hsl(var(--hue), 10%, 15%);
+  --input-border: hsl(var(--hue), 10%, 20%);
+  --input-autofill: hsl(var(--hue), 10%, 20%);
 
-  --card: hsl(var(--hue) 10% 10%);
+  --card: hsl(var(--hue), 10%, 10%);
+  --ai-message: hsla(var(--hue), 10%, 15%, 0.6);
 
-  --popover: hsl(var(--hue) 10% 15%);
-  --popover-foreground: hsl(var(--hue) 10% 85%);
-  --popover-focus: hsl(var(--hue) 10% 15%);
+  --popover: hsl(var(--hue), 10%, 15%);
+  --popover-foreground: hsl(var(--hue), 10%, 85%);
+  --popover-focus: hsl(var(--hue), 10%, 15%);
 
-  --error: hsl(var(--error-hue) 100% 50%);
+  --error: hsl(var(--error-hue), 100%, 50%);
 
-  --topbar: hsla(var(--hue) 10% 20%);
-  --area: hsl(var(--hue) 10% 5%);
-  --blured: hsl(var(--hue) 10% 52%);
-  --muted: hsl(var(--hue) 10% 55%);
-  --border: hsl(var(--hue) 10% 20%);
-  --icon: hsl(var(--hue) 10% 75%);
-  --ring: hsl(var(--hue) 10% 45%);
+  --topbar: hsl(var(--hue), 10%, 20%);
+  --title: hsl(var(--brand-primary-hue), 100%, 50%);
+  --area: hsl(var(--hue), 10%, 5%);
+  --muted: hsl(var(--hue), 10%, 55%);
+  --border: hsl(var(--hue), 10%, 20%);
+  --icon: hsl(var(--hue), 10%, 75%);
+  --ring: hsl(var(--hue), 10%, 45%);
+  --scroll: hsl(var(--hue), 10%, 25%);
 }
 
 @theme inline {
@@ -146,32 +154,27 @@
   --color-btn-accent-background: var(--btn-accent-background);
   --color-btn-accent-background-hover: var(--btn-accent-background-hover);
 
-  /* --color-btn-accent-foreground: var(--btn-accent-foreground);
-  --color-btn-accent-background: var(--btn-accent-background);
-  --color-btn-accent-background-hover: var(--btn-accent-background-hover); */
-
   --color-input: var(--input);
   --color-input-border: var(--input-border);
   --color-input-autofill: var(--input-autofill);
 
   --color-card: var(--card);
+  --color-ai-message: var(--ai-message);
 
   --color-popover: var(--popover);
   --color-popover-foreground: var(--popover-foreground);
   --color-popover-focus: var(--popover-focus);
 
-  /* --color-success: var(--success);
-  --color-success-foreground: var(--success-foreground); */
-
   --color-error: var(--error);
 
   --color-topbar: var(--topbar);
+  --color-title: var(--title);
   --color-area: var(--area);
-  --color-blured: var(--blured);
   --color-muted: var(--muted);
   --color-border: var(--border);
   --color-icon: var(--icon);
   --color-ring: var(--ring);
+  --color-scroll: var(--scroll);
 
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
@@ -444,9 +447,9 @@
     @apply hidden;
   }
 
-  .chat-list_items {
+  /* .chat-list_items {
     height: calc(100dvh - var(--topbar-h));
-  }
+  } */
 
   /* Item */
 
@@ -525,12 +528,11 @@
   }
 
   .chat-message[data-role='ai'] .chat-message_content {
-    @apply bg-card/90 ml-11 sm:mr-10 rounded-tl-3xl!;
+    @apply bg-ai-message ml-11 sm:mr-10 rounded-tl-3xl!;
   }
 
-  :root.dark .chat-message[data-role='ai'] .chat-message_content {
-    @apply bg-blured/8;
-    backdrop-filter: blur(10px);
+  .dark .chat-message[data-role='ai'] .chat-message_content {
+    @apply bg-ai-message;
   }
 
   .chat-message[data-role='human'] .chat-message_content {
@@ -673,6 +675,18 @@
 
   .person-card_description {
     @apply text-sm opacity-70;
+  }
+
+  .chat-memory-item {
+    @apply relative flex-1 px-6 py-4 rounded-2xl bg-card cursor-default;
+  }
+
+  .chat-memory-item_toolbar {
+    @apply opacity-0 pointer-events-none absolute top-0 right-0 p-4 flex items-center gap-4 text-sm rounded-tr-2xl bg-card transition-opacity duration-300;
+  }
+
+  .chat-memory-item:hover .chat-memory-item_toolbar {
+    @apply opacity-100 pointer-events-auto;
   }
 
   /* ChatMedia */

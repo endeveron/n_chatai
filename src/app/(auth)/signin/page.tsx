@@ -14,7 +14,7 @@ export default async function SigninPage() {
   return (
     <AnimatedCard>
       <CardLogo />
-      <CardTitle>Sign In</CardTitle>
+      <CardTitle className="text-title">Sign In</CardTitle>
       <SignInForm />
     </AnimatedCard>
   );

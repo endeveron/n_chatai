@@ -483,6 +483,48 @@ export const saveChatMemory = async ({
   }
 };
 
+export const deleteChatMemoryItem = async ({
+  chatId,
+  timestamp,
+  path,
+}: {
+  chatId: string;
+  timestamp: number;
+  path?: string;
+}): Promise<ServerActionResult> => {
+  try {
+    await mongoDB.connect();
+
+    // Retrieve chat document from db
+    const chat = await ChatModel.findById(chatId);
+    if (!chat) {
+      return handleActionError('Unable to retrieve chat document from db');
+    }
+
+    let memory = [...chat.memory];
+    if (!memory.length) {
+      console.log('[Debug] deleteChatMemoryItem: chat.memory is empty');
+      return {
+        success: true,
+      };
+    }
+
+    // Remove memory item
+    memory = memory.filter((m) => m.timestamp !== timestamp);
+    chat.memory = memory;
+    await chat.save();
+
+    // Update cache
+    if (path) revalidatePath(path);
+
+    return {
+      success: true,
+    };
+  } catch (err: unknown) {
+    return handleActionError('Unable to delete chat memory item', err);
+  }
+};
+
 export const cleanChatMemory = async ({
   chatId,
 }: {

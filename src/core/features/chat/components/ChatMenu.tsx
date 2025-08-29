@@ -5,6 +5,7 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/core/components/ui/DropdownMenu';
 import { CleanIcon } from '@/core/components/icons/CleanIcon';
@@ -16,19 +17,31 @@ import {
   deleteChat,
 } from '@/core/features/chat/actions/chat';
 import { useError } from '@/core/hooks/useError';
+import { HistoryIcon } from '@/core/components/icons/HistoryIcon';
 
 interface ChatMenuProps {
+  isMemories: boolean;
   cleanChat: {
     show: boolean;
     chatId: string;
     path: string;
   };
   onCleaned: () => void;
+  onEditMemory: () => void;
 }
 
-const ChatMenu = ({ cleanChat, onCleaned }: ChatMenuProps) => {
+const ChatMenu = ({
+  isMemories,
+  cleanChat,
+  onCleaned,
+  onEditMemory,
+}: ChatMenuProps) => {
   const router = useRouter();
   const { toastError } = useError();
+
+  const handleEditMemory = async () => {
+    onEditMemory();
+  };
 
   const handleCleanChat = async () => {
     try {
@@ -72,15 +85,22 @@ const ChatMenu = ({ cleanChat, onCleaned }: ChatMenuProps) => {
           <MenuIcon className="icon--action" />
         </DropdownMenuTrigger>
         <DropdownMenuContent>
+          {isMemories && (
+            <DropdownMenuItem onClick={handleEditMemory}>
+              <HistoryIcon className="icon--menu" />
+              Memories
+            </DropdownMenuItem>
+          )}
           {cleanChat.show && (
             <DropdownMenuItem onClick={handleCleanChat}>
               <CleanIcon className="icon--menu" />
               Clean chat
             </DropdownMenuItem>
           )}
-          <DropdownMenuItem onClick={handleDeleteChat}>
-            <DeleteIcon className="icon--menu" />
-            Delete chat
+          <DropdownMenuSeparator />
+          <DropdownMenuItem className="text-error" onClick={handleDeleteChat}>
+            <DeleteIcon />
+            <span className="font-medium">Delete chat</span>
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
