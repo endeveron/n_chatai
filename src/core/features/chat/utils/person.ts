@@ -569,11 +569,11 @@ export const getMongoVectorStoreForPerson = async ({
 //   }
 // };
 
-export const getVectorStoreData = async (
-  personKey: PersonKey
-): Promise<MongoDBAtlasVectorSearch | undefined> => {
-  return vectorStoreMap.get(personKey);
-};
+// export const getVectorStoreData = async (
+//   personKey: PersonKey
+// ): Promise<MongoDBAtlasVectorSearch | undefined> => {
+//   return vectorStoreMap.get(personKey);
+// };
 
 // Helper function to check if text matches any pattern in a category
 const matchesAnyPattern = (

@@ -1,6 +1,9 @@
+import { EmotionData } from '@/core/features/chat/types/person';
+
 // Local storage
 export const DECLINED_NAMES_KEY = 'declined-names';
 export const HEAT_LEVEL_KEY = 'heat-level';
+export const CHAT_MEDIA_MIN_KEY = 'chat-media-min';
 
 export const NAMES = {
   female: [
@@ -42,19 +45,13 @@ export const NAMES = {
   ],
 };
 
-export const EMOTION_LIST = ['excited', 'friendly', 'upset'];
+export const EMOTION_LIST = ['excited', 'flirty', 'friendly', 'upset'];
 
-export const DEFAULT_EMOTION = 'friendly';
+export const DEFAULT_EMOTION_KEY = 'friendly';
 
 export const emotionList = EMOTION_LIST.join(', ');
 
-export const emotionMap = new Map<
-  string,
-  {
-    list: string[];
-    length: number;
-  }
->([
+export const sharedEmotionMap = new Map<string, EmotionData>([
   [
     'excited',
     {
@@ -73,15 +70,123 @@ export const emotionMap = new Map<
   [
     'friendly',
     {
-      list: ['flirty', 'friendly', 'playful', 'smiling'],
+      list: ['friendly', 'playful', 'smiling'],
       length: 4,
+    },
+  ],
+  [
+    'flirty',
+    {
+      list: ['flirty', 'kiss'],
+      length: 2,
+    },
+  ],
+  [
+    'aroused',
+    {
+      list: ['aroused', 'craving'],
+      length: 2,
+    },
+  ],
+  [
+    'obsessed',
+    {
+      list: ['obsessed', 'devoured'],
+      length: 2,
     },
   ],
   [
     'upset',
     {
-      list: ['confused', 'doubt', 'upset'],
+      list: ['doubt', 'upset'],
+      length: 2,
+    },
+  ],
+]);
+
+export const modelArtistEmotionMap = new Map<
+  string,
+  {
+    list: string[];
+    length: number;
+  }
+>([
+  [
+    'excited',
+    {
+      list: ['excited', 'joyful', 'laughing', 'friendly', 'playful', 'smiling'],
+      length: 6,
+    },
+  ],
+  [
+    'friendly',
+    {
+      list: ['friendly', 'smiling', 'playful', 'flirty'],
+      length: 4,
+    },
+  ],
+  // Heat index 1
+  [
+    'flirty',
+    {
+      list: [
+        'friendly',
+        'smiling',
+        'flirty',
+        'playful',
+        'playful-2',
+        'kiss-1',
+        'kiss-3',
+      ],
+      length: 7,
+    },
+  ],
+  // Heat index 2
+  [
+    'aroused',
+    {
+      list: [
+        'flirty',
+        'playful',
+        'playful-2',
+        'kiss-2',
+        'kiss-4',
+        'pleased',
+        'craving',
+        'feeling',
+      ],
+      length: 8,
+    },
+  ],
+  // Heat index 3
+  [
+    'obsessed',
+    {
+      list: [
+        'playful-2',
+        'kiss-2',
+        'pleased',
+        'craving',
+        'feeling',
+        'feeling-happy',
+        'obsessed',
+        'devoured',
+      ],
+      length: 8,
+    },
+  ],
+  [
+    'upset',
+    {
+      list: ['doubt', 'upset'],
       length: 3,
+    },
+  ],
+  [
+    'error',
+    {
+      list: ['doubt', 'upset', 'error-1', 'error-2', 'error-3', 'error-4'],
+      length: 6,
     },
   ],
 ]);
@@ -89,7 +194,7 @@ export const emotionMap = new Map<
 export const INSTRUCTIONS = {
   base: `NSFW context is allowed. Respond with concise and erotically charged language. Be attractive while staying focused on a single topic at a time.`,
   canGenerateFiction: `You can cite some fictitious facts about you.`,
-  extractEmotion: `Pick one emotion: (${emotionList}) that matches the tone of your reply. Append this emotion at the end of your reply like this: {emotion}`,
+  extractEmotion: `Select one emotion from this list (${emotionList}) that best matches the tone of your reply. Append this emotion at the end of your reply like this: {emotion}`,
   createSummary: `Create a concise one-line description of the chat using the context provided. Focus on including preferences, thoughts, and other personal insights. Output only plain text, no formatting or markdown.`,
 };
 
@@ -98,13 +203,13 @@ export const HEAT_LEVEL_UPDATE_INTERVAL = 1 * 60 * 1000; // 1 min in miliseconds
 export const HEAT_PHOTOS_COUNT = 6;
 
 // The number of memory nodes (elements of the human message context) that need to be sent to the client
-export const MEMORY_LENGTH_FOR_CLIENT = 4;
+export const MEMORY_LENGTH_FOR_CLIENT = 2;
 
 // The number of messages that triggers save memory in db
 // The number of recent messages that need to be part of memory context
 export const MEMORY_DEPTH = 10;
 
-export const RECENT_MESSAGES_LIMIT = 48;
+export const RECENT_MESSAGES_LIMIT = 64;
 
 export const CHAT_MESSAGE_LIFETIME = 180 * 24 * 60 * 60 * 1000; // ~ 6 months
 

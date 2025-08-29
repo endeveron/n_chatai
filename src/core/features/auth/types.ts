@@ -60,8 +60,8 @@ export type SignInSocialArgs = {
   provider: SocialProvider;
   email: string;
   emailConfirmed: boolean;
-  name: string | null | undefined;
-  image: string | null | undefined;
+  name?: string | null;
+  image?: string | null;
 };
 
 export type SignUpArgs = {

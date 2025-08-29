@@ -37,7 +37,7 @@ import { configureUser } from '@/core/utils/user';
  */
 export const createUser = async ({
   email,
-}: CreateUserArgs): Promise<ServerActionResult | undefined> => {
+}: CreateUserArgs): Promise<ServerActionResult> => {
   if (!email) {
     return handleActionError('createUser: No user email provided');
   }
@@ -71,7 +71,7 @@ export const onboardUser = async ({
   userId,
   name,
   password,
-}: OnboardUserArgs): Promise<ServerActionResult | undefined> => {
+}: OnboardUserArgs): Promise<ServerActionResult> => {
   if (!userId || !password) {
     return handleActionError('onboardUser: Invalid input data provided');
   }
@@ -112,7 +112,7 @@ export const onboardUser = async ({
  */
 export const getUserIdByEmail = async (
   email: string
-): Promise<ServerActionResult<string | null> | undefined> => {
+): Promise<ServerActionResult<string | null>> => {
   try {
     await mongoDB.connect();
 
@@ -129,47 +129,6 @@ export const getUserIdByEmail = async (
     return handleActionError('Unable to fetch user id', err);
   }
 };
-
-// /**
-//  * Retrieves a user from the database by their email.
-//  *
-//  * @param {string} email user's email address.
-//  * @param {boolean} checkHasChats check if the user has chats.
-//  * @returns a Promise that resolves to a `TServerActionResult` object or `undefined`.
-//  */
-// export const fetchUserByEmail = async (
-//   email: string,
-//   checkHasChats?: boolean
-// ): Promise<ServerActionResult<{user: User; hasChats?: boolean}> | undefined> => {
-//   try {
-//     await mongoDB.connect();
-
-//     const user = await UserModel.findOne<User>({ email: email }).select('id');
-//     if (!user) {
-//       return handleActionError('Could not find a user for the provided email');
-//     }
-
-//     if (checkHasChats) {
-//       const userChats = await ChatModel.find({ user: user._id }).select('_id');
-//       return {
-//         success: true,
-//         data: {
-//           user,
-//           hasChats: !!userChats.length,
-//         },
-//       };
-//     }
-
-//     return {
-//       success: true,
-//       data: {
-//         user,
-//       },
-//     };
-//   } catch (err: unknown) {
-//     return handleActionError('Could not retrieve user', err);
-//   }
-// };
 
 /**
  * Generates a JWT token for email verification using a user's object ID.
@@ -197,7 +156,7 @@ export const confirmEmail = async ({
   email: string;
   emailType?: EmailType;
   isSignup?: boolean;
-}): Promise<ServerActionResult | undefined> => {
+}): Promise<ServerActionResult> => {
   try {
     await mongoDB.connect();
 
@@ -334,28 +293,30 @@ export const verifyEmailToken = async ({
  * Checks the validity of a user object ID and verifies if a user with that ID exists in the database.
  *
  * @param {string} userId user._id, a mongoDb ObjectId prop in the user object.
- * @returns a Promise that resolves to a value of type `ServerActionResult` or `undefined`.
+ * @returns a Promise that resolves to a value of type `ServerActionResult`.
  */
 export const verifyUserId = async (
   userId: string
-): Promise<ServerActionResult | undefined> => {
+): Promise<ServerActionResult> => {
   try {
     // Check the `userId` validity
     if (!Types.ObjectId.isValid(userId)) {
-      handleActionError('Invalid ID data', null, true);
-      return;
+      return handleActionError('Invalid ID data', null, true);
     }
 
     // Check if a user with the given `userId` exists in the db
     const user = await UserModel.findById(userId);
     if (!user) {
-      handleActionError('Invalid user ID', null, true);
-      return;
+      return handleActionError('Invalid user ID', null, true);
     }
 
     // Update email status
     user.emailConfirmed = true;
     await user.save();
+
+    return {
+      success: true,
+    };
   } catch (err: unknown) {
     return handleActionError('Unable to onboard', err, true);
   }
@@ -380,11 +341,11 @@ export const verifyUserId = async (
  */
 export const resendVerifyEmailLink = async ({
   email,
-}: SignUpArgs): Promise<ServerActionResult | undefined> => {
+}: SignUpArgs): Promise<ServerActionResult> => {
   try {
     // Verify the user email by sending authentication link
     const res = await confirmEmail({ email });
-    if (!res?.success) handleActionError('', res?.error, true);
+    if (!res?.success) return handleActionError('', res?.error, true);
     return { success: true };
   } catch (err: unknown) {
     return handleActionError('Unable to send a link', err);
@@ -399,11 +360,11 @@ export const resendVerifyEmailLink = async ({
  */
 export const signUp = async ({
   email,
-}: SignUpArgs): Promise<ServerActionResult | undefined> => {
+}: SignUpArgs): Promise<ServerActionResult> => {
   try {
     // Verify the user email by sending authentication link
     const res = await confirmEmail({ email, isSignup: true });
-    if (!res?.success) handleActionError('', res?.error, true);
+    if (!res?.success) return handleActionError('', res?.error, true);
     return { success: true };
   } catch (err: unknown) {
     return handleActionError('Unable to signup', err);
@@ -421,7 +382,7 @@ export const signIn = async ({
   email,
   password,
   redirectTo,
-}: SignInArgs): Promise<ServerActionResult | undefined> => {
+}: SignInArgs): Promise<ServerActionResult> => {
   try {
     // Call the `auth.providers.Credentials.authorize` method (./auth.ts)
     await nextSignIn('credentials', {
@@ -507,7 +468,7 @@ export const signInSocial = async ({
   emailConfirmed,
   name,
   image,
-}: SignInSocialArgs): Promise<ServerActionResult | undefined> => {
+}: SignInSocialArgs): Promise<ServerActionResult> => {
   try {
     await mongoDB.connect();
 
@@ -515,7 +476,7 @@ export const signInSocial = async ({
     let user = await UserModel.findOne({ email: email });
 
     if (!user) {
-      if (!email) handleActionError('No email provided', null, true);
+      if (!email) return handleActionError('No email provided', null, true);
 
       // Create a new user in the database
       const _id = new Types.ObjectId();

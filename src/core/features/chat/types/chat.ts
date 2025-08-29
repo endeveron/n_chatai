@@ -72,7 +72,9 @@ export type BaseChatMessage = {
   content: string;
   role: MessageRole;
   timestamp: number;
+  id?: string;
   emotion?: string;
+  translation?: string;
 };
 
 export type ChatMessageDb = BaseChatMessage & {
@@ -97,16 +99,16 @@ export type ChatMessage = BaseChatMessage & {
   chatId: string;
 };
 
-export type ChatMessageItem = Pick<ChatMessage, 'content' | 'role'> & {
-  emotion?: string;
+export type ChatMessageItem = Pick<
+  ChatMessage,
+  'id' | 'content' | 'role' | 'emotion' | 'translation'
+> & {
   timestamp: number;
 };
 
-export type CreateMessageArgs = Pick<ChatMessage, 'content' | 'role'> & {
+export type CreateMessageArgs = ChatMessageItem & {
   chatId: string;
-  timestamp: number;
   path?: string;
-  emotion?: string;
 };
 
 export type CreateChatArgs = {

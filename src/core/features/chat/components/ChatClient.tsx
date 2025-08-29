@@ -12,9 +12,11 @@ import {
 import { askAI } from '@/core/features/chat/actions/llm';
 import AskForName from '@/core/features/chat/components/AskForName';
 import ChatInput from '@/core/features/chat/components/ChatInput';
+import ChatMedia from '@/core/features/chat/components/ChatMedia';
 import ChatMenu from '@/core/features/chat/components/ChatMenu';
 import ChatMessages from '@/core/features/chat/components/ChatMessages';
 import HeatHeart from '@/core/features/chat/components/HeatHeart';
+import Statistics from '@/core/features/chat/components/Statistics';
 import Topbar, {
   TopbarContent,
   TopbarNavBack,
@@ -41,8 +43,6 @@ import {
 } from '@/core/features/chat/utils/chat';
 import { useLocalStorage } from '@/core/hooks/useLocalStorage';
 import { cn } from '@/core/utils';
-import Statistics from '@/core/features/chat/components/Statistics';
-import ChatMedia from '@/core/features/chat/components/ChatMedia';
 
 interface ChatClientProps extends ChatData {
   chatId: string;
@@ -72,6 +72,15 @@ const ChatClient = ({
   const humanNameRef = useRef<string | null>(null);
   const memoryInitRef = useRef(false);
   const prevHeatLevelRef = useRef(0);
+
+  // const handleDev = async () => {
+  //   try {
+  //     const translateRes = await translateText('Hello', 'en', 'uk');
+  //     console.log('translateRes', translateRes);
+  //   } catch (err: unknown) {
+  //     console.error(err);
+  //   }
+  // };
 
   const handleUpHeat = () => {
     setHeatLevel((prev) => prev + 1);
@@ -156,7 +165,9 @@ const ChatClient = ({
 
           if (heatIndex > 0) {
             newHeatLevel = heatLevel + heatIndex;
+            console.log('[Debug] Increase heat level');
           } else if (heatIndex === 0 && heatLevel > 0) {
+            console.log('[Debug] Decrease heat level');
             newHeatLevel = heatLevel - heatIndex;
           }
 
@@ -170,20 +181,28 @@ const ChatClient = ({
         }
 
         // Periodically save chat memory
-        if (updContextMemory.length >= MEMORY_DEPTH) {
+        // Get recent messages count, except system (they are memories)
+        const recentMessages = memoryMessagesRef.current.filter(
+          (m) => m.role !== MessageRole.system
+        );
+
+        const rest = MEMORY_DEPTH - recentMessages.length;
+        if (rest > 0) {
+          console.log(`[Debug] ${rest} messages left until summary.`);
+        }
+
+        if (recentMessages.length >= MEMORY_DEPTH) {
+          console.log('[Debug] Creating memory...');
           let localMemoryMessages: MemoryMessage[] = [];
 
           // If person's accuracy = 1 => AI didn't provide fictitious facts, there is no any
           // sense to keep the AI messages (the context will duplicate the person's context).
           if (person.accuracy === 1) {
-            localMemoryMessages = updContextMemory.filter(
+            localMemoryMessages = recentMessages.filter(
               (m) => m.role === MessageRole.human
             );
           } else {
-            // Remove system messages, they are not related to recent chat messages
-            localMemoryMessages = updContextMemory.filter(
-              (m) => m.role !== MessageRole.system
-            );
+            localMemoryMessages = recentMessages;
           }
 
           const saveRes = await saveChatMemory({
@@ -202,6 +221,9 @@ const ChatClient = ({
               context: saveRes.data,
               timestamp: Date.now(),
             });
+            console.log('[Debug] Memory created');
+          } else {
+            console.warn('[Debug] Memory not created');
           }
         }
       }
@@ -214,7 +236,14 @@ const ChatClient = ({
   };
 
   const handleCleanChat = () => {
+    // Update local state
     setMessages([]);
+    // Update memory
+    memoryMessagesRef.current = memoryMessagesRef.current.filter(
+      (m) => m.role === MessageRole.system
+    );
+    // Update local storage
+    removeItemFromLS(`${HEAT_LEVEL_KEY}_${person.personKey}`);
   };
 
   const handleAskForNameAccept = async () => {
@@ -341,55 +370,36 @@ const ChatClient = ({
     }
   }, [fetchedHeatLevel, person.personKey, getItemFromLS, setItemInLS]);
 
-  // // Update heat level at interval
-  // useEffect(() => {
-  //   const interval = setInterval(async () => {
-  //     if (prevHeatLevelRef.current === heatLevel) {
-  //       return;
-  //     }
+  // Update heat level at interval
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      if (prevHeatLevelRef.current === heatLevel) {
+        return;
+      }
 
-  //     prevHeatLevelRef.current = heatLevel;
-  //     console.log('[Debug] Updating heat level in db...');
+      prevHeatLevelRef.current = heatLevel;
+      console.log('[Debug] Updating heat level in db...');
 
-  //     try {
-  //       const res = await updateHeatLevel({
-  //         chatId,
-  //         heatLevel,
-  //       });
+      try {
+        const res = await updateHeatLevel({
+          chatId,
+          heatLevel,
+        });
 
-  //       if (res?.success) {
-  //         console.log('[Debug] Heat level updated.');
-  //       } else {
-  //         console.error(res?.error.message ?? 'Unable to update heat level.');
-  //       }
-  //     } catch (err: unknown) {
-  //       console.error(err);
-  //     }
-  //   }, HEAT_LEVEL_UPDATE_INTERVAL);
+        if (res?.success) {
+          console.log('[Debug] Heat level updated.');
+        } else {
+          console.error(res?.error.message ?? 'Unable to update heat level.');
+        }
+      } catch (err: unknown) {
+        console.error(err);
+      }
+    }, HEAT_LEVEL_UPDATE_INTERVAL);
 
-  //   return () => {
-  //     clearInterval(interval);
-  //   };
-  // }, [chatId, heatLevel]);
-
-  // Disabled - Bad results: ['Hi', 'Alex', 'Tell']
-  // // Extract human name from the chat messages
-  // useEffect(() => {
-  //   if (humanNameRef.current) return;
-
-  //   const nameCandidates = extractNamesFromChatMessages({
-  //     messages,
-  //     personName: person.name,
-  //   });
-
-  //   if (nameCandidates.length) {
-  //     console.log(
-  //       `[Debug] Probably human name candidates found in the chat messages`,
-  //       nameCandidates
-  //     );
-  //     // humanNameRef.current = nameCandidates[0];
-  //   }
-  // }, [messages, person.name]);
+    return () => {
+      clearInterval(interval);
+    };
+  }, [chatId, heatLevel]);
 
   return (
     <section
@@ -403,6 +413,9 @@ const ChatClient = ({
           <Topbar>
             <TopbarNavBack navPath="/" />
             <Statistics />
+            {/* <Button onClick={handleDev} size="sm" variant="default">
+              DEV
+            </Button> */}
             <TopbarContent>
               <div onClick={handleUpHeat}>
                 <HeatHeart heatLevel={heatLevel} />
@@ -440,7 +453,7 @@ const ChatClient = ({
           <ChatInput onSubmit={handleInputSubmit} isPending={isPending} />
           <div
             className="chat_bg-image"
-            data-messages={messages.length ? 'true' : 'false'}
+            data-active={messages.length < 6 ? 'true' : 'false'}
           >
             <Image
               src={`/images/people/${person.avatarKey}/chat-bg.png`}

@@ -16,26 +16,31 @@ const memorySchema = new Schema<MemoryNode>(
   { _id: false }
 );
 
-const chatSchema = new Schema<Chat>({
-  title: { type: String },
-  user: {
-    type: Schema.Types.ObjectId,
-    ref: 'User',
+const chatSchema = new Schema<Chat>(
+  {
+    title: { type: String },
+    user: {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
+    },
+    humanName: { type: String },
+    personName: { type: String, require: true },
+    person: {
+      type: Schema.Types.ObjectId,
+      ref: 'Person',
+    },
+    heatLevel: { type: Number, require: true },
+    memory: [memorySchema],
+    tokens: {
+      input: { type: Number },
+      output: { type: Number },
+      total: { type: Number },
+    },
   },
-  humanName: { type: String },
-  personName: { type: String, require: true },
-  person: {
-    type: Schema.Types.ObjectId,
-    ref: 'Person',
-  },
-  heatLevel: { type: Number, require: true },
-  memory: [memorySchema],
-  tokens: {
-    input: { type: Number },
-    output: { type: Number },
-    total: { type: Number },
-  },
-});
+  {
+    versionKey: false,
+  }
+);
 
 const ChatModel = models.Chat || model('Chat', chatSchema);
 

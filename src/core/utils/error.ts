@@ -23,7 +23,7 @@ export const handleActionError = (
   msg?: string,
   err?: unknown,
   isThrow: boolean = false
-): ServerActionError | undefined => {
+): ServerActionError => {
   const error =
     err instanceof Error ? err : err ? new Error(String(err)) : undefined;
   const code =
@@ -32,12 +32,16 @@ export const handleActionError = (
   const message =
     msg && info ? `${msg}. ${info}` : msg || info || 'Unknown error';
 
-  if (isThrow) throw new Error(message);
-
-  return {
+  const serverActionError: ServerActionError = {
     success: false,
     error: { message, code },
   };
+
+  if (isThrow) {
+    throw new Error(message);
+  }
+
+  return serverActionError;
 };
 
 /**

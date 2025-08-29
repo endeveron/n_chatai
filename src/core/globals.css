@@ -109,7 +109,7 @@
   --topbar: hsla(var(--hue) 10% 20%);
   --area: hsl(var(--hue) 10% 5%);
   --blured: hsl(var(--hue) 10% 52%);
-  --muted: hsl(var(--hue) 10% 45%);
+  --muted: hsl(var(--hue) 10% 55%);
   --border: hsl(var(--hue) 10% 20%);
   --icon: hsl(var(--hue) 10% 75%);
   --ring: hsl(var(--hue) 10% 45%);
@@ -455,10 +455,6 @@
     padding: var(--gap);
   }
 
-  /* .chat-item.active {
-    @apply bg-background transition-colors;
-  } */
-
   .chat-item:not(.active) {
     cursor: pointer;
   }
@@ -513,7 +509,19 @@
   }
 
   .chat-message_content {
-    @apply py-4 px-6 rounded-[32px] cursor-default transition-colors duration-300;
+    @apply relative py-4 px-6 rounded-[32px] cursor-default transition-colors duration-300;
+  }
+
+  .chat-message_translation {
+    @apply mt-2 text-muted leading-snug;
+  }
+
+  .chat-message_translate-button {
+    @apply opacity-0 z-10 absolute top-0 right-0 w-7 h-7 bg-btn-secondary-background rounded-full ring-4 ring-background transition-all duration-300;
+  }
+
+  .chat-message[data-role='ai']:hover .chat-message_translate-button {
+    @apply opacity-100;
   }
 
   .chat-message[data-role='ai'] .chat-message_content {
@@ -557,16 +565,16 @@
     @apply absolute inset-0 z-0 flex flex-col items-center justify-center overflow-hidden transition-opacity duration-300;
   }
 
-  .light .chat_bg-image[data-messages='true'] {
-    opacity: 0.2;
+  .chat_bg-image[data-active='false'] {
+    opacity: 0;
   }
 
-  .dark .chat_bg-image[data-messages='true'] {
-    opacity: 0.1;
+  .light .chat_bg-image[data-active='true'] {
+    opacity: 0.25;
   }
 
-  .chat_bg-image[data-messages='false'] {
-    opacity: 1;
+  .dark .chat_bg-image[data-active='true'] {
+    opacity: 0.15;
   }
 
   .chat_bg-image img {
@@ -667,16 +675,22 @@
     @apply text-sm opacity-70;
   }
 
-  .chat-media_main-item {
-    @apply relative z-20 transition-all duration-300 overflow-hidden;
+  /* ChatMedia */
+
+  .chat-media_minimizer {
+    @apply absolute z-20 w-32 top-2 left-1/2 -translate-x-1/2 text-sm text-muted pointer-events-auto cursor-pointer;
   }
 
   .chat-media_main-item {
-    @apply relative z-20 transition-all duration-300 overflow-hidden;
+    @apply relative z-20 transition-all duration-300 overflow-hidden pointer-events-auto cursor-pointer;
   }
 
   .chat-media_item {
-    @apply hidden w-0;
+    @apply relative hidden w-0;
+  }
+
+  .chat-media_image-wrapper {
+    @apply relative h-full;
   }
 
   @media only screen and (min-width: 700px) {
@@ -736,6 +750,8 @@
       @apply translate-x-20;
     }
   }
+
+  /* ChatMedia end */
 
   @media only screen and (min-height: 768px) {
     .chat-input form {

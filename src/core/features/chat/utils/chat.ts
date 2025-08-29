@@ -2,10 +2,11 @@ import emojiRegex from 'emoji-regex';
 
 import {
   ALT_MESSAGES,
-  DEFAULT_EMOTION,
+  sharedEmotionMap,
+  DEFAULT_EMOTION_KEY,
   EMOTION_LIST,
-  emotionMap,
   ERROR_MESSAGES,
+  modelArtistEmotionMap,
   NAME_RECOVERY_QUESTIONS,
   NAMES,
 } from '@/core/features/chat/constants';
@@ -15,7 +16,11 @@ import {
   MessageRole,
   NamePattern,
 } from '@/core/features/chat/types/chat';
-import { Gender } from '@/core/features/chat/types/person';
+import {
+  EmotionData,
+  Gender,
+  PersonKey,
+} from '@/core/features/chat/types/person';
 import { getRandom } from '@/core/utils';
 import { MessageContent, MessageContentText } from '@langchain/core/messages';
 import { RefObject } from 'react';
@@ -35,25 +40,62 @@ export const getRandomName = (gender: Gender = Gender.female) => {
  * timestamp, and emotion set to 'doubt'.
  * @returns An alternative message item object of type ChatMessageItem.
  */
-export const createAltMessageItem = (): ChatMessageItem => ({
-  content: getRandom(ALT_MESSAGES, 22),
-  role: MessageRole.ai,
-  timestamp: new Date().getTime(),
-  emotion: 'doubt',
-});
+/**
+ * Generates a chat message item with a random content, AI role,
+ * timestamp, and emotion based on a person's key or defaulting to 'doubt'.
+ * @param {PersonKey} [personKey] - An optional parameter of type
+ * `PersonKey`.
+ * @returns a `ChatMessageItem` object
+ */
+export const createAltMessageItem = (
+  personKey?: PersonKey
+): ChatMessageItem => {
+  let emotion;
+
+  if (personKey) {
+    emotion = getPersonalEmotion({
+      emotionKey: 'error',
+      personKey,
+    });
+  } else {
+    emotion = 'doubt';
+  }
+
+  return {
+    content: getRandom(ALT_MESSAGES, 22),
+    role: MessageRole.ai,
+    timestamp: new Date().getTime(),
+    emotion,
+  };
+};
 
 /**
- * Generates a random error message item with content, role,
- * timestamp, and emotion.
- * @returns An error message item object of type ChatMessageItem.
+ * Generates a chat message item with a random error message and
+ * emotion, optionally personalized for a specific person.
+ * @param {PersonKey} [personKey] - An optional parameter that represents
+ * a key associated with a person.
+ * @returns a `ChatMessageItem` object.
  */
-export const createErrorMessageItem = (): ChatMessageItem => {
+export const createErrorMessageItem = (
+  personKey?: PersonKey
+): ChatMessageItem => {
   const randomErrMsg = getRandom(ERROR_MESSAGES, 14);
+  let emotion;
+
+  if (personKey) {
+    emotion = getPersonalEmotion({
+      emotionKey: 'error',
+      personKey,
+    });
+  } else {
+    emotion = getRandom(['doubt', 'upset'], 2);
+  }
+
   const errorMessage = {
     content: randomErrMsg,
     role: MessageRole.ai,
     timestamp: new Date().getTime(),
-    emotion: getRandom(['confused', 'doubt', 'upset'], 3),
+    emotion,
   };
   return errorMessage;
 };
@@ -85,13 +127,46 @@ export const parseAIMessageContent = (
     : rawText;
 };
 
-export const getSuitableEmotion = (emotionKey: string) => {
-  const emotionData = emotionMap.get(emotionKey);
-  if (emotionData) {
-    return getRandom(emotionData.list, emotionData.length);
+export const getPersonalEmotion = ({
+  emotionKey,
+  personKey,
+}: {
+  emotionKey: string;
+  personKey: PersonKey;
+}) => {
+  let emotionData: EmotionData;
+
+  switch (personKey) {
+    case PersonKey.modelArtist:
+      {
+        emotionData = modelArtistEmotionMap.get(emotionKey) as EmotionData;
+      }
+      break;
+    default: {
+      emotionData = sharedEmotionMap.get(emotionKey) as EmotionData;
+    }
   }
-  const defaultData = emotionMap.get(DEFAULT_EMOTION)!;
-  return getRandom(defaultData.list, defaultData.length);
+
+  if (!emotionData) {
+    console.warn(
+      `[Debug] getPersonalEmotion: Unable to get an emotion for ${emotionKey} key.`
+    );
+    const defaultData = sharedEmotionMap.get(DEFAULT_EMOTION_KEY)!;
+    return getRandom(defaultData.list, defaultData.length);
+  }
+
+  return getRandom(emotionData.list, emotionData.length);
+};
+
+export const getHeatEmotionKey = (heatIndex: number): string => {
+  switch (heatIndex) {
+    case 1:
+      return 'flirty';
+    case 2:
+      return 'aroused';
+    default:
+      return heatIndex > 2 ? 'obsessed' : DEFAULT_EMOTION_KEY;
+  }
 };
 
 /**
@@ -99,28 +174,55 @@ export const getSuitableEmotion = (emotionKey: string) => {
  * @param content The AI message content, either a string or structured content array.
  * @returns an object { emotion, text }
  */
-export const extractEmotionFromAIMessageContent = (
-  content: MessageContent
-): { aiMsgText: string; emotion: string } => {
+export const extractEmotionFromAIMessageContent = ({
+  content,
+  heatIndex,
+  personKey,
+}: {
+  content: MessageContent;
+  heatIndex: number;
+  personKey: PersonKey;
+}): { aiMsgText: string; emotion: string } => {
   const parsedText = parseAIMessageContent(content);
   if (!parsedText) {
-    return { aiMsgText: '', emotion: DEFAULT_EMOTION };
+    return { aiMsgText: '', emotion: DEFAULT_EMOTION_KEY };
   }
 
   const match = parsedText.match(/\{(\w+)\}\s*$/); // extracts {emotion}
   if (match) {
-    const emotionKey = match[1];
-    const aiMsgText = parsedText.slice(0, match.index);
+    const initialEmotionKey = match[1];
+    const aiMsgText = parsedText.slice(0, match.index).trimEnd();
 
-    const baseEmotion = EMOTION_LIST.includes(emotionKey)
-      ? emotionKey
-      : DEFAULT_EMOTION;
-    return { aiMsgText, emotion: getSuitableEmotion(baseEmotion) };
+    let emotionKey = EMOTION_LIST.includes(initialEmotionKey)
+      ? initialEmotionKey
+      : DEFAULT_EMOTION_KEY;
+
+    if (heatIndex > 0) {
+      emotionKey = getHeatEmotionKey(heatIndex);
+    }
+
+    const emotion = getPersonalEmotion({
+      emotionKey,
+      personKey,
+    });
+
+    console.log('initialEmotionKey:', initialEmotionKey);
+    console.log('emotionKey:', emotionKey);
+    console.log('emotion:', emotion);
+    console.log('\n');
+
+    return {
+      aiMsgText,
+      emotion,
+    };
   }
 
   return {
     aiMsgText: parsedText,
-    emotion: getSuitableEmotion(DEFAULT_EMOTION),
+    emotion: getPersonalEmotion({
+      emotionKey: DEFAULT_EMOTION_KEY,
+      personKey,
+    }),
   };
 };
 

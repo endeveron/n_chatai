@@ -46,9 +46,7 @@ export const configureBaseSystemMessage = ({
 
   const context = `\n\n[CONTEXT]\n[About you]\n${personalityContext}${chatContext}`;
 
-  const instructionsGreet = isChatStart
-    ? ' Cheerful greet and introduce yourself.'
-    : ` No greet.`;
+  const instructionsGreet = isChatStart ? ' Cheerful greet.' : ` No greet.`;
 
   const instructions = `[INSTRUCTIONS]\n${baseInstructions} Play a role of ${personName} using relevant details from the provided context. ${INSTRUCTIONS.base}${instructionsGreet}${accuracyInstructions}\n${INSTRUCTIONS.extractEmotion}${context}`;
 

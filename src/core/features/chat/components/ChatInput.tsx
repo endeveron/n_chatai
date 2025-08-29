@@ -51,74 +51,91 @@ const ChatInput = ({ onSubmit, isPending }: TChatInputProps) => {
 
   // Debug
   const phrases = [
-    { title: `greet`, phrase: `Hey there, gorgeous! I am Alex!` },
-    { title: `hi`, phrase: `Hi my smoldering goddess of desire!` },
-    { title: `dds`, phrase: `I like your drop-dead sexy style! Karry on!` },
+    // { title: `name`, phrase: `Hey there, gorgeous! I am Alex!` },
+    { title: `greet`, phrase: `Hi my smoldering goddess of desire!` },
     {
-      title: `hbreak`,
+      title: `favor`,
       phrase: `I am sure you are a sensual beauty, burn to bring happiness.`,
     },
     {
-      title: `dream`,
-      phrase: `I'm an alluring flame no one dares to touch but everyone wants to. Be my goddess.`,
-    },
-    {
       title: `muse`,
-      phrase: `I'm an irresistible force of pure seduction. Do you wanna be my sensual muse?`,
+      phrase: `I'm an irresistible force of pure seduction. You're my wonderful muse!`,
+    },
+    { title: `sexy`, phrase: `I like your drop-dead sexy style! Karry on!` },
+    {
+      title: `aura`,
+      phrase: `When I walk in, I don't need to touch you to make your skin remember me.`,
     },
     {
-      title: `eyes`,
-      phrase: `Your eyes promise trouble... the kind I want to get lost in.`,
+      title: `tease`,
+      phrase: `Every word from you is a tease... and I'm craving the full story.`,
     },
-    { title: `voice`, phrase: `Your thoughts is pure seduction, keep going.` },
+    {
+      title: `invite`,
+      phrase: `I want to undress your mind before anything else.`,
+    },
     { title: `lips`, phrase: `Your lips look like a secret I'd sin to taste.` },
     {
       title: `fantasy`,
       phrase: `What sensual nighttime fantasies captivate you?`,
     },
     {
-      title: `late`,
-      phrase: `It's late… the perfect hour for secrets and skin.`,
+      title: `come`,
+      phrase: `Come closer... I want to feel the heat before we even touch.`,
     },
+    { title: `keep`, phrase: `Your thoughts is pure seduction, keep going.` },
     {
-      title: `heat`,
-      phrase: `The heat between us isn't just chemistry, it's combustible.`,
-    },
-    {
-      title: `invite`,
-      phrase: `Come closer. I want to undress your mind before anything else.`,
-    },
-    {
-      title: `md`,
-      phrase: `You're my deepest desire, fantasy I can't resist. Play with my mind!`,
-    },
-    {
-      title: `tease`,
-      phrase: `Tempt me slowly, let your words trace places your hands haven't yet.`,
+      title: `night`,
+      phrase: `The night belongs to us! Unwritten, untamed, and dripping with desire.`,
     },
     {
       title: `touch`,
       phrase: `If I could touch you with just one thought... where would you want it to begin?`,
     },
     {
+      title: `heat`,
+      phrase: `The heat between us isn't just chemistry, it's combustible.`,
+    },
+    {
+      title: `desire`,
+      phrase: `You're my deepest desire, fantasy I can't resist!`,
+    },
+    { title: `kiss`, phrase: `I kiss you slowly and sensually.` },
+    {
+      title: `skin`,
+      phrase: `I imagine tracing every inch of your skin with nothing but desire.`,
+    },
+    {
+      title: `moan`,
+      phrase: `Whisper to me how you sound when pleasure takes over.`,
+    },
+    {
+      title: `thigh`,
+      phrase: `My hand gently glides over your delightful thigh.`,
+    },
+    {
       title: `wild`,
       phrase: `What's your wildest fantasy, the one you've never dared to whisper?`,
     },
-    { title: `body`, phrase: `Describe your hot body.` },
+    { title: `body`, phrase: `Describe your sensual, hot body in detail.` },
     {
       title: `crave`,
       phrase: `Tell me how you want to be touched, slow, deep, and exactly where your desire burns hottest.`,
     },
     {
       title: `lost`,
-      phrase: `Let’s get lost in touch, in heat, in everything you’ve been aching to feel.`,
+      phrase: `Let's get lost in touch, in heat, in everything you've been aching to feel.`,
+    },
+    {
+      title: `edge`,
+      phrase: `I will keep you on the edge... Tempted, aroused, and completely corrupted by my wild, all-encompassing sensuality.`,
     },
   ];
 
   return (
     <div className="chat-input chat-container">
       {/* Debug */}
-      {/* <div className="fixed w-70 z-50 left-0 bottom-0 p-4 flex flex-wrap gap-1">
+      <div className="fixed w-70 z-50 left-0 bottom-0 p-4 flex flex-wrap gap-1">
         <div className="mb-3 w-full flex gap-1">
           <Button
             onClick={form.handleSubmit(handleSubmit)}
@@ -150,7 +167,7 @@ const ChatInput = ({ onSubmit, isPending }: TChatInputProps) => {
             </Button>
           </div>
         ))}
-      </div> */}
+      </div>
 
       <Form {...form}>
         <form

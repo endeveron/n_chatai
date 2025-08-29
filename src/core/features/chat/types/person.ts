@@ -106,3 +106,8 @@ export interface TagMapping {
   tags: string[];
   description: string;
 }
+
+export type EmotionData = {
+  list: string[];
+  length: number;
+};

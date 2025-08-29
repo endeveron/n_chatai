@@ -37,9 +37,7 @@ export const createChat = async ({
   personId,
   personName,
   path,
-}: CreateChatArgs): Promise<
-  ServerActionResult<{ chatId: string }> | undefined
-> => {
+}: CreateChatArgs): Promise<ServerActionResult<{ chatId: string }>> => {
   try {
     await mongoDB.connect();
 
@@ -77,9 +75,21 @@ export const cleanChat = async ({
 }: {
   chatId: string;
   path?: string;
-}): Promise<ServerActionResult | undefined> => {
+}): Promise<ServerActionResult> => {
+  const errMsg = `cleanChat: Could not clean chat.`;
+
   try {
     await mongoDB.connect();
+
+    // Find a chat
+    const chat = await ChatModel.findById(chatId);
+    if (!chat) {
+      return handleActionError(`${errMsg} Unable to find target chat`);
+    }
+
+    // Reset heat level
+    chat.heatLevel = 0;
+    await chat.save();
 
     // Remove related messages (mongo documents)
     await MessageModel.deleteMany({ chatId });
@@ -91,7 +101,7 @@ export const cleanChat = async ({
       success: true,
     };
   } catch (err: unknown) {
-    return handleActionError('Could not delete chat messages', err);
+    return handleActionError(errMsg, err);
   }
 };
 
@@ -101,17 +111,14 @@ export const deleteChat = async ({
 }: {
   chatId: string;
   path?: string;
-}): Promise<ServerActionResult | undefined> => {
+}): Promise<ServerActionResult> => {
   try {
     await mongoDB.connect();
 
     // Delete the chat
     const chat = await ChatModel.findByIdAndDelete(chatId);
     if (!chat) {
-      return handleActionError(
-        'Could not find a chat for the provided id',
-        null
-      );
+      return handleActionError('Could not find a chat for the provided id');
     }
 
     // Delete message docs that belong to the chat
@@ -133,20 +140,19 @@ export const getUserChats = async ({
 }: {
   userEmail: string;
 }): Promise<
-  | ServerActionResult<
-      {
-        chatId: string;
-        title: string;
-        heatLevel: number;
-        person: {
-          name: string;
-          status: string;
-          avatarBlur: string;
-          avatarKey: AvatarKey;
-        };
-      }[]
-    >
-  | undefined
+  ServerActionResult<
+    {
+      chatId: string;
+      title: string;
+      heatLevel: number;
+      person: {
+        name: string;
+        status: string;
+        avatarBlur: string;
+        avatarKey: AvatarKey;
+      };
+    }[]
+  >
 > => {
   try {
     await mongoDB.connect();
@@ -154,7 +160,7 @@ export const getUserChats = async ({
     // Find user by email
     const user = await UserModel.findOne({ email: userEmail });
     if (!user) {
-      handleActionError(
+      return handleActionError(
         `Could not find a user for provided email ${userEmail}`
       );
     }
@@ -197,7 +203,7 @@ export const getChat = async ({
 }: {
   chatId: Types.ObjectId | string;
   userEmail: string;
-}): Promise<ServerActionResult<ChatResponseData | null> | undefined> => {
+}): Promise<ServerActionResult<ChatResponseData | null>> => {
   try {
     await mongoDB.connect();
 
@@ -246,9 +252,11 @@ export const getChat = async ({
 
     if (messages.length) {
       parsedMessages = messages.map((m: ChatMessageDb) => ({
+        id: m._id.toString(),
         content: m.content,
         role: m.role,
         emotion: m.emotion,
+        translation: m.translation,
         timestamp: m.timestamp,
       }));
     }
@@ -305,11 +313,11 @@ export const saveChatMessagePairInDB = async ({
   humanMessage: ChatMessageItem;
   aiMessage: ChatMessageItem;
   path?: string;
-}): Promise<ServerActionResult | undefined> => {
+}): Promise<ServerActionResult> => {
   const errMsg = 'Unable to save message pair in db.';
 
   if (!chatId || !humanMessage || !aiMessage) {
-    return handleActionError(`${errMsg} Invalid message data`, null);
+    return handleActionError(`${errMsg} Invalid message data`);
   }
 
   try {
@@ -318,7 +326,7 @@ export const saveChatMessagePairInDB = async ({
     // Find a chat
     const chat = await ChatModel.findById(chatId);
     if (!chat) {
-      return handleActionError(`${errMsg} Unable to find target chat`, null);
+      return handleActionError(`${errMsg} Unable to find target chat`);
     }
 
     // Compute message expiration time (used by MongoDB TTL to auto-delete)
@@ -357,7 +365,7 @@ export const getChatMemory = async ({
 }: {
   chatId: string;
   recentMemoriesCount?: number;
-}): Promise<ServerActionResult<string> | undefined> => {
+}): Promise<ServerActionResult<string>> => {
   try {
     await mongoDB.connect();
 
@@ -372,8 +380,7 @@ export const getChatMemory = async ({
     }
 
     if (!chat) {
-      handleActionError('Unable to retrieve chat document from db', null, true);
-      return;
+      return handleActionError('Unable to retrieve chat document from db');
     }
 
     // Add recent memories context, if exists
@@ -411,15 +418,14 @@ export const saveChatMemory = async ({
   chatId: string;
   humanName: string | null;
   localMemoryMessages: MemoryMessage[];
-}): Promise<ServerActionResult<string> | undefined> => {
+}): Promise<ServerActionResult<string>> => {
   try {
     await mongoDB.connect();
 
     // Retrieve chat document from db
     const chat = await ChatModel.findById(chatId);
     if (!chat) {
-      handleActionError('Unable to retrieve chat document from db', null, true);
-      return;
+      return handleActionError('Unable to retrieve chat document from db');
     }
 
     const message = createSummaryMessage({
@@ -447,8 +453,7 @@ export const saveChatMemory = async ({
 
     if (!content) {
       return handleActionError(
-        `AIMessageChunk does not contain message content`,
-        null
+        `AIMessageChunk does not contain message content`
       );
     }
 
@@ -482,15 +487,14 @@ export const cleanChatMemory = async ({
   chatId,
 }: {
   chatId: string;
-}): Promise<ServerActionResult<string> | undefined> => {
+}): Promise<ServerActionResult<string>> => {
   try {
     await mongoDB.connect();
 
     // Try to retrieve chat document from db
     const chat = await ChatModel.findById(chatId);
     if (!chat) {
-      handleActionError('Unable to retrieve chat document from db', null, true);
-      return;
+      return handleActionError('Unable to retrieve chat document from db');
     }
 
     if (!chat.memory.length) {
@@ -508,7 +512,6 @@ export const cleanChatMemory = async ({
       success: true,
     };
   } catch (err: unknown) {
-    // return configureCasualServerActionError(err);
     return handleActionError('Unable to clean chat memory nodes in db', err);
   }
 };
@@ -519,15 +522,14 @@ export const saveHumanName = async ({
 }: {
   chatId: string;
   humanName: string;
-}): Promise<ServerActionResult | undefined> => {
+}): Promise<ServerActionResult> => {
   try {
     await mongoDB.connect();
 
     // Retrieve chat document from db
     const chat = await ChatModel.findById(chatId);
     if (!chat) {
-      handleActionError('Unable to retrieve chat document from db', null, true);
-      return;
+      return handleActionError('Unable to retrieve chat document from db');
     }
 
     chat.humanName = humanName;
@@ -537,13 +539,43 @@ export const saveHumanName = async ({
       success: true,
     };
   } catch (err: unknown) {
-    return handleActionError('Unable to save chat memory in db', err);
+    return handleActionError('Unable to save human name in db', err);
+  }
+};
+
+export const saveMessageTranslation = async ({
+  messageId,
+  translation,
+}: {
+  messageId: string;
+  translation: string;
+}): Promise<ServerActionResult> => {
+  try {
+    await mongoDB.connect();
+
+    // Retrieve message document from db
+    const message = await MessageModel.findById(messageId);
+    if (!message) {
+      return handleActionError('Unable to retrieve message document from db');
+    }
+
+    message.translation = translation;
+    await message.save();
+
+    return {
+      success: true,
+    };
+  } catch (err: unknown) {
+    return handleActionError(
+      'Unable to save translation in db. Unknown error occurred',
+      err
+    );
   }
 };
 
 export const getUsageStatistics = async (
   userId: string
-): Promise<ServerActionResult<number> | undefined> => {
+): Promise<ServerActionResult<number>> => {
   try {
     await mongoDB.connect();
 
@@ -577,15 +609,14 @@ export const updateHeatLevel = async ({
 }: {
   chatId: string;
   heatLevel: number;
-}): Promise<ServerActionResult | undefined> => {
+}): Promise<ServerActionResult> => {
   try {
     await mongoDB.connect();
 
     // Retrieve chat document from db
     const chat = await ChatModel.findById(chatId);
     if (!chat) {
-      handleActionError('Unable to retrieve chat document from db', null, true);
-      return;
+      return handleActionError('Unable to retrieve chat document from db');
     }
 
     chat.heatLevel = heatLevel;

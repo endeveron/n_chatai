@@ -47,13 +47,10 @@ export const askAI = async ({
   personKey: PersonKey;
   isChatStart: boolean;
   path?: string;
-}): Promise<
-  | ServerActionResult<{
-      aiMessage: ChatMessageItem;
-      heatIndex?: number;
-    }>
-  | undefined
-> => {
+}): Promise<ServerActionResult<{
+  aiMessage: ChatMessageItem;
+  heatIndex?: number;
+}>> => {
   if (!chatId || !message.content || !personKey) {
     return configureCasualServerActionError(`askAI: Invalid arguments.`);
   }
@@ -95,7 +92,7 @@ export const askAI = async ({
     });
 
     if (!vectorStore) {
-      return handleActionError('Unable to retrieve vector store', null);
+      return handleActionError('Unable to retrieve vector store');
     }
 
     const query = message.content;
@@ -107,7 +104,7 @@ export const askAI = async ({
       vectorStore,
     });
     if (!personalityContext) {
-      return handleActionError('Unable to retrieve personality context', null);
+      return handleActionError('Unable to retrieve personality context');
     }
 
     // Configure prompt
@@ -169,28 +166,34 @@ export const askAI = async ({
       );
     }
 
+    const heatIndex = getAIResHeatIndex(aiMsg);
+
     const normalizedContent = normalizeText({
       text: content,
       noLineBreaks: true,
     });
 
-    console.log('[Debug] askAI > AI Response:', normalizedContent);
-    const heatIndex = getAIResHeatIndex(aiMsg);
-    console.log('[Debug] askAI > heatIndex:', heatIndex);
-    console.log('[Debug] askAI > usageMetadata:', usageMetadata);
-    console.log('');
-
-    const { aiMsgText, emotion } = extractEmotionFromAIMessageContent(content);
+    const { aiMsgText, emotion } = extractEmotionFromAIMessageContent({
+      content: normalizedContent,
+      heatIndex,
+      personKey,
+    });
 
     if (!aiMsgText) {
       // Configure an alternative AI message if LLM doesn't provide content
       return {
         success: true,
         data: {
-          aiMessage: createAltMessageItem(),
+          aiMessage: createAltMessageItem(personKey),
         },
       };
     }
+
+    console.log('[Debug] askAI > content:', normalizedContent);
+    console.log('[Debug] askAI > emotion:', emotion);
+    console.log('[Debug] askAI > heatIndex:', heatIndex);
+    console.log('[Debug] askAI > usageMetadata:', usageMetadata);
+    console.log('');
 
     // Configure AI message
     const timestamp = new Date().getTime();
@@ -235,15 +238,14 @@ export const updateLLMUsageStatistics = async ({
 }: {
   chatId: string;
   tokens: ChatTokens;
-}): Promise<ServerActionResult | undefined> => {
+}): Promise<ServerActionResult> => {
   try {
     await mongoDB.connect();
 
     // Try to retrieve chat document from db
     const chat = await ChatModel.findById(chatId);
     if (!chat) {
-      handleActionError('Unable to retrieve chat document from db', null, true);
-      return;
+      return handleActionError('Unable to retrieve chat document from db');
     }
 
     // Update LLM usage statistics

@@ -3,10 +3,10 @@
 import { useEffect, useRef } from 'react';
 
 import { ScrollArea } from '@/core/components/ui/ScrollArea';
+import ChatMessage from '@/core/features/chat/components/ChatMessage';
 import Typing from '@/core/features/chat/components/Typing';
 import { ChatMessageItem } from '@/core/features/chat/types/chat';
 import { AvatarKey } from '@/core/features/chat/types/person';
-import ChatMessage from '@/core/features/chat/components/ChatMessage';
 
 interface ChatMessagesProps {
   messages: ChatMessageItem[];
@@ -39,13 +39,15 @@ const ChatMessages = ({
     <ScrollArea className="chat-messages chat-container column-stack" ref={ref}>
       {messages.map((m) => (
         <ChatMessage
+          id={m.id}
+          key={m.timestamp}
           avatarKey={avatarKey}
           avatarBlur={avatarBlur}
           content={m.content}
           emotion={m.emotion}
           role={m.role}
+          translation={m.translation}
           timestamp={m.timestamp}
-          key={m.timestamp}
         />
       ))}
       {typingMessageEl}

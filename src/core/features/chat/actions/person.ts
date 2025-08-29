@@ -18,7 +18,7 @@ import { ObjectId } from 'mongoose';
  * object containing an array of `PersonCardData` or `undefined`.
  */
 export const getPeople = async (): Promise<
-  ServerActionResult<PersonCardData[]> | undefined
+  ServerActionResult<PersonCardData[]>
 > => {
   try {
     await mongoDB.connect();
@@ -42,7 +42,7 @@ export const getPeople = async (): Promise<
       data: peopleData,
     };
   } catch (err: unknown) {
-    return handleActionError('Could not get person', err);
+    return handleActionError('Could not get person list', err);
   }
 };
 
@@ -50,7 +50,7 @@ export const getPersonDataForLLM = async ({
   chatId,
 }: {
   chatId: ObjectId | string;
-}): Promise<ServerActionResult<PersonDataForLLM> | undefined> => {
+}): Promise<ServerActionResult<PersonDataForLLM>> => {
   try {
     await mongoDB.connect();
 
