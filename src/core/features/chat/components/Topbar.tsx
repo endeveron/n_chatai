@@ -50,7 +50,7 @@ export const TopbarNavBack = ({ navPath }: { navPath?: string }) => {
 };
 
 export const TopbarTitle = ({ className, children }: TopbarProps) => {
-  return <h2 className={cn(className)}>{children}</h2>;
+  return <h2 className={cn('select-none', className)}>{children}</h2>;
 };
 
 export default Topbar;

@@ -111,3 +111,10 @@ export type EmotionData = {
   list: string[];
   length: number;
 };
+
+export interface CollectionInfo {
+  readonly totalPhotos: number;
+  readonly description: string;
+}
+
+export type CollectionMap = Record<string, CollectionInfo>;

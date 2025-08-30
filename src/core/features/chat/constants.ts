@@ -1,4 +1,8 @@
-import { EmotionData } from '@/core/features/chat/types/person';
+import {
+  AvatarKey,
+  CollectionMap,
+  EmotionData,
+} from '@/core/features/chat/types/person';
 
 // Local storage
 export const DECLINED_NAMES_KEY = 'declined-names';
@@ -198,10 +202,6 @@ export const INSTRUCTIONS = {
   createSummary: `Create a concise one-line description of the chat using the context provided. Focus on including preferences, thoughts, and other personal insights. Output only plain text, no formatting or markdown.`,
 };
 
-export const MAX_HEAT_LEVEL = 10;
-export const HEAT_LEVEL_UPDATE_INTERVAL = 1 * 60 * 1000; // 1 min in miliseconds
-export const HEAT_PHOTOS_COUNT = 6;
-
 // The number of memory nodes (elements of the human message context) that need to be sent to the client
 export const MEMORY_LENGTH_FOR_CLIENT = 20;
 
@@ -389,3 +389,30 @@ export const NAME_RECOVERY_QUESTIONS = [
   `Mind reminding me of your name? I think it was {name}?`,
   `Hey is this {name} I'm chatting with?`,
 ];
+
+// Heat section
+
+export const MAX_HEAT_LEVEL = 10;
+export const HEAT_LEVEL_UPDATE_INTERVAL = 1 * 60 * 1000; // 1 min in miliseconds
+export const HEAT_PHOTOS_COUNT = 6;
+export const HEAT_PHOTO_STEP = 2;
+
+export const heatPhotoMap = new Map<AvatarKey, CollectionMap>([
+  [
+    AvatarKey.blonde,
+    {
+      base: {
+        totalPhotos: 10,
+        description: 'Basic photos',
+      },
+      studio: {
+        totalPhotos: 7,
+        description: 'Professional studio shots',
+      },
+      nature: {
+        totalPhotos: 9,
+        description: 'Outdoor natural lighting',
+      },
+    },
+  ],
+]);

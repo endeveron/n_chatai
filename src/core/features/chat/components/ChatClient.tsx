@@ -322,7 +322,7 @@ const ChatClient = ({
     if (memoryInitRef.current) return;
 
     if (memory.length) {
-      console.log(`[Debug] Recieved memories for ${person.personKey}`, memory);
+      // console.log(`[Debug] Recieved memories for ${person.personKey}`, memory);
       const parsedMemory = memory.map((m) => ({
         role: MessageRole.system,
         context: m.context,
@@ -389,35 +389,35 @@ const ChatClient = ({
   }, [fetchedHeatLevel, person.personKey, getItemFromLS, setItemInLS]);
 
   // Update heat level at interval
-  useEffect(() => {
-    const interval = setInterval(async () => {
-      if (prevHeatLevelRef.current === heatLevel) {
-        return;
-      }
+  // useEffect(() => {
+  //   const interval = setInterval(async () => {
+  //     if (prevHeatLevelRef.current === heatLevel) {
+  //       return;
+  //     }
 
-      prevHeatLevelRef.current = heatLevel;
-      console.log('[Debug] Updating heat level in db...');
+  //     prevHeatLevelRef.current = heatLevel;
+  //     console.log('[Debug] Updating heat level in db...');
 
-      try {
-        const res = await updateHeatLevel({
-          chatId,
-          heatLevel,
-        });
+  //     try {
+  //       const res = await updateHeatLevel({
+  //         chatId,
+  //         heatLevel,
+  //       });
 
-        if (res?.success) {
-          console.log('[Debug] Heat level updated.');
-        } else {
-          console.error(res?.error.message ?? 'Unable to update heat level.');
-        }
-      } catch (err: unknown) {
-        console.error(err);
-      }
-    }, HEAT_LEVEL_UPDATE_INTERVAL);
+  //       if (res?.success) {
+  //         console.log('[Debug] Heat level updated.');
+  //       } else {
+  //         console.error(res?.error.message ?? 'Unable to update heat level.');
+  //       }
+  //     } catch (err: unknown) {
+  //       console.error(err);
+  //     }
+  //   }, HEAT_LEVEL_UPDATE_INTERVAL);
 
-    return () => {
-      clearInterval(interval);
-    };
-  }, [chatId, heatLevel]);
+  //   return () => {
+  //     clearInterval(interval);
+  //   };
+  // }, [chatId, heatLevel]);
 
   return (
     <section
@@ -455,6 +455,7 @@ const ChatClient = ({
             avatarBlur={person.avatarBlur}
             isTyping={isPending}
           />
+          {/* <div className="h-80 w-full bg-red-500"></div> */}
 
           <ChatMedia heatLevel={heatLevel} avatarKey={person.avatarKey} />
 

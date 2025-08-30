@@ -4,13 +4,14 @@ import Image from 'next/image';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { CloseIcon } from '@/core/components/icons/CloseIcon';
-import { HeartIcon } from '@/core/components/icons/HeartIcon';
 import { Button } from '@/core/components/ui/Button';
 import {
   CHAT_MEDIA_MIN_KEY,
+  HEAT_PHOTO_STEP,
+  heatPhotoMap,
   MAX_HEAT_LEVEL,
 } from '@/core/features/chat/constants';
-import { AvatarKey } from '@/core/features/chat/types/person';
+import { AvatarKey, CollectionMap } from '@/core/features/chat/types/person';
 import { useLocalStorage } from '@/core/hooks/useLocalStorage';
 import { cn } from '@/core/utils';
 
@@ -34,10 +35,20 @@ interface ChatMediaProps {
 const ChatMedia = ({ heatLevel, avatarKey }: ChatMediaProps) => {
   const [getItemFromLS, setItemInLS, removeItemFromLS] = useLocalStorage();
 
+  // const [avalCollections, setAvalCollections] = useState<string[]>([]);
+  // const [curCollections, setCurCollections] = useState<(keyof CollectionMap)[]>(
+  //   ['base']
+  // );
+  const [avalImages, setAvalImages] = useState<
+    { index: number; collectionName: keyof CollectionMap }[]
+  >([]);
+  const [displayStartIndex, setDisplayStartIndex] = useState<number>(0);
+  const [prevAvalImagesLength, setPrevAvalImagesLength] = useState<number>(0);
+
   const [active, setActive] = useState(false);
   const [expanded, setExpanded] = useState(false);
   const [minimized, setMinimized] = useState(false);
-  const [imageSrcArr, setImageSrcArr] = useState<string[]>([]);
+  const [imgSrcArr, setImgSrcArr] = useState<string[]>([]);
   const [transitionState, setTransitionState] = useState<TransitionState>({
     phase: 'idle',
     previousSources: [],
@@ -47,6 +58,34 @@ const ChatMedia = ({ heatLevel, avatarKey }: ChatMediaProps) => {
       right: 'visible',
     },
   });
+
+  const personPhotoData = useMemo((): {
+    collections: CollectionMap;
+    collectionNames: (keyof CollectionMap)[];
+  } => {
+    const collections = heatPhotoMap.get(avatarKey) as CollectionMap;
+    const collectionNames = collections
+      ? (Object.keys(collections) as (keyof CollectionMap)[])
+      : [];
+
+    return {
+      collections,
+      collectionNames,
+    };
+  }, [avatarKey]);
+
+  const heatIndex = useMemo(() => {
+    return Math.max(heatLevel - MAX_HEAT_LEVEL, 1);
+  }, [heatLevel]);
+
+  // const getCollectionNames = (
+  //   avatarKey: AvatarKey
+  // ): (keyof CollectionMap)[] => {
+  //   const collections = heatPhotoMap.get(avatarKey);
+  //   return collections
+  //     ? (Object.keys(collections) as (keyof CollectionMap)[])
+  //     : [];
+  // };
 
   const toggleExpanded = () => {
     setExpanded((prev) => !prev);
@@ -72,42 +111,9 @@ const ChatMedia = ({ heatLevel, avatarKey }: ChatMediaProps) => {
     }
   }, [avatarKey, getItemFromLS]);
 
-  const createImgSrc = useCallback(
-    (imgIndex: number) => {
-      return `/images/people/${avatarKey}/heat/${imgIndex}.jpg`;
-    },
-    [avatarKey]
-  );
-
-  useEffect(() => {
-    if (heatLevel <= MAX_HEAT_LEVEL) {
-      setImageSrcArr([]);
-      return;
-    }
-
-    const heatDiff = Math.max(heatLevel - MAX_HEAT_LEVEL, 1);
-
-    // Map heatDiff to the highest image index needed
-    const getImageIndexes = (diff: number): number[] => {
-      if (diff <= 3) return [1];
-      if (diff <= 6) return [2, 1];
-      if (diff <= 9) return [3, 2, 1];
-      if (diff <= 12) return [4, 3, 2];
-      if (diff <= 15) return [5, 4, 3];
-      if (diff <= 18) return [6, 5, 4];
-      if (diff <= 21) return [7, 6, 5];
-      if (diff <= 24) return [8, 7, 6];
-      if (diff <= 27) return [9, 8, 7];
-      return [10, 9, 8];
-    };
-
-    const indexes = getImageIndexes(heatDiff);
-    setImageSrcArr(indexes.map(createImgSrc));
-  }, [createImgSrc, heatLevel]);
-
-  const imageSrcArrLength = useMemo(() => {
-    return imageSrcArr.length;
-  }, [imageSrcArr.length]);
+  const imgSrcArrLength = useMemo(() => {
+    return imgSrcArr.length;
+  }, [imgSrcArr.length]);
 
   useEffect(() => {
     if (heatLevel <= MAX_HEAT_LEVEL) return;
@@ -121,6 +127,310 @@ const ChatMedia = ({ heatLevel, avatarKey }: ChatMediaProps) => {
     };
   }, [heatLevel]);
 
+  // Helper to determine which collections should be available based on heatIndex
+  const getAvailableCollections = useCallback(
+    (heatIndex: number): (keyof CollectionMap)[] => {
+      const collections = personPhotoData.collectionNames;
+      const availableCollections: (keyof CollectionMap)[] = ['base'];
+
+      let currentCapacity =
+        personPhotoData.collections['base']?.totalPhotos || 0;
+      let collectionIndex = 1;
+
+      // Unlock additional collections as heatIndex grows
+      while (
+        heatIndex > currentCapacity * HEAT_PHOTO_STEP &&
+        collectionIndex < collections.length
+      ) {
+        const nextCollection = collections[collectionIndex];
+        availableCollections.push(nextCollection);
+        currentCapacity +=
+          personPhotoData.collections[nextCollection].totalPhotos;
+        collectionIndex++;
+      }
+
+      return availableCollections;
+    },
+    [personPhotoData]
+  );
+
+  // Helper to get total images from available collections only
+  const getTotalAvailableImages = useCallback(
+    (availableCollections: (keyof CollectionMap)[]): number => {
+      return availableCollections.reduce((total, collectionName) => {
+        return total + personPhotoData.collections[collectionName].totalPhotos;
+      }, 0);
+    },
+    [personPhotoData]
+  );
+
+  // Helper to configure image indexes array
+  const getImageIndexes = useCallback(
+    (index: number): number[] => {
+      const availableCollections = getAvailableCollections(index);
+      const totalAvailableImages =
+        getTotalAvailableImages(availableCollections);
+
+      // Calculate which step we're at within available images
+      const step = Math.ceil(index / HEAT_PHOTO_STEP);
+
+      if (step === 1) return [1];
+      if (step === 2) return [2, 1];
+
+      // For step 3 and beyond, return 3 consecutive numbers
+      const maxIndex = Math.min(step, totalAvailableImages);
+      return [maxIndex, maxIndex - 1, maxIndex - 2].filter((i) => i > 0);
+    },
+    [getAvailableCollections, getTotalAvailableImages]
+  );
+
+  // Helper to generate all available images from collections
+  // const generateAvailableImages = useCallback(
+  //   (
+  //     availableCollections: (keyof CollectionMap)[]
+  //   ): { index: number; collectionName: keyof CollectionMap }[] => {
+  //     const images: { index: number; collectionName: keyof CollectionMap }[] =
+  //       [];
+  //     let globalIndex = 1;
+
+  //     availableCollections.forEach((collectionName) => {
+  //       const totalPhotos =
+  //         personPhotoData.collections[collectionName].totalPhotos;
+  //       for (let i = 1; i <= totalPhotos; i++) {
+  //         images.push({
+  //           index: globalIndex,
+  //           collectionName,
+  //         });
+  //         globalIndex++;
+  //       }
+  //     });
+
+  //     return images;
+  //   },
+  //   [personPhotoData]
+  // );
+  const generateAvailableImages = useCallback(
+    (
+      availableCollections: (keyof CollectionMap)[],
+      maxAccessIndex: number
+    ): { index: number; collectionName: keyof CollectionMap }[] => {
+      const images: { index: number; collectionName: keyof CollectionMap }[] =
+        [];
+      let globalIndex = 1;
+
+      for (const collectionName of availableCollections) {
+        const totalPhotos =
+          personPhotoData.collections[collectionName].totalPhotos;
+
+        for (let i = 1; i <= totalPhotos; i++) {
+          if (globalIndex <= maxAccessIndex) {
+            images.push({
+              index: globalIndex,
+              collectionName,
+            });
+            globalIndex++;
+          } else {
+            return images; // Stop when we reach the access level limit
+          }
+        }
+      }
+
+      return images;
+    },
+    [personPhotoData]
+  );
+
+  // Helper to get collection name and local index for a global image index
+  const getImageCollectionInfo = useCallback(
+    (
+      globalIndex: number,
+      availableImages: { index: number; collectionName: keyof CollectionMap }[]
+    ): { collectionName: keyof CollectionMap; localIndex: number } | null => {
+      const imageInfo = availableImages.find(
+        (img) => img.index === globalIndex
+      );
+      if (!imageInfo) return null;
+
+      // Calculate local index within the collection by counting images in the same collection before this one
+      const localIndex = availableImages.filter(
+        (img) =>
+          img.collectionName === imageInfo.collectionName &&
+          img.index <= globalIndex
+      ).length;
+
+      return { collectionName: imageInfo.collectionName, localIndex };
+    },
+    []
+  );
+
+  // Helper to generate image src
+  const generateImgSrc = useCallback(
+    (
+      imgIndex: number,
+      availableImages: { index: number; collectionName: keyof CollectionMap }[]
+    ): string => {
+      const collectionInfo = getImageCollectionInfo(imgIndex, availableImages);
+
+      if (!collectionInfo) {
+        console.warn(
+          `[generateImgSrc] No collection info found for index ${imgIndex}`
+        );
+        return '';
+      }
+
+      const { collectionName, localIndex } = collectionInfo;
+      return `/images/people/${avatarKey}/heat/${collectionName}/${localIndex}.jpg`;
+    },
+    [avatarKey, getImageCollectionInfo]
+  );
+
+  const curImageSet = useMemo(() => {
+    if (avalImages.length === 0) return [];
+
+    const maxAccessIndex = avalImages[avalImages.length - 1]?.index || 1;
+    const imgIndexes = getImageIndexes(heatIndex);
+    const setSize = imgIndexes.length;
+
+    // Calculate the starting index for current display
+    // If displayStartIndex is 0, start from maxAccessIndex
+    // Otherwise, offset backwards by displayStartIndex
+    const startIndex = maxAccessIndex - displayStartIndex;
+
+    // Generate consecutive indexes backwards from startIndex
+    const displayIndexes = [];
+    for (let i = 0; i < setSize; i++) {
+      const idx = startIndex - i;
+      if (idx >= 1) displayIndexes.push(idx);
+    }
+
+    return displayIndexes
+      .map((idx) => ({
+        globalIndex: idx,
+        imageSrc: generateImgSrc(idx, avalImages),
+        imageInfo: avalImages.find((img) => img.index === idx),
+      }))
+      .filter((item) => item.imageInfo);
+  }, [
+    avalImages,
+    getImageIndexes,
+    heatIndex,
+    displayStartIndex,
+    generateImgSrc,
+  ]);
+
+  // Navigate to previous set of images
+  const handlePrev = useCallback(() => {
+    if (avalImages.length === 0) return;
+
+    // Remove the lock logic - just navigate
+    const maxAccessIndex = avalImages[avalImages.length - 1]?.index || 1;
+
+    setDisplayStartIndex((prevIndex) => {
+      const newIndex = prevIndex + 1;
+      const maxStartIndex = maxAccessIndex - 1;
+      return Math.min(newIndex, maxStartIndex);
+    });
+  }, [avalImages]);
+
+  // Navigate to next set of images
+  const handleNext = useCallback(() => {
+    if (avalImages.length === 0) return;
+
+    setDisplayStartIndex((prevIndex) => Math.max(0, prevIndex - 1));
+  }, [avalImages]);
+
+  // Check if navigation is possible
+  const canGoNext = useMemo(() => {
+    return displayStartIndex > 0;
+  }, [displayStartIndex]);
+
+  const canGoPrev = useMemo(() => {
+    if (avalImages.length < 4 || imgSrcArr.length < 3) return false;
+    const maxAccessIndex = avalImages[avalImages.length - 1]?.index || 1;
+    return displayStartIndex < maxAccessIndex - 1;
+  }, [avalImages, displayStartIndex, imgSrcArr.length]);
+
+  // Reset display when available images change
+  useEffect(() => {
+    if (avalImages.length === 0) {
+      setDisplayStartIndex(0);
+      setPrevAvalImagesLength(0);
+      return;
+    }
+
+    // If this is the first time setting avalImages, start at latest
+    if (prevAvalImagesLength === 0) {
+      setDisplayStartIndex(0);
+      setPrevAvalImagesLength(avalImages.length);
+      return;
+    }
+
+    // If new images were added (heat level increased)
+    if (avalImages.length > prevAvalImagesLength) {
+      // Always go to latest images when new ones are available
+      setDisplayStartIndex(0);
+      setPrevAvalImagesLength(avalImages.length);
+      return;
+    }
+
+    // If images decreased, reset to latest
+    if (avalImages.length < prevAvalImagesLength) {
+      setDisplayStartIndex(0);
+      setPrevAvalImagesLength(avalImages.length);
+    }
+  }, [avalImages.length, prevAvalImagesLength]);
+
+  // Update imgSrcArr when display changes
+  useEffect(() => {
+    const imgSources = curImageSet.map((item) => item.imageSrc);
+    setImgSrcArr(imgSources);
+  }, [curImageSet]);
+
+  // Main logic to update images
+  useEffect(() => {
+    if (heatLevel <= MAX_HEAT_LEVEL) {
+      setImgSrcArr([]);
+      // setAvalCollections([]);
+      // setCurCollections(['base']);
+      setAvalImages([]);
+      return;
+    }
+
+    // Get available collections based on heatIndex
+    const availableCollections = getAvailableCollections(heatIndex);
+    // console.log('[Debug] availableCollections:', availableCollections);
+
+    // Update state
+    // setAvalCollections([...availableCollections]);
+    // setCurCollections([...availableCollections]);
+
+    // Get image indexes for display
+    const imgIndexes = getImageIndexes(heatIndex);
+    // console.log('[Debug] imgIndexes:', imgIndexes);
+
+    // The first index represents the maximum access level (edge line)
+    const maxAccessIndex = imgIndexes[0] || 1;
+
+    // Generate available images up to the access level
+    const allAvailableImages = generateAvailableImages(
+      availableCollections,
+      maxAccessIndex
+    );
+    setAvalImages(allAvailableImages);
+
+    // Generate image sources by passing avalImages as parameter
+    setImgSrcArr(
+      imgIndexes.map((index) => generateImgSrc(index, allAvailableImages))
+    );
+  }, [
+    heatLevel,
+    getAvailableCollections,
+    generateAvailableImages,
+    getImageIndexes,
+    generateImgSrc,
+    heatIndex,
+  ]);
+
   // Helper function to get the current image source for display
   const getCurrentImageSrc = (index: number): string | null => {
     switch (transitionState.phase) {
@@ -133,7 +443,7 @@ const ChatMedia = ({ heatLevel, avatarKey }: ChatMediaProps) => {
       case 'idle':
       default:
         // In idle state, show current sources (use newSources as they're up to date)
-        return transitionState.newSources[index] || imageSrcArr[index] || null;
+        return transitionState.newSources[index] || imgSrcArr[index] || null;
     }
   };
 
@@ -181,19 +491,19 @@ const ChatMedia = ({ heatLevel, avatarKey }: ChatMediaProps) => {
     }
   };
 
-  // Handle imageSrcArr changes and trigger transitions
+  // Handle imgSrcArr changes and trigger transitions
   useEffect(() => {
     setTransitionState((prev) => {
       // Check if any source has changed or if array length increased
       const hasChanges =
-        imageSrcArr.length !== prev.previousSources.length ||
-        imageSrcArr.some((src, index) => src !== prev.previousSources[index]);
+        imgSrcArr.length !== prev.previousSources.length ||
+        imgSrcArr.some((src, index) => src !== prev.previousSources[index]);
 
       if (hasChanges && prev.previousSources.length > 0) {
         return {
           phase: 'fadeOut',
           previousSources: [...prev.previousSources],
-          newSources: [...imageSrcArr],
+          newSources: [...imgSrcArr],
           sideImagePhases: {
             left: 'waiting',
             right: 'waiting',
@@ -204,8 +514,8 @@ const ChatMedia = ({ heatLevel, avatarKey }: ChatMediaProps) => {
         return {
           ...prev,
           phase: 'idle',
-          previousSources: [...imageSrcArr],
-          newSources: [...imageSrcArr],
+          previousSources: [...imgSrcArr],
+          newSources: [...imgSrcArr],
           sideImagePhases: {
             left: 'visible',
             right: 'visible',
@@ -213,7 +523,7 @@ const ChatMedia = ({ heatLevel, avatarKey }: ChatMediaProps) => {
         };
       }
     });
-  }, [imageSrcArr]);
+  }, [imgSrcArr]);
 
   // Handle image src transition phases timing
   useEffect(() => {
@@ -297,15 +607,45 @@ const ChatMedia = ({ heatLevel, avatarKey }: ChatMediaProps) => {
     };
   }, [transitionState.phase, transitionState.newSources]);
 
+  // Debugging
+  // useEffect(() => {
+  //   console.log('[Debug] heatIndex', heatIndex);
+  // }, [heatIndex]);
+
+  // useEffect(() => {
+  //   console.log('[Debug] displayStartIndex:', displayStartIndex);
+  // }, [displayStartIndex]);
+
+  // useEffect(() => {
+  //   console.log('[Debug] curImageSet deps changed:', {
+  //     avalImagesLength: avalImages.length,
+  //     heatIndex,
+  //     displayStartIndex,
+  //   });
+  // }, [avalImages, heatIndex, displayStartIndex]);
+
+  useEffect(() => {
+    if (!curImageSet.length) return;
+    console.log(
+      '[Debug]: curImageSet',
+      curImageSet.map((i) => i.globalIndex)
+    );
+  }, [curImageSet]);
+
+  useEffect(() => {
+    if (!avalImages.length) return;
+    console.log('[Debug] avalImages:', avalImages);
+  }, [avalImages, avalImages.length]);
+
   return (
     <div
       className={cn(
         'absolute z-10 top-[var(--topbar-h)] left-0 flex flex-col transition-all duration-500 pointer-events-none',
-        active && imageSrcArr.length ? 'opacity-100' : 'opacity-0',
+        active && imgSrcArr.length ? 'opacity-100' : 'opacity-0',
         expanded ? 'right-0 h-134 pb-10 w-full' : 'w-full h-16'
       )}
     >
-      {imageSrcArr.length ? (
+      {imgSrcArr.length ? (
         <div className="relative h-full w-full">
           {/* Background fade */}
           <div
@@ -317,9 +657,9 @@ const ChatMedia = ({ heatLevel, avatarKey }: ChatMediaProps) => {
             <div
               className={cn(
                 'h-full bg-gradient-to-b from-[90%] to-background/0 to-[100%]',
-                imageSrcArrLength === 1 && 'from-background/60',
-                imageSrcArrLength === 2 && 'from-background/80',
-                imageSrcArrLength === 3 && 'from-background/95'
+                imgSrcArrLength === 1 && 'from-background/60',
+                imgSrcArrLength === 2 && 'from-background/80',
+                imgSrcArrLength === 3 && 'from-background/95'
               )}
             />
           </div>
@@ -339,7 +679,7 @@ const ChatMedia = ({ heatLevel, avatarKey }: ChatMediaProps) => {
                   )}
                 >
                   <Button variant="accent" size="sm">
-                    Photos
+                    {avalImages.length} Photo{avalImages.length > 1 ? 's' : ''}
                   </Button>
                 </div>
 
@@ -356,9 +696,8 @@ const ChatMedia = ({ heatLevel, avatarKey }: ChatMediaProps) => {
 
             {/* Main image */}
             <div
-              onClick={toggleExpanded}
               data-translate={
-                expanded && imageSrcArrLength === 2 ? 'true' : 'false'
+                expanded && imgSrcArrLength === 2 ? 'true' : 'false'
               }
               className={cn(
                 'chat-media_main-item',
@@ -369,9 +708,7 @@ const ChatMedia = ({ heatLevel, avatarKey }: ChatMediaProps) => {
                   'scale-50 w-1 h-1 -translate-y-4 ease-out opacity-0'
               )}
             >
-              <div className="absolute inset-0.25 text-white/20 flex-center rounded-2xl bg-accent/20">
-                <HeartIcon className="scale-500" />
-              </div>
+              <div className="absolute inset-0 bg-background/80"></div>
               {getCurrentImageSrc(0) && (
                 <Image
                   src={getCurrentImageSrc(0)!}
@@ -384,6 +721,40 @@ const ChatMedia = ({ heatLevel, avatarKey }: ChatMediaProps) => {
                   alt="Photo"
                 />
               )}
+
+              {/* Clickable area (expand / collapse) */}
+              <div
+                onClick={toggleExpanded}
+                className="z-10 absolute top-0 inset-x-0 bottom-15 cursor-pointer"
+                // title={expanded ? 'Collapse' : 'Expand'}
+              />
+
+              {/* Navbar */}
+              <div
+                data-active={expanded ? 'true' : 'false'}
+                className="chat-media_navbar"
+              >
+                <div className="w-1/2">
+                  <div
+                    onClick={handlePrev}
+                    data-side="left"
+                    data-active={canGoPrev ? 'true' : 'false'}
+                    className="chat-media_nav-item"
+                  >
+                    PREV
+                  </div>
+                </div>
+                <div className="w-1/2">
+                  <div
+                    onClick={handleNext}
+                    data-side="right"
+                    data-active={canGoNext ? 'true' : 'false'}
+                    className="chat-media_nav-item"
+                  >
+                    NEXT
+                  </div>
+                </div>
+              </div>
             </div>
 
             {/* Left side image */}
@@ -394,7 +765,7 @@ const ChatMedia = ({ heatLevel, avatarKey }: ChatMediaProps) => {
                 expanded && getCurrentImageSrc(1)
                   ? 'chat-media_item--active'
                   : 'chat-media_item--inactive',
-                expanded && imageSrcArrLength === 2 && '-translate-x-60!'
+                expanded && imgSrcArrLength === 2 && '-translate-x-60!'
               )}
             >
               <div className="opacity-85 chat-media_image-wrapper">

@@ -127,7 +127,7 @@ const HeatHeart = ({ heatLevel }: HeatHeartProps) => {
   };
 
   return (
-    <div className="mr-1.5 relative h-5.5 w-6 flex-center">
+    <div className="mr-1.5 relative h-5.5 w-6 flex-center select-none">
       {/* Heat level difference indicator */}
       <div
         className={cn(
