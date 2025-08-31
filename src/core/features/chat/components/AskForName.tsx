@@ -46,7 +46,7 @@ const AskForName = ({
   return (
     <div
       data-fade-out={isFadeOut && 'true'}
-      className="fade--delayed relative z-10 mb-8 w-full flex-center pl-4 transition-opacity data-[fade-out=true]:opacity-0"
+      className="fade--delayed relative z-10 mb-8 w-full flex-center pl-4 data-[fade-out=true]:opacity-0 trans-o"
     >
       {stateKey === 'prompt' && (
         <div className="fade flex-center flex-col gap-4">

@@ -48,7 +48,7 @@ const MainMenu = ({ userData, className }: MainMenuProps) => {
   return (
     <div className={cn('main-menu h-6', className)}>
       {signoutPending && (
-        <div className="fixed z-40 inset-0 bg-background/90 flex flex-col items-center justify-center transition-colors duration-300">
+        <div className="fixed z-40 inset-0 bg-background/90 flex flex-col items-center justify-center trans-c">
           <LoadingIcon />
         </div>
       )}

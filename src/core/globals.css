@@ -230,6 +230,10 @@
   .link {
     @apply underline underline-offset-4;
   }
+
+  button:focus-visible {
+    outline: none;
+  }
 }
 
 @layer layout {
@@ -271,8 +275,44 @@
 }
 
 @layer components {
-  button:focus-visible {
-    outline: none;
+  /* Custom autofull area color */
+
+  input:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0 100px var(--input-autofill) inset !important;
+    -webkit-text-fill-color: var(--foreground) !important;
+  }
+
+  input::placeholder {
+    font-weight: 400;
+  }
+
+  /* Animations */
+
+  .fade {
+    animation: fade 0.25s ease-out;
+  }
+
+  .fade--delayed {
+    animation: fade 0.25s ease-out;
+    animation-delay: 1000;
+  }
+
+  .flip-x {
+    transform: scaleX(-1);
+  }
+
+  /* Custom transitions */
+
+  .trans-a {
+    @apply transition-all duration-300;
+  }
+
+  .trans-c {
+    @apply transition-colors duration-300;
+  }
+
+  .trans-o {
+    @apply transition-opacity duration-300;
   }
 
   .card {
@@ -346,37 +386,6 @@
   .typing_circle {
     @apply w-2 h-2 rounded-xl bg-foreground/80 transition-all;
     animation: typing 1s ease-in-out infinite both;
-  }
-}
-
-@layer utilities {
-  .custom-color-transition {
-    @apply transition-colors duration-300;
-  }
-
-  /* Customize autofull area color */
-  input:-webkit-autofill {
-    -webkit-box-shadow: 0 0 0 100px var(--input-autofill) inset !important;
-    -webkit-text-fill-color: var(--foreground) !important;
-  }
-
-  input::placeholder {
-    font-weight: 400;
-  }
-
-  /* Animations */
-
-  .fade {
-    animation: fade 0.25s ease-out;
-  }
-
-  .fade--delayed {
-    animation: fade 0.25s ease-out;
-    animation-delay: 1000;
-  }
-
-  .flip-x {
-    transform: scaleX(-1);
   }
 }
 
@@ -695,6 +704,22 @@
     @apply absolute z-20 w-32 top-2 left-1/2 -translate-x-1/2 text-sm text-muted pointer-events-auto cursor-pointer;
   }
 
+  .chat-media_icon {
+    @apply opacity-0 pointer-events-none w-10 h-10 p-2 rounded-full text-white bg-slate-700/50 dark:bg-background/50 transition-opacity duration-300;
+  }
+
+  .chat-media_clickable-area {
+    @apply z-10 absolute top-0 inset-x-0 bottom-15 flex justify-end p-2 cursor-pointer;
+  }
+
+  .chat-media_clickable-area:hover .chat-media_icon[data-active='true'] {
+    @apply opacity-30 pointer-events-auto;
+  }
+
+  .chat-media_clickable-area:hover .chat-media_icon[data-active='true']:hover {
+    @apply opacity-100;
+  }
+
   .chat-media_main-item {
     @apply relative z-20 transition-all duration-300 overflow-hidden pointer-events-auto;
   }
@@ -708,7 +733,7 @@
   }
 
   .chat-media_nav-item {
-    @apply h-15 w-full flex items-center justify-center cursor-pointer text-white bg-slate-700/50 dark:bg-background/60 transition-opacity duration-300;
+    @apply h-15 w-full flex items-center justify-center cursor-pointer text-white bg-slate-700/50 dark:bg-background/50 transition-opacity duration-300;
   }
 
   .chat-media_nav-item[data-active='false'] {

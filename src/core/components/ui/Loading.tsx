@@ -40,12 +40,7 @@ const Loading = ({
         className
       )}
     >
-      <div
-        className={cn(
-          'transition-opacity duration-300',
-          showLoading ? 'opacity-100' : 'opacity-0'
-        )}
-      >
+      <div className={cn('trans-o', showLoading ? 'opacity-100' : 'opacity-0')}>
         <LoadingIcon size={size} thickness={thickness} />
       </div>
     </div>

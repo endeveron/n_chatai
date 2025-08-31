@@ -14,6 +14,7 @@ import {
 import { AvatarKey, CollectionMap } from '@/core/features/chat/types/person';
 import { useLocalStorage } from '@/core/hooks/useLocalStorage';
 import { cn } from '@/core/utils';
+import { MinimizeIcon } from '@/core/components/icons/MinimizeIcon';
 
 const SIDE_IMAGE_FADEIN_DELAY = 100;
 
@@ -35,10 +36,10 @@ interface ChatMediaProps {
 const ChatMedia = ({ heatLevel, avatarKey }: ChatMediaProps) => {
   const [getItemFromLS, setItemInLS, removeItemFromLS] = useLocalStorage();
 
-  // const [avalCollections, setAvalCollections] = useState<string[]>([]);
-  // const [curCollections, setCurCollections] = useState<(keyof CollectionMap)[]>(
-  //   ['base']
-  // );
+  const [avalCollections, setAvalCollections] = useState<string[]>([]);
+  const [curCollections, setCurCollections] = useState<(keyof CollectionMap)[]>(
+    ['base']
+  );
   const [avalImages, setAvalImages] = useState<
     { index: number; collectionName: keyof CollectionMap }[]
   >([]);
@@ -78,14 +79,14 @@ const ChatMedia = ({ heatLevel, avatarKey }: ChatMediaProps) => {
     return Math.max(heatLevel - MAX_HEAT_LEVEL, 1);
   }, [heatLevel]);
 
-  // const getCollectionNames = (
-  //   avatarKey: AvatarKey
-  // ): (keyof CollectionMap)[] => {
-  //   const collections = heatPhotoMap.get(avatarKey);
-  //   return collections
-  //     ? (Object.keys(collections) as (keyof CollectionMap)[])
-  //     : [];
-  // };
+  const getCollectionNames = (
+    avatarKey: AvatarKey
+  ): (keyof CollectionMap)[] => {
+    const collections = heatPhotoMap.get(avatarKey);
+    return collections
+      ? (Object.keys(collections) as (keyof CollectionMap)[])
+      : [];
+  };
 
   const toggleExpanded = () => {
     setExpanded((prev) => !prev);
@@ -345,7 +346,7 @@ const ChatMedia = ({ heatLevel, avatarKey }: ChatMediaProps) => {
   }, [displayStartIndex]);
 
   const canGoPrev = useMemo(() => {
-    if (avalImages.length < 4 || imgSrcArr.length < 3) return false;
+    if (avalImages.length < 2 || imgSrcArr.length === 1) return false;
     const maxAccessIndex = avalImages[avalImages.length - 1]?.index || 1;
     return displayStartIndex < maxAccessIndex - 1;
   }, [avalImages, displayStartIndex, imgSrcArr.length]);
@@ -390,19 +391,19 @@ const ChatMedia = ({ heatLevel, avatarKey }: ChatMediaProps) => {
   useEffect(() => {
     if (heatLevel <= MAX_HEAT_LEVEL) {
       setImgSrcArr([]);
-      // setAvalCollections([]);
-      // setCurCollections(['base']);
+      setAvalCollections([]);
+      setCurCollections(['base']);
       setAvalImages([]);
       return;
     }
 
     // Get available collections based on heatIndex
     const availableCollections = getAvailableCollections(heatIndex);
-    // console.log('[Debug] availableCollections:', availableCollections);
+    console.log('[Debug] availableCollections:', availableCollections);
 
     // Update state
-    // setAvalCollections([...availableCollections]);
-    // setCurCollections([...availableCollections]);
+    setAvalCollections([...availableCollections]);
+    setCurCollections([...availableCollections]);
 
     // Get image indexes for display
     const imgIndexes = getImageIndexes(heatIndex);
@@ -627,7 +628,7 @@ const ChatMedia = ({ heatLevel, avatarKey }: ChatMediaProps) => {
   useEffect(() => {
     if (!curImageSet.length) return;
     console.log(
-      '[Debug]: curImageSet',
+      '[Debug] curImageSet:',
       curImageSet.map((i) => i.globalIndex)
     );
   }, [curImageSet]);
@@ -650,7 +651,7 @@ const ChatMedia = ({ heatLevel, avatarKey }: ChatMediaProps) => {
           {/* Background fade */}
           <div
             className={cn(
-              'z-0 absolute inset-0 transition-opacity duration-500',
+              'z-0 absolute inset-0 trans-o',
               expanded ? 'opacity-100' : 'opacity-0'
             )}
           >
@@ -674,7 +675,7 @@ const ChatMedia = ({ heatLevel, avatarKey }: ChatMediaProps) => {
               <div className="relative h-4 flex-center leading-none">
                 <div
                   className={cn(
-                    'translate-x-2 transition-all ease-out duration-300',
+                    'translate-x-2 trans-a ease-out',
                     !minimized && 'opacity-0 scale-30'
                   )}
                 >
@@ -685,7 +686,7 @@ const ChatMedia = ({ heatLevel, avatarKey }: ChatMediaProps) => {
 
                 <div
                   className={cn(
-                    'absolute translate-x-12 p-1.5 rounded-full bg-btn-secondary-background transition-opacity ease-out',
+                    'absolute translate-x-12 p-1.5 rounded-full bg-btn-secondary-background trans-o ease-out',
                     (minimized || expanded) && 'opacity-0'
                   )}
                 >
@@ -712,7 +713,7 @@ const ChatMedia = ({ heatLevel, avatarKey }: ChatMediaProps) => {
               {getCurrentImageSrc(0) && (
                 <Image
                   src={getCurrentImageSrc(0)!}
-                  className="z-10 fade object-cover text-sm text-muted bg-background transition-opacity duration-200"
+                  className="z-10 fade object-cover text-sm text-muted bg-background trans-o"
                   style={{ opacity: getImageOpacity(0) }}
                   fill
                   priority
@@ -725,9 +726,15 @@ const ChatMedia = ({ heatLevel, avatarKey }: ChatMediaProps) => {
               {/* Clickable area (expand / collapse) */}
               <div
                 onClick={toggleExpanded}
-                className="z-10 absolute top-0 inset-x-0 bottom-15 cursor-pointer"
-                // title={expanded ? 'Collapse' : 'Expand'}
-              />
+                className="chat-media_clickable-area"
+              >
+                <div
+                  data-active={expanded ? 'true' : 'false'}
+                  className="chat-media_icon"
+                >
+                  <MinimizeIcon />
+                </div>
+              </div>
 
               {/* Navbar */}
               <div
@@ -772,7 +779,7 @@ const ChatMedia = ({ heatLevel, avatarKey }: ChatMediaProps) => {
                 {getCurrentImageSrc(1) && (
                   <Image
                     src={getCurrentImageSrc(1)!}
-                    className="object-cover text-sm text-muted transition-opacity duration-200 fade-out"
+                    className="object-cover text-sm text-muted trans-o fade-out"
                     style={{ opacity: getImageOpacity(1) }}
                     fill
                     priority
@@ -798,7 +805,7 @@ const ChatMedia = ({ heatLevel, avatarKey }: ChatMediaProps) => {
                 {getCurrentImageSrc(2) && (
                   <Image
                     src={getCurrentImageSrc(2)!}
-                    className="object-cover text-sm text-muted transition-opacity duration-200 fade-out"
+                    className="object-cover text-sm text-muted trans-o fade-out"
                     style={{ opacity: getImageOpacity(2) }}
                     fill
                     priority

@@ -9,9 +9,5 @@ export default function AuthLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  return (
-    <div className="size-full bg-area transition-colors duration-300">
-      {children}
-    </div>
-  );
+  return <div className="size-full bg-area trans-c">{children}</div>;
 }

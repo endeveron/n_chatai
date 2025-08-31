@@ -183,7 +183,7 @@ const ChatInput = ({ onSubmit, isPending }: TChatInputProps) => {
                 <FormControl>
                   <FormInput
                     placeholder="Type something..."
-                    className="rounded-3xl p-6 bg-card transition-colors duration-300"
+                    className="rounded-3xl p-6 bg-card trans-c"
                     {...field}
                   />
                 </FormControl>

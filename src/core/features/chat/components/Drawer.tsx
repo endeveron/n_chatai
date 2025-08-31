@@ -115,7 +115,7 @@ export const Drawer: React.FC<DrawerProps> = ({ open, onChange, children }) => {
     <DrawerContext.Provider value={{ close, isClosing, isOpening }}>
       <div
         className={cn(
-          'fixed inset-0 z-100 transition-all duration-300 ease-in-out',
+          'fixed inset-0 z-100 trans-a ease-in-out',
           isClosing
             ? 'bg-background/0'
             : isOpening

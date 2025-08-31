@@ -421,10 +421,7 @@ const ChatClient = ({
 
   return (
     <section
-      className={cn(
-        'fade chat opacity-0 transition-opacity',
-        chatId && 'opacity-100'
-      )}
+      className={cn('fade chat opacity-0 trans-o', chatId && 'opacity-100')}
     >
       {chatId ? (
         <>

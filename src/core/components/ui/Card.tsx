@@ -15,7 +15,7 @@ const Card = forwardRef<HTMLDivElement, CardProps>(
       <div
         ref={ref}
         className={cn(
-          'px-4 py-6 sm:px-6 rounded-2xl bg-card transition-colors duration-300 cursor-default',
+          'px-4 py-6 sm:px-6 rounded-2xl bg-card cursor-default trans-c',
           className
         )}
         {...props}
@@ -56,7 +56,7 @@ const AnimatedCard = forwardRef<HTMLDivElement, AnimatedCardProps>(
         <div
           ref={ref}
           className={cn(
-            'relative max-w-md flex-center flex-col px-4 sm:px-8 py-8 rounded-2xl bg-card transition-all cursor-default',
+            'relative max-w-md flex-center flex-col px-4 sm:px-8 py-8 rounded-2xl bg-card cursor-default trans-a',
             isVisible
               ? 'scale-100 opacity-100 translate-y-0'
               : 'scale-95 opacity-0 translate-y-2',

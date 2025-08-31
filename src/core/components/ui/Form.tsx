@@ -116,7 +116,7 @@ function FormInput({
       type={type}
       data-slot="input"
       className={cn(
-        'h-10 px-2 pb-0.5 flex font-semibold items-center w-full rounded-sm border-2 border-input-border bg-input file:border-0 file:text-foreground file:bg-transparent file:text-sm file:font-medium placeholder:text-muted focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-error aria-invalid:ring-error transition-colors duration-300',
+        'h-10 px-2 pb-0.5 flex font-semibold items-center w-full rounded-sm border-2 border-input-border bg-input file:border-0 file:text-foreground file:bg-transparent file:text-sm file:font-medium placeholder:text-muted focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-error aria-invalid:ring-error trans-c',
         className
       )}
       {...props}
@@ -145,7 +145,7 @@ function FormControl({ ...props }: React.ComponentProps<typeof Slot>) {
 
 const FormControlIcon = ({ children }: { children: React.ReactNode }) => {
   return (
-    <div className="absolute top-1/2 translate-y-[-12px] right-2 text-icon transition-opacity opacity-50 hover:opacity-100 cursor-pointer">
+    <div className="absolute top-1/2 translate-y-[-12px] right-2 text-icon trans-o opacity-50 hover:opacity-100 cursor-pointer">
       {children}
     </div>
   );
