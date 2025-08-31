@@ -1,4 +1,4 @@
-// https://www.svgrepo.com/svg/532493/eye
+// https://www.svgrepo.com/svg/471704/minimize-01
 
 export function MinimizeIcon(props: React.SVGProps<SVGSVGElement>) {
   return (

@@ -23,9 +23,9 @@ export const getPeople = async (): Promise<
   try {
     await mongoDB.connect();
 
-    const people = await PersonModel.find().select(
-      '_id title gender avatarKey personKey status imgBlur'
-    );
+    const people = await PersonModel.find()
+      .sort({ _id: 1 }) // Ascending (oldest to newest)
+      .select('_id title gender avatarKey personKey status imgBlur');
 
     const peopleData: PersonCardData[] = people.map((p) => ({
       _id: p._id.toString(),

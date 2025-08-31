@@ -75,7 +75,7 @@ const NewChat = ({ userId, people }: CreateChatProps) => {
         <TopbarTitle>New Chat</TopbarTitle>
       </Topbar>
 
-      <h3 className="mt-4 py-4 text-accent">Select an AI personality</h3>
+      <h3 className="mt-4 py-4 text-title">Select an AI personality</h3>
       <PeopleList
         people={people}
         currentPersonId={personId}

@@ -36,10 +36,10 @@ interface ChatMediaProps {
 const ChatMedia = ({ heatLevel, avatarKey }: ChatMediaProps) => {
   const [getItemFromLS, setItemInLS, removeItemFromLS] = useLocalStorage();
 
-  const [avalCollections, setAvalCollections] = useState<string[]>([]);
-  const [curCollections, setCurCollections] = useState<(keyof CollectionMap)[]>(
-    ['base']
-  );
+  // const [avalCollections, setAvalCollections] = useState<string[]>([]);
+  // const [curCollections, setCurCollections] = useState<(keyof CollectionMap)[]>(
+  //   ['base']
+  // );
   const [avalImages, setAvalImages] = useState<
     { index: number; collectionName: keyof CollectionMap }[]
   >([]);
@@ -79,14 +79,14 @@ const ChatMedia = ({ heatLevel, avatarKey }: ChatMediaProps) => {
     return Math.max(heatLevel - MAX_HEAT_LEVEL, 1);
   }, [heatLevel]);
 
-  const getCollectionNames = (
-    avatarKey: AvatarKey
-  ): (keyof CollectionMap)[] => {
-    const collections = heatPhotoMap.get(avatarKey);
-    return collections
-      ? (Object.keys(collections) as (keyof CollectionMap)[])
-      : [];
-  };
+  // const getCollectionNames = (
+  //   avatarKey: AvatarKey
+  // ): (keyof CollectionMap)[] => {
+  //   const collections = heatPhotoMap.get(avatarKey);
+  //   return collections
+  //     ? (Object.keys(collections) as (keyof CollectionMap)[])
+  //     : [];
+  // };
 
   const toggleExpanded = () => {
     setExpanded((prev) => !prev);
@@ -391,8 +391,8 @@ const ChatMedia = ({ heatLevel, avatarKey }: ChatMediaProps) => {
   useEffect(() => {
     if (heatLevel <= MAX_HEAT_LEVEL) {
       setImgSrcArr([]);
-      setAvalCollections([]);
-      setCurCollections(['base']);
+      // setAvalCollections([]);
+      // setCurCollections(['base']);
       setAvalImages([]);
       return;
     }
@@ -401,9 +401,9 @@ const ChatMedia = ({ heatLevel, avatarKey }: ChatMediaProps) => {
     const availableCollections = getAvailableCollections(heatIndex);
     console.log('[Debug] availableCollections:', availableCollections);
 
-    // Update state
-    setAvalCollections([...availableCollections]);
-    setCurCollections([...availableCollections]);
+    // // Update state
+    // setAvalCollections([...availableCollections]);
+    // setCurCollections([...availableCollections]);
 
     // Get image indexes for display
     const imgIndexes = getImageIndexes(heatIndex);

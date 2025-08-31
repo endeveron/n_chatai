@@ -97,7 +97,7 @@ const ChatMenu = ({
               Clean chat
             </DropdownMenuItem>
           )}
-          <DropdownMenuSeparator />
+          {isMemories || (cleanChat.show && <DropdownMenuSeparator />)}
           <DropdownMenuItem className="text-error" onClick={handleDeleteChat}>
             <DeleteIcon />
             <span className="font-medium">Delete chat</span>

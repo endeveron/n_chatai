@@ -195,6 +195,67 @@ export const modelArtistEmotionMap = new Map<
   ],
 ]);
 
+export const artFutureEmotionMap = new Map<
+  string,
+  {
+    list: string[];
+    length: number;
+  }
+>([
+  [
+    'excited',
+    {
+      list: ['excited', 'happy', 'laughing', 'smiling', 'surprised'],
+      length: 5,
+    },
+  ],
+  [
+    'friendly',
+    {
+      list: ['happy', 'joyful', 'smiling'],
+      length: 3,
+    },
+  ],
+  // Heat index 1
+  [
+    'flirty',
+    {
+      list: ['laughing', 'playful', 'shy'],
+      length: 3,
+    },
+  ],
+  // Heat index 2
+  [
+    'aroused',
+    {
+      list: ['shy', 'feeling'],
+      length: 2,
+    },
+  ],
+  // Heat index 3
+  [
+    'obsessed',
+    {
+      list: ['obsessed', 'shy', 'devoured'],
+      length: 3,
+    },
+  ],
+  [
+    'upset',
+    {
+      list: ['confused', 'upset'],
+      length: 2,
+    },
+  ],
+  [
+    'error',
+    {
+      list: ['confused', 'doubt', 'upset'],
+      length: 3,
+    },
+  ],
+]);
+
 export const INSTRUCTIONS = {
   base: `NSFW context is allowed. Respond with concise and erotically charged language. Be attractive while staying focused on a single topic at a time.`,
   canGenerateFiction: `You can cite some fictitious facts about you.`,
@@ -403,15 +464,16 @@ export const heatPhotoMap = new Map<AvatarKey, CollectionMap>([
     {
       base: {
         totalPhotos: 10,
-        description: 'Basic photos',
+        description: 'Base collection',
       },
-      studio: {
-        totalPhotos: 7,
-        description: 'Professional studio shots',
-      },
-      nature: {
-        totalPhotos: 9,
-        description: 'Outdoor natural lighting',
+    },
+  ],
+  [
+    AvatarKey.honey,
+    {
+      base: {
+        totalPhotos: 15,
+        description: 'Base collection',
       },
     },
   ],

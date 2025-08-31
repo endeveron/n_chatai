@@ -9,6 +9,7 @@ import {
   modelArtistEmotionMap,
   NAME_RECOVERY_QUESTIONS,
   NAMES,
+  artFutureEmotionMap,
 } from '@/core/features/chat/constants';
 import {
   ChatMessageItem,
@@ -140,6 +141,11 @@ export const getPersonalEmotion = ({
     case PersonKey.modelArtist:
       {
         emotionData = modelArtistEmotionMap.get(emotionKey) as EmotionData;
+      }
+      break;
+    case PersonKey.artFuture:
+      {
+        emotionData = artFutureEmotionMap.get(emotionKey) as EmotionData;
       }
       break;
     default: {
