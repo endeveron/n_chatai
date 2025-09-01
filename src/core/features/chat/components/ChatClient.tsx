@@ -1,6 +1,5 @@
 'use client';
 
-import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
@@ -14,6 +13,7 @@ import {
 } from '@/core/features/chat/actions/chat';
 import { askAI } from '@/core/features/chat/actions/llm';
 import AskForName from '@/core/features/chat/components/AskForName';
+import ChatBackgroundImage from '@/core/features/chat/components/ChatBackgroundImage';
 import ChatInput from '@/core/features/chat/components/ChatInput';
 import ChatMedia from '@/core/features/chat/components/ChatMedia';
 import ChatMemoryItem from '@/core/features/chat/components/ChatMemoryItem';
@@ -406,6 +406,10 @@ const ChatClient = ({
 
         if (res?.success) {
           console.log('[Debug] Heat level updated.');
+          setItemInLS<number>(
+            `${HEAT_LEVEL_KEY}_${person.personKey}`,
+            heatLevel
+          );
         } else {
           console.error(res?.error.message ?? 'Unable to update heat level.');
         }
@@ -417,7 +421,7 @@ const ChatClient = ({
     return () => {
       clearInterval(interval);
     };
-  }, [chatId, heatLevel]);
+  }, [chatId, heatLevel, person.personKey, setItemInLS]);
 
   return (
     <section
@@ -469,26 +473,18 @@ const ChatClient = ({
           />
 
           <ChatInput onSubmit={handleInputSubmit} isPending={isPending} />
-          <div
-            className="chat_bg-image"
-            data-active={messages.length < 6 ? 'true' : 'false'}
-          >
-            <Image
-              src={`/images/people/${person.avatarKey}/chat-bg.png`}
-              placeholder="blur"
-              blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAMAAAC67D+PAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAAZQTFRF////AAAAVcLTfgAAAAF0Uk5TAEDm2GYAAAAOSURBVHjaYmCgJwAIMAAAbgABHA/EkAAAAABJRU5ErkJggg=="
-              width={900}
-              height={900}
-              alt={`${person.name} - ${person.title}`}
-            />
-          </div>
+
+          <ChatBackgroundImage
+            src={`/images/people/${person.avatarKey}/chat-bg.png`}
+            alt={`${person.name} - ${person.title}`}
+            isActive={messages.length < 6}
+          />
 
           <Drawer open={isEditMemory} onChange={setEditMemory}>
             <DrawerContent className="h-120">
               <div className="flex items-center justify-between">
                 <h3 className="text-title">{person.name}&apos;s memories</h3>
                 <DrawerClose>
-                  {/* <Button variant="ghost">close</Button> */}
                   <div className="icon--action m-0.5 scale-75">
                     <DeclineIcon />
                   </div>

@@ -573,7 +573,7 @@
   /* Background */
 
   .chat_bg-image {
-    @apply absolute inset-0 z-0 flex flex-col items-center justify-center overflow-hidden transition-opacity duration-300;
+    @apply absolute inset-0 z-0 flex flex-col items-center justify-center overflow-hidden transition-opacity duration-1000;
   }
 
   .chat_bg-image[data-active='false'] {

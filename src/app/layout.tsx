@@ -3,6 +3,7 @@ import { Mulish } from 'next/font/google';
 
 import { Providers } from '@/core/context/providers';
 import { Toaster } from '@/core/components/ui/Sonner';
+import { ASSET_URL, BASE_URL } from '@/core/constants';
 
 import '@/core/globals.css';
 
@@ -21,34 +22,35 @@ export const metadata: Metadata = {
   applicationName: 'Chat AI',
   description: 'Beautiful AI companion',
   creator: 'Endeveron',
+  metadataBase: new URL(BASE_URL),
   openGraph: {
     title: 'Chat AI',
     description: `Chat AI - Beautiful AI companion`,
     siteName: 'Chat AI',
     type: 'website',
-    url: 'https://chatai-sigma-three.vercel.app',
+    url: '/',
     locale: 'en_US',
-    // images: [
-    //   {
-    //     url: 'https://chatai-sigma-three.vercel.app/images/og-image.png',
-    //     width: 1200,
-    //     height: 630,
-    //     alt: `Chat AI - Beautiful AI companion`,
-    //     type: 'image/png',
-    //   },
-    //   {
-    //     url: 'https://chatai-sigma-three.vercel.app/images/og-image-square.png',
-    //     width: 1200,
-    //     height: 1200,
-    //     alt: `Chat AI - Beautiful AI companion`,
-    //     type: 'image/png',
-    //   },
-    // ],
+    images: [
+      {
+        url: `${BASE_URL}/images/og-image.png`,
+        width: 1200,
+        height: 630,
+        alt: `OG Image`,
+        type: 'image/png',
+      },
+      {
+        url: `${BASE_URL}/images/og-image-square.png`,
+        width: 1200,
+        height: 1200,
+        alt: `OG Image`,
+        type: 'image/png',
+      },
+    ],
   },
   icons: {
     icon: {
       // url: 'https://chatai-sigma-three.vercel.app/favicon.ico',
-      url: 'https://chataiapp.pages.dev/images/favicon.ico',
+      url: `${ASSET_URL}/icons/favicon.ico`,
       type: 'image/image/ico',
     },
   },

@@ -1,5 +1,7 @@
 // const API_URL = process.env.NEXT_PUBLIC_API_URL as string;
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL as string;
+const ASSET_URL = process.env.NEXT_PUBLIC_ASSET_URL as string;
+
 const STATE_KEY = process.env.NEXT_PUBLIC_STATE_KEY as string;
 
 const DB_CONNECTION_STRING = process.env.DB_CONNECTION_STRING as string;
@@ -25,6 +27,7 @@ const DEFAULT_REDIRECT = '/'; // after user signed in.
 export {
   // API_URL,
   BASE_URL,
+  ASSET_URL,
   STATE_KEY,
   DB_CONNECTION_STRING,
   AUTH_SECRET,

@@ -212,7 +212,7 @@ export const artFutureEmotionMap = new Map<
   [
     'friendly',
     {
-      list: ['happy', 'joyful', 'smiling'],
+      list: ['friendly', 'happy', 'smiling'],
       length: 3,
     },
   ],
