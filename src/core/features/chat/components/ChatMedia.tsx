@@ -10,9 +10,9 @@ import { ASSET_URL } from '@/core/constants';
 import {
   CHAT_MEDIA_MIN_KEY,
   HEAT_PHOTO_STEP,
-  heatPhotoMap,
   MAX_HEAT_LEVEL,
 } from '@/core/features/chat/constants';
+import { heatPhotoMap } from '@/core/features/chat/maps';
 import { AvatarKey, CollectionMap } from '@/core/features/chat/types/person';
 import { useImagePreloader } from '@/core/hooks/useImagePreloader';
 import { useLocalStorage } from '@/core/hooks/useLocalStorage';
@@ -36,7 +36,7 @@ interface ChatMediaProps {
 }
 
 const ChatMedia = ({ heatLevel, avatarKey }: ChatMediaProps) => {
-  const [getItemFromLS, setItemInLS, removeItemFromLS] = useLocalStorage();
+  const { getItem, setItem, removeItem } = useLocalStorage();
   const { preloadImages, clearCache } = useImagePreloader();
 
   // const [avalCollections, setAvalCollections] = useState<string[]>([]);
@@ -99,21 +99,19 @@ const ChatMedia = ({ heatLevel, avatarKey }: ChatMediaProps) => {
     const value = !minimized;
     const key = `${CHAT_MEDIA_MIN_KEY}_${avatarKey}`;
     if (value) {
-      setItemInLS(key, value);
+      setItem(key, value);
     } else {
-      removeItemFromLS(key);
+      removeItem(key);
     }
     setMinimized(value);
   };
 
   useEffect(() => {
-    const itemInLS = getItemFromLS<boolean>(
-      `${CHAT_MEDIA_MIN_KEY}_${avatarKey}`
-    );
+    const itemInLS = getItem<boolean>(`${CHAT_MEDIA_MIN_KEY}_${avatarKey}`);
     if (itemInLS) {
       setMinimized(true);
     }
-  }, [avatarKey, getItemFromLS]);
+  }, [avatarKey, getItem]);
 
   const imgSrcArrLength = useMemo(() => {
     return imgSrcArr.length;
@@ -189,30 +187,6 @@ const ChatMedia = ({ heatLevel, avatarKey }: ChatMediaProps) => {
   );
 
   // Helper to generate all available images from collections
-  // const generateAvailableImages = useCallback(
-  //   (
-  //     availableCollections: (keyof CollectionMap)[]
-  //   ): { index: number; collectionName: keyof CollectionMap }[] => {
-  //     const images: { index: number; collectionName: keyof CollectionMap }[] =
-  //       [];
-  //     let globalIndex = 1;
-
-  //     availableCollections.forEach((collectionName) => {
-  //       const totalPhotos =
-  //         personPhotoData.collections[collectionName].totalPhotos;
-  //       for (let i = 1; i <= totalPhotos; i++) {
-  //         images.push({
-  //           index: globalIndex,
-  //           collectionName,
-  //         });
-  //         globalIndex++;
-  //       }
-  //     });
-
-  //     return images;
-  //   },
-  //   [personPhotoData]
-  // );
   const generateAvailableImages = useCallback(
     (
       availableCollections: (keyof CollectionMap)[],
@@ -360,6 +334,12 @@ const ChatMedia = ({ heatLevel, avatarKey }: ChatMediaProps) => {
 
   // Reset display when available images change
   useEffect(() => {
+    // console.log('[Debug] RESET EFFECT triggered', {
+    //   avalImagesLength: avalImages.length,
+    //   prevLength: prevAvalImagesLength,
+    //   timestamp: Date.now(),
+    // });
+
     if (avalImages.length === 0) {
       setDisplayStartIndex(0);
       setPrevAvalImagesLength(0);
@@ -390,12 +370,24 @@ const ChatMedia = ({ heatLevel, avatarKey }: ChatMediaProps) => {
 
   // Update imgSrcArr when display changes
   useEffect(() => {
+    // console.log('[Debug] IMG UPDATE EFFECT triggered', {
+    //   curImageSetLength: curImageSet.length,
+    //   timestamp: Date.now(),
+    // });
+
     const imgSources = curImageSet.map((item) => item.imageSrc);
     setImgSrcArr(imgSources);
   }, [curImageSet]);
 
   // Main logic to update images
   useEffect(() => {
+    // console.log('[Debug] MAIN LOGIC EFFECT triggered', {
+    //   heatLevel,
+    //   heatIndex,
+    //   timestamp: Date.now(),
+    //   stack: new Error().stack?.split('\n')[2], // Shows what triggered it
+    // });
+
     if (heatLevel <= MAX_HEAT_LEVEL) {
       setImgSrcArr([]);
       // setAvalCollections([]);
@@ -439,21 +431,6 @@ const ChatMedia = ({ heatLevel, avatarKey }: ChatMediaProps) => {
     heatIndex,
   ]);
 
-  // // Helper function to get the current image source for display
-  // const getCurrentImageSrc = (index: number): string | null => {
-  //   switch (transitionState.phase) {
-  //     case 'fadeOut':
-  //       // During fade out, show previous sources
-  //       return transitionState.previousSources[index] || null;
-  //     case 'fadeIn':
-  //       // During fade in, show new sources
-  //       return transitionState.newSources[index] || null;
-  //     case 'idle':
-  //     default:
-  //       // In idle state, show current sources (use newSources as they're up to date)
-  //       return transitionState.newSources[index] || imgSrcArr[index] || null;
-  //   }
-  // };
   // Helper function to get the current image source for display
   const getCurrentImageSrc = (index: number): string | null => {
     switch (transitionState.phase) {
@@ -472,50 +449,6 @@ const ChatMedia = ({ heatLevel, avatarKey }: ChatMediaProps) => {
         return transitionState.newSources[index] || imgSrcArr[index] || null;
     }
   };
-
-  // Helper function to get opacity based on transition phase
-  // const getImageOpacity = (index: number): number => {
-  //   const currentSrc = getCurrentImageSrc(index);
-
-  //   if (!currentSrc) return 0;
-
-  //   // Main image (index 0) - no delay, standard transition
-  //   if (index === 0) {
-  //     switch (transitionState.phase) {
-  //       case 'fadeOut':
-  //         return 0;
-  //       case 'fadeIn':
-  //       case 'idle':
-  //         return 1;
-  //       default:
-  //         return 1;
-  //     }
-  //   }
-
-  //   // Side images (index 1 and 2) - with delayed fade-in
-  //   const sideKey = index === 1 ? 'left' : 'right';
-  //   const sidePhase = transitionState.sideImagePhases[sideKey];
-
-  //   switch (transitionState.phase) {
-  //     case 'fadeOut':
-  //       return 0; // All fade out together
-  //     case 'fadeIn':
-  //       // Side images follow their individual phases
-  //       switch (sidePhase) {
-  //         case 'waiting':
-  //           return 0; // Still waiting to fade in
-  //         case 'fadeIn':
-  //         case 'visible':
-  //           return 1; // Fading in or visible
-  //         default:
-  //           return 0;
-  //       }
-  //     case 'idle':
-  //       return sidePhase === 'visible' ? 1 : 0;
-  //     default:
-  //       return 1;
-  //   }
-  // };
 
   // Helper function to get opacity based on transition phase
   const getImageOpacity = (index: number): number => {
@@ -564,42 +497,13 @@ const ChatMedia = ({ heatLevel, avatarKey }: ChatMediaProps) => {
     }
   };
 
-  // // Handle imgSrcArr changes and trigger transitions
-  // useEffect(() => {
-  //   setTransitionState((prev) => {
-  //     // Check if any source has changed or if array length increased
-  //     const hasChanges =
-  //       imgSrcArr.length !== prev.previousSources.length ||
-  //       imgSrcArr.some((src, index) => src !== prev.previousSources[index]);
-
-  //     if (hasChanges && prev.previousSources.length > 0) {
-  //       return {
-  //         phase: 'fadeOut',
-  //         previousSources: [...prev.previousSources],
-  //         newSources: [...imgSrcArr],
-  //         sideImagePhases: {
-  //           left: 'waiting',
-  //           right: 'waiting',
-  //         },
-  //       };
-  //     } else {
-  //       // Initial load or no changes - no transition needed
-  //       return {
-  //         ...prev,
-  //         phase: 'idle',
-  //         previousSources: [...imgSrcArr],
-  //         newSources: [...imgSrcArr],
-  //         sideImagePhases: {
-  //           left: 'visible',
-  //           right: 'visible',
-  //         },
-  //       };
-  //     }
-  //   });
-  // }, [imgSrcArr]);
-
   // Handle imgSrcArr changes and trigger transitions with preloading
   useEffect(() => {
+    // console.log('[Debug] TRANSITION EFFECT triggered', {
+    //   imgSrcArrLength: imgSrcArr.length,
+    //   timestamp: Date.now(),
+    // });
+
     setTransitionState((prev) => {
       const hasChanges =
         imgSrcArr.length !== prev.previousSources.length ||
@@ -722,7 +626,6 @@ const ChatMedia = ({ heatLevel, avatarKey }: ChatMediaProps) => {
     };
   }, [transitionState.phase, transitionState.newSources]);
 
-  // Add this new effect after your existing useEffects, before the return statement:
   // Predictive preloading - preload next potential images
   useEffect(() => {
     if (heatLevel <= MAX_HEAT_LEVEL || !avalImages.length) return;
@@ -794,7 +697,7 @@ const ChatMedia = ({ heatLevel, avatarKey }: ChatMediaProps) => {
   // Clean up preloaded images cache
   useEffect(() => {
     return () => {
-      clearCache(); //
+      clearCache();
     };
   }, [clearCache]);
 

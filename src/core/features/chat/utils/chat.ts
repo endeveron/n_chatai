@@ -2,14 +2,11 @@ import emojiRegex from 'emoji-regex';
 
 import {
   ALT_MESSAGES,
-  sharedEmotionMap,
   DEFAULT_EMOTION_KEY,
   EMOTION_LIST,
   ERROR_MESSAGES,
-  modelArtistEmotionMap,
   NAME_RECOVERY_QUESTIONS,
   NAMES,
-  artFutureEmotionMap,
 } from '@/core/features/chat/constants';
 import {
   ChatMessageItem,
@@ -25,6 +22,12 @@ import {
 import { getRandom } from '@/core/utils';
 import { MessageContent, MessageContentText } from '@langchain/core/messages';
 import { RefObject } from 'react';
+import {
+  artFutureEmotionMap,
+  mangoEmotionMap,
+  modelArtistEmotionMap,
+  sharedEmotionMap,
+} from '@/core/features/chat/maps';
 
 /**
  * Returns a random name based on the specified gender.
@@ -137,15 +140,24 @@ export const getPersonalEmotion = ({
 }) => {
   let emotionData: EmotionData;
 
+  console.log(
+    `[Debug] getPersonalEmotion:, emotionKey: ${emotionKey}, personKey: ${personKey}`
+  );
+
   switch (personKey) {
-    case PersonKey.modelArtist:
-      {
-        emotionData = modelArtistEmotionMap.get(emotionKey) as EmotionData;
-      }
-      break;
     case PersonKey.artFuture:
       {
         emotionData = artFutureEmotionMap.get(emotionKey) as EmotionData;
+      }
+      break;
+    case PersonKey.mango:
+      {
+        emotionData = mangoEmotionMap.get(emotionKey) as EmotionData;
+      }
+      break;
+    case PersonKey.modelArtist:
+      {
+        emotionData = modelArtistEmotionMap.get(emotionKey) as EmotionData;
       }
       break;
     default: {

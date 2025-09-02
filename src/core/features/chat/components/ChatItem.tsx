@@ -32,10 +32,10 @@ const ChatItem = ({ chatId, title, person, heatLevel }: ChatItemProps) => {
       onClick={openChat}
       role="listitem"
     >
-      <div className="chat-item_avatar relative">
+      <div className="chat-item_avatar-wrapper">
         <Avatar avatarKey={person.avatarKey} avatarBlur={person.avatarBlur} />
         {heatLevel >= MAX_HEAT_LEVEL ? (
-          <div className="fade absolute scale-75 -right-2.25 -bottom-0.5 text-accent">
+          <div className="fade absolute z-50 scale-75 -right-2.25 -bottom-0.5 text-accent">
             <HeartIcon />
           </div>
         ) : null}

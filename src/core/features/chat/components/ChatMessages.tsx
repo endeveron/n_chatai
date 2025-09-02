@@ -23,6 +23,15 @@ const ChatMessages = ({
 }: ChatMessagesProps) => {
   const ref = useRef<HTMLDivElement>(null);
 
+  // Scroll to the last message during translating
+  const scrollToBottom = () => {
+    // Wait briefly to ensure the component is mounted
+    setTimeout(() => {
+      if (!ref.current) return;
+      ref.current.scrollTo(0, ref.current.scrollHeight);
+    }, 100);
+  };
+
   // Scroll to the last message
   useEffect(() => {
     if (!ref.current) return;
@@ -51,6 +60,7 @@ const ChatMessages = ({
           role={m.role}
           translation={m.translation}
           timestamp={m.timestamp}
+          onScroll={scrollToBottom}
         />
       ))}
       {typingMessageEl}

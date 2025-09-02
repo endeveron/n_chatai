@@ -22,7 +22,16 @@ const ChatBackgroundImage = ({
 
   return (
     <div data-active={isActive && isLoaded} className="chat_bg-image">
-      <Image src={src} width={900} height={900} alt={alt} onLoad={handleLoad} />
+      <Image
+        src={src}
+        width={900}
+        height={900}
+        onLoad={handleLoad}
+        priority
+        quality={100}
+        unoptimized
+        alt={alt}
+      />
     </div>
   );
 };

@@ -2,11 +2,11 @@
 
 import { useCallback } from 'react';
 
-export function useLocalStorage(): [
-  getItem: <T>(key: string) => T | null,
-  setItem: <T>(key: string, item: T) => void,
-  removeItem: (key: string) => void
-] {
+export const useLocalStorage = (): {
+  getItem: <T>(key: string) => T | null;
+  setItem: <T>(key: string, item: T) => void;
+  removeItem: (key: string) => void;
+} => {
   const getItem = useCallback<<T>(key: string) => T | null>((key) => {
     if (typeof window === 'undefined') return null;
     try {
@@ -36,5 +36,5 @@ export function useLocalStorage(): [
     }
   }, []);
 
-  return [getItem, setItem, removeItem];
-}
+  return { getItem, setItem, removeItem };
+};

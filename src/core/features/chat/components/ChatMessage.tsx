@@ -15,6 +15,7 @@ import { useClipboard } from '@/core/hooks/useClipboard';
 type ChatMessageProps = BaseChatMessage & {
   avatarKey: AvatarKey;
   avatarBlur: string;
+  onScroll: () => void;
 };
 
 const ChatMessage = ({
@@ -25,6 +26,7 @@ const ChatMessage = ({
   emotion,
   role,
   translation,
+  onScroll,
 }: ChatMessageProps) => {
   const { copy } = useClipboard();
 
@@ -43,6 +45,7 @@ const ChatMessage = ({
     }
 
     setTranslating(true);
+    onScroll();
     const res = await translateText({
       text: content,
       sourceLang: 'en',
@@ -58,6 +61,7 @@ const ChatMessage = ({
       // Update local state
       setTranslation(res.data);
       setTranslating(false);
+      onScroll();
 
       // Save translation in db
       const saveTrRes = await saveMessageTranslation({
@@ -84,6 +88,7 @@ const ChatMessage = ({
       avatarBlur={avatarBlur}
       emotion={emotion}
       showEmotion
+      isFade={true}
     />
   );
 

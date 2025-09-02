@@ -20,24 +20,24 @@ const LangContext = createContext<LangContextType | undefined>(undefined);
 
 export function LangProvider({ children }: { children: ReactNode }) {
   const [langCode, setLangCode] = useState<LangCode>('en');
-  const [getLangCodeFromStorage, saveLangCodeInStorage] = useLocalStorage();
+  const { getItem, setItem } = useLocalStorage();
 
   const toggleLangCode = () => {
     setLangCode((prev) => {
       const newLangCode = prev === 'en' ? 'uk' : 'en';
-      saveLangCodeInStorage<LangCode>(LANG_CODE_KEY, newLangCode);
+      setItem<LangCode>(LANG_CODE_KEY, newLangCode);
       return newLangCode;
     });
   };
 
   useEffect(() => {
-    const langCodeFromStorage = getLangCodeFromStorage<LangCode>(LANG_CODE_KEY);
+    const langCodeFromStorage = getItem<LangCode>(LANG_CODE_KEY);
     if (langCodeFromStorage) {
       setLangCode(langCodeFromStorage);
     } else {
-      saveLangCodeInStorage<LangCode>(LANG_CODE_KEY, 'en');
+      setItem<LangCode>(LANG_CODE_KEY, 'en');
     }
-  }, [getLangCodeFromStorage, saveLangCodeInStorage]);
+  }, [getItem, setItem]);
 
   return (
     <LangContext.Provider value={{ langCode, toggleLangCode }}>

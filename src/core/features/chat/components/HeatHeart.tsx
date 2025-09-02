@@ -142,7 +142,12 @@ const HeatHeart = ({ heatLevel }: HeatHeartProps) => {
 
       {/* Current heat level display */}
       {heatLevel > 0 ? (
-        <div className="relative z-40 text-[11px] text-white font-bold leading-none tracking-tight -translate-x-0.25 cursor-default">
+        <div
+          className={cn(
+            'relative z-40 text-white font-bold leading-none tracking-tight -translate-x-0.25 cursor-default',
+            heatLevel > 99 ? 'text-[10px]' : 'text-[11px]'
+          )}
+        >
           {heatLevel}
         </div>
       ) : null}

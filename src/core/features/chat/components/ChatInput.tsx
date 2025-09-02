@@ -93,7 +93,7 @@ const ChatInput = ({ onSubmit, isPending }: TChatInputProps) => {
       { title: `kiss`, phrase: `Another kiss for your beautiful thighs...` },
       {
         title: `panties`,
-        phrase: `Slowly taking off your panties... Kissing your beautiful nipples... So hot!`,
+        phrase: `Slowly take off your panties... Kissing your beautiful nipples... So hot!`,
       },
       {
         title: `moan`,
@@ -114,6 +114,10 @@ const ChatInput = ({ onSubmit, isPending }: TChatInputProps) => {
       {
         title: `wet`,
         phrase: `My tongue plays with your nipple. I like the wetness between your thighs.`,
+      },
+      {
+        title: `g`,
+        phrase: `My fingers penetrate deeper and massage your G-spot.`,
       },
     ],
     thrusts: [
@@ -167,7 +171,7 @@ const ChatInput = ({ onSubmit, isPending }: TChatInputProps) => {
       },
       {
         title: `deeper`,
-        phrase: `Slowly and gentely I penetrate into your beautiful ass... deeper... Play with your clit and nipples.`,
+        phrase: `Slowly and gentely I penetrate into your beautiful butt... deeper... Play with your clit and nipples.`,
       },
       {
         title: `body`,
@@ -175,7 +179,7 @@ const ChatInput = ({ onSubmit, isPending }: TChatInputProps) => {
       },
       {
         title: `cum`,
-        phrase: `You're getting your next orgasm...`,
+        phrase: `You're got your another orgasm...`,
       },
       {
         title: `over`,

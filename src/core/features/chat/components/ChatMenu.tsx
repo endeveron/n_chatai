@@ -1,6 +1,10 @@
 'use client';
 import { useRouter } from 'next/navigation';
 
+import { CleanIcon } from '@/core/components/icons/CleanIcon';
+import { DeleteIcon } from '@/core/components/icons/DeleteIcon';
+import { HistoryIcon } from '@/core/components/icons/HistoryIcon';
+import { MenuIcon } from '@/core/components/icons/MenuIcon';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -8,18 +12,18 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/core/components/ui/DropdownMenu';
-import { CleanIcon } from '@/core/components/icons/CleanIcon';
-import { DeleteIcon } from '@/core/components/icons/DeleteIcon';
-import { MenuIcon } from '@/core/components/icons/MenuIcon';
 import { DEFAULT_REDIRECT } from '@/core/constants';
 import {
   cleanChat as clean,
   deleteChat,
 } from '@/core/features/chat/actions/chat';
+import { HEAT_LEVEL_KEY } from '@/core/features/chat/constants';
+import { PersonKey } from '@/core/features/chat/types/person';
 import { useError } from '@/core/hooks/useError';
-import { HistoryIcon } from '@/core/components/icons/HistoryIcon';
+import { useLocalStorage } from '@/core/hooks/useLocalStorage';
 
 interface ChatMenuProps {
+  personKey: PersonKey;
   isMemories: boolean;
   cleanChat: {
     show: boolean;
@@ -31,12 +35,14 @@ interface ChatMenuProps {
 }
 
 const ChatMenu = ({
+  personKey,
   isMemories,
   cleanChat,
   onCleaned,
   onEditMemory,
 }: ChatMenuProps) => {
   const router = useRouter();
+  const { removeItem } = useLocalStorage();
   const { toastError } = useError();
 
   const handleEditMemory = async () => {
@@ -70,6 +76,9 @@ const ChatMenu = ({
         toastError(res);
         return;
       }
+      // Delete heat level key from the local storage
+      removeItem(`${HEAT_LEVEL_KEY}_${personKey}`);
+
       // Navigate to chat list page
       router.push(DEFAULT_REDIRECT);
     } catch (err: unknown) {

@@ -3,7 +3,7 @@
 import { useState, useCallback } from 'react';
 import { toast } from 'sonner';
 
-export function useClipboard(timeout: number = 2000) {
+export const useClipboard = (timeout: number = 2000) => {
   const [copied, setCopied] = useState(false);
 
   const copy = useCallback(
@@ -28,4 +28,4 @@ export function useClipboard(timeout: number = 2000) {
   );
 
   return { copy, copied };
-}
+};

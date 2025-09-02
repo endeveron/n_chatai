@@ -54,6 +54,7 @@ export enum PersonKey {
   artFuture = 'artFuture',
   devJourney = 'devJourney',
   modelArtist = 'modelArtist',
+  mango = 'mango',
   musican = 'musican',
   positiveShot = 'positiveShot',
 }
@@ -64,6 +65,7 @@ export enum AvatarKey {
   choco = 'choco',
   cutie = 'cutie',
   honey = 'honey',
+  mango = 'mango',
 }
 
 export type SelectPerson = {

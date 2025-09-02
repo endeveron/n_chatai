@@ -68,7 +68,7 @@ const ChatClient = ({
   memory,
 }: ChatClientProps) => {
   const pathname = usePathname();
-  const [getItemFromLS, setItemInLS, removeItemFromLS] = useLocalStorage();
+  const { getItem, setItem, removeItem } = useLocalStorage();
 
   const [isPending, setPending] = useState(false);
   const [messages, setMessages] = useState<ChatMessageItem[]>([]);
@@ -182,7 +182,7 @@ const ChatClient = ({
           }
 
           if (newHeatLevel && newHeatLevel >= 0) {
-            setItemInLS<number>(
+            setItem<number>(
               `${HEAT_LEVEL_KEY}_${person.personKey}`,
               newHeatLevel
             );
@@ -252,8 +252,8 @@ const ChatClient = ({
     memoryMessagesRef.current = memoryMessagesRef.current.filter(
       (m) => m.role === MessageRole.system
     );
-    // Update local storage
-    removeItemFromLS(`${HEAT_LEVEL_KEY}_${person.personKey}`);
+    // Delete heat level key from the local storage
+    removeItem(`${HEAT_LEVEL_KEY}_${person.personKey}`);
   };
 
   const handleAskForNameAccept = async () => {
@@ -276,7 +276,7 @@ const ChatClient = ({
     if (res?.success) {
       console.log(`[Debug] Human name saved in db`);
       // Remove declined names array from local storage
-      removeItemFromLS(`${DECLINED_NAMES_KEY}_${person.personKey}`);
+      removeItem(`${DECLINED_NAMES_KEY}_${person.personKey}`);
     }
   };
 
@@ -284,17 +284,17 @@ const ChatClient = ({
     if (!humanNameCandidate) return;
 
     // Add declined name to local storage
-    const declinedNamesFromLS = getItemFromLS<string[]>(
+    const declinedNamesFromLS = getItem<string[]>(
       `${DECLINED_NAMES_KEY}_${person.personKey}`
     );
     if (!declinedNamesFromLS) {
-      setItemInLS(`${DECLINED_NAMES_KEY}_${person.personKey}`, [
+      setItem(`${DECLINED_NAMES_KEY}_${person.personKey}`, [
         humanNameCandidate,
       ]);
     } else {
       const declinedNamesSet = new Set<string>(declinedNamesFromLS);
       declinedNamesSet.add(humanNameCandidate);
-      setItemInLS(`${DECLINED_NAMES_KEY}_${person.personKey}`, [
+      setItem(`${DECLINED_NAMES_KEY}_${person.personKey}`, [
         ...declinedNamesSet,
       ]);
     }
@@ -353,7 +353,7 @@ const ChatClient = ({
       const nameCandidate = nameCandidates[0];
 
       // Exit if the name-candidate is saved in the local storage as declined
-      const declinedNamesFromLS = getItemFromLS<string[]>(
+      const declinedNamesFromLS = getItem<string[]>(
         `${DECLINED_NAMES_KEY}_${person.personKey}`
       );
       if (declinedNamesFromLS && declinedNamesFromLS.includes(nameCandidate)) {
@@ -366,13 +366,13 @@ const ChatClient = ({
       );
       setHumanNameCandidate(nameCandidate);
     }
-  }, [getItemFromLS, humanName, memory, person.name, person.personKey]);
+  }, [getItem, humanName, memory, person.name, person.personKey]);
 
   // Init heat level
   useEffect(() => {
     // Check heat level from the local storage
     const heatLevelFromLS =
-      getItemFromLS<number>(`${HEAT_LEVEL_KEY}_${person.personKey}`) ?? 0;
+      getItem<number>(`${HEAT_LEVEL_KEY}_${person.personKey}`) ?? 0;
 
     // Get the greater of the heat level values
     const greaterLevel = Math.max(heatLevelFromLS, fetchedHeatLevel);
@@ -381,12 +381,12 @@ const ChatClient = ({
 
     // Update heat level value in local storage
     if (heatLevelFromLS < greaterLevel) {
-      setItemInLS<number>(
+      setItem<number>(
         `${HEAT_LEVEL_KEY}_${person.personKey}`,
         fetchedHeatLevel
       );
     }
-  }, [fetchedHeatLevel, person.personKey, getItemFromLS, setItemInLS]);
+  }, [fetchedHeatLevel, person.personKey, getItem, setItem]);
 
   // Update heat level at interval
   useEffect(() => {
@@ -406,10 +406,7 @@ const ChatClient = ({
 
         if (res?.success) {
           console.log('[Debug] Heat level updated.');
-          setItemInLS<number>(
-            `${HEAT_LEVEL_KEY}_${person.personKey}`,
-            heatLevel
-          );
+          setItem<number>(`${HEAT_LEVEL_KEY}_${person.personKey}`, heatLevel);
         } else {
           console.error(res?.error.message ?? 'Unable to update heat level.');
         }
@@ -421,7 +418,7 @@ const ChatClient = ({
     return () => {
       clearInterval(interval);
     };
-  }, [chatId, heatLevel, person.personKey, setItemInLS]);
+  }, [chatId, heatLevel, person.personKey, setItem]);
 
   return (
     <section
@@ -444,6 +441,7 @@ const ChatClient = ({
               </div>
             </TopbarContent>
             <ChatMenu
+              personKey={person.personKey}
               isMemories={memory.length > 0}
               cleanChat={{ show: !!messages.length, chatId, path: pathname }}
               onCleaned={handleCleanChat}
@@ -456,7 +454,6 @@ const ChatClient = ({
             avatarBlur={person.avatarBlur}
             isTyping={isPending}
           />
-          {/* <div className="h-80 w-full bg-red-500"></div> */}
 
           <ChatMedia heatLevel={heatLevel} avatarKey={person.avatarKey} />
 
