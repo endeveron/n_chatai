@@ -93,3 +93,22 @@ export function round(value: number, decimals: number = 2): number {
 export const getRandom = <T>(array: T[], length?: number) => {
   return array[Math.floor(Math.random() * (length ?? array.length))];
 };
+
+/**
+ * Converts a camelCase or lowercase string into a properly formatted title.
+ * - Splits camelCase into separate words.
+ * - Converts all words to lowercase.
+ * - Capitalizes only the first word.
+ * @param input - The input string to convert (e.g., "someCollection", "collection").
+ * @returns A properly formatted title string (e.g., "Some collection", "Collection").
+ */
+export const toProperTitle = (input: string): string => {
+  // Split camelCase into words
+  const words = input
+    .replace(/([a-z])([A-Z])/g, '$1 $2')
+    .toLowerCase()
+    .split(' ');
+  // Capitalize the first word
+  words[0] = words[0].charAt(0).toUpperCase() + words[0].slice(1);
+  return words.join(' ');
+};

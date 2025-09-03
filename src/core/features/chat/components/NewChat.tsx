@@ -47,9 +47,9 @@ const NewChat = ({ userId, people }: CreateChatProps) => {
       setPending(true);
       const res = await createChat({
         userId,
-        title: values.title,
-        personId,
+        userName: values.userName,
         personName,
+        personId,
         path: pathname,
       });
       if (!res?.success || !res.data) {

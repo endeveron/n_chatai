@@ -35,8 +35,8 @@ const NewChatForm = ({
   const form = useForm<CreateChatSchema>({
     resolver: zodResolver(createChatSchema),
     defaultValues: {
+      userName: '',
       personName: '',
-      title: '',
     },
   });
 
@@ -44,8 +44,6 @@ const NewChatForm = ({
     onSubmit(values);
     form.reset();
   };
-
-  const optionalEl = <span className="text-muted font-normal">optional</span>;
 
   return (
     <Form {...form}>
@@ -58,12 +56,12 @@ const NewChatForm = ({
         <div className="new-chat-form_fields">
           <FormField
             control={form.control}
-            name="personName"
+            name="userName"
             render={({ field }) => (
               <FormItem>
                 <FormLabel className="new-chat-form_label">
-                  AI person name
-                  {optionalEl}
+                  Your name
+                  <span className="text-title font-normal">required</span>
                 </FormLabel>
                 <FormControl>
                   <FormInput {...field} />
@@ -74,17 +72,16 @@ const NewChatForm = ({
           />
           <FormField
             control={form.control}
-            name="title"
+            name="personName"
             render={({ field }) => (
               <FormItem>
                 <FormLabel className="new-chat-form_label">
-                  Chat title
-                  {optionalEl}
+                  AI person name
+                  <span className="text-muted font-normal">optional</span>
                 </FormLabel>
                 <FormControl>
                   <FormInput {...field} />
                 </FormControl>
-                {/* <FormDescription>The field is optional</FormDescription> */}
                 <FormMessage />
               </FormItem>
             )}

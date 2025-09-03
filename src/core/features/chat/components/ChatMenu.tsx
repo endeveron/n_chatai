@@ -46,7 +46,10 @@ const ChatMenu = ({
   const { toastError } = useError();
 
   const handleEditMemory = async () => {
-    onEditMemory();
+    // Prevent warning: "Blocked aria-hidden on an element because its descendant retained focus. This gives the browser a moment to blur the dropdown’s focus before hiding it."
+    setTimeout(() => {
+      onEditMemory();
+    }, 50);
   };
 
   const handleCleanChat = async () => {
@@ -109,7 +112,7 @@ const ChatMenu = ({
           {isMemories || (cleanChat.show && <DropdownMenuSeparator />)}
           <DropdownMenuItem className="text-error" onClick={handleDeleteChat}>
             <DeleteIcon />
-            <span className="font-medium">Delete chat</span>
+            <span className="font-medium dark:font-bold">Delete chat</span>
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

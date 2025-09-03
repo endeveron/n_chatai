@@ -14,13 +14,13 @@ import { MemoryMessage, MessageRole } from '@/core/features/chat/types/chat';
 import { PersonDataForPrompt } from '@/core/features/chat/types/person';
 
 export const configureBaseSystemMessage = ({
-  // humanName,
+  humanName,
   person,
   personalityContext,
   chatContext,
   isChatStart,
 }: {
-  // humanName: string | null;
+  humanName: string;
   person: PersonDataForPrompt;
   personalityContext: string;
   chatContext: string;
@@ -44,7 +44,7 @@ export const configureBaseSystemMessage = ({
     accuracyInstructions += ` ${INSTRUCTIONS.canGenerateFiction}`;
   }
 
-  const context = `\n\n[CONTEXT]\n[About you]\n${personalityContext}${chatContext}`;
+  const context = `\n\n[CONTEXT]\nThe name of your chat partner is ${humanName}.\n\n[About you]\n${personalityContext}${chatContext}`;
 
   const instructionsGreet = isChatStart ? ' Cheerful greet.' : ` No greet.`;
 
@@ -125,27 +125,3 @@ export const getAIResHeatIndex = (aiMsg: AIMessageChunk): number => {
 
   return heatIndex;
 };
-
-// export const createExtractNameMessage = ({
-//   localMemoryMessages,
-// }: {
-//   localMemoryMessages: MemoryMessage[];
-// }): HumanMessage => {
-//   // Configure context
-//   const contextLines: string[] = [];
-//   localMemoryMessages.forEach((memoryNode) => {
-//     if (memoryNode.role !== MessageRole.ai) {
-//       contextLines.push(memoryNode.context);
-//     }
-//   });
-
-//   const instructions = `${
-//     INSTRUCTIONS.extractName
-//   }\n\n[TEXT]\n${contextLines.join('\n')}`;
-
-//   console.log('\n\ncreateExtractNameMessage:', instructions);
-
-//   return new HumanMessage({
-//     content: instructions,
-//   });
-// };

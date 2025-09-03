@@ -17,6 +17,8 @@ import { AvatarKey, CollectionMap } from '@/core/features/chat/types/person';
 import { useImagePreloader } from '@/core/hooks/useImagePreloader';
 import { useLocalStorage } from '@/core/hooks/useLocalStorage';
 import { cn } from '@/core/utils';
+import SelectMediaCollection from '@/core/features/chat/components/SelectMediaCollection';
+import { ImageInfo } from '@/core/features/chat/types/chat';
 
 const SIDE_IMAGE_FADEIN_DELAY = 100;
 
@@ -39,15 +41,21 @@ const ChatMedia = ({ heatLevel, avatarKey }: ChatMediaProps) => {
   const { getItem, setItem, removeItem } = useLocalStorage();
   const { preloadImages, clearCache } = useImagePreloader();
 
-  // const [avalCollections, setAvalCollections] = useState<string[]>([]);
-  // const [curCollections, setCurCollections] = useState<(keyof CollectionMap)[]>(
-  //   ['base']
-  // );
-  const [avalImages, setAvalImages] = useState<
-    { index: number; collectionName: keyof CollectionMap }[]
-  >([]);
+  const [avalCollections, setAvalCollections] = useState<string[]>([]);
+  const [selectedCollection, setSelectedCollection] =
+    useState<keyof CollectionMap>('all');
+
+  const [images, setImages] = useState<ImageInfo[]>([]);
+  const [avalImages, setAvalImages] = useState<ImageInfo[]>([]);
   const [displayStartIndex, setDisplayStartIndex] = useState<number>(0);
   const [prevAvalImagesLength, setPrevAvalImagesLength] = useState<number>(0);
+  const [curImageSet, setCurImageSet] = useState<
+    {
+      globalIndex: number;
+      imageSrc: string;
+      imageInfo?: ImageInfo;
+    }[]
+  >([]);
 
   const [active, setActive] = useState(false);
   const [expanded, setExpanded] = useState(false);
@@ -122,7 +130,7 @@ const ChatMedia = ({ heatLevel, avatarKey }: ChatMediaProps) => {
 
     const timeout = setTimeout(() => {
       setActive(true);
-    }, 2000);
+    }, 1000);
 
     return () => {
       if (timeout) clearTimeout(timeout);
@@ -266,60 +274,103 @@ const ChatMedia = ({ heatLevel, avatarKey }: ChatMediaProps) => {
     [avatarKey, getImageCollectionInfo]
   );
 
-  const curImageSet = useMemo(() => {
-    if (avalImages.length === 0) return [];
+  const mapToDisplayFormat = useCallback(
+    (imageItems: ImageInfo[]) =>
+      imageItems.map((item) => ({
+        globalIndex: item.index,
+        imageSrc: generateImgSrc(item.index, avalImages),
+        imageInfo: item,
+      })),
+    [avalImages, generateImgSrc]
+  );
 
-    const maxAccessIndex = avalImages[avalImages.length - 1]?.index || 1;
-    const imgIndexes = getImageIndexes(heatIndex);
-    const setSize = imgIndexes.length;
+  // Helper to configure image set. Retrieves the latest images from the avalImages
+  const configureImageSet = useCallback(
+    (imageItems: ImageInfo[]) => {
+      if (!imageItems.length) return [];
 
-    // Calculate the starting index for current display
-    // If displayStartIndex is 0, start from maxAccessIndex
-    // Otherwise, offset backwards by displayStartIndex
-    const startIndex = maxAccessIndex - displayStartIndex;
+      const maxAccessIndex = imageItems[imageItems.length - 1]?.index || 1;
+      const imgIndexes = getImageIndexes(heatIndex);
+      const setSize = imgIndexes.length;
 
-    // Generate consecutive indexes backwards from startIndex
-    const displayIndexes = [];
-    for (let i = 0; i < setSize; i++) {
-      const idx = startIndex - i;
-      if (idx >= 1) displayIndexes.push(idx);
+      // Calculate the starting index for current display
+      // If displayStartIndex is 0, start from maxAccessIndex
+      // Otherwise, offset backwards by displayStartIndex
+      const startIndex = maxAccessIndex - displayStartIndex;
+
+      // Generate consecutive indexes backwards from startIndex
+      const displayIndexes = [];
+      for (let i = 0; i < setSize; i++) {
+        const idx = startIndex - i;
+        if (idx >= 1) displayIndexes.push(idx);
+      }
+
+      // Convert indexes to ImageInfo objects first, then use mapToDisplayFormat
+      const foundItems = displayIndexes
+        .map((idx) => imageItems.find((img) => img.index === idx))
+        .filter((item): item is ImageInfo => item !== undefined);
+
+      return mapToDisplayFormat(foundItems);
+    },
+    [displayStartIndex, getImageIndexes, heatIndex, mapToDisplayFormat]
+  );
+
+  const handleSelectCollection = (key: string) => {
+    setSelectedCollection(key);
+
+    if (key === 'all') {
+      setImages(avalImages);
+      setDisplayStartIndex(0);
+      return;
     }
 
-    return displayIndexes
-      .map((idx) => ({
-        globalIndex: idx,
-        imageSrc: generateImgSrc(idx, avalImages),
-        imageInfo: avalImages.find((img) => img.index === idx),
-      }))
-      .filter((item) => item.imageInfo);
+    const filteredImageItems = avalImages.filter(
+      (i) => i.collectionName === key
+    );
+
+    setImages(filteredImageItems);
+    setDisplayStartIndex(0);
+  };
+
+  // Update active image set
+  useEffect(() => {
+    // if (avalImages.length === 0) return;
+    if (images.length === 0) return;
+    // const newImageSet = configureImageSet(avalImages);
+    const newImageSet = configureImageSet(images);
+    setCurImageSet(newImageSet);
   }, [
-    avalImages,
+    // avalImages,
+    images,
     getImageIndexes,
     heatIndex,
     displayStartIndex,
     generateImgSrc,
+    configureImageSet,
   ]);
 
   // Navigate to previous set of images
   const handlePrev = useCallback(() => {
-    if (avalImages.length === 0) return;
+    // if (avalImages.length === 0) return;
+    if (images.length === 0) return;
 
-    // Remove the lock logic - just navigate
-    const maxAccessIndex = avalImages[avalImages.length - 1]?.index || 1;
+    // const maxAccessIndex = avalImages[avalImages.length - 1]?.index || 1;
+    const maxAccessIndex = images[images.length - 1]?.index || 1;
 
     setDisplayStartIndex((prevIndex) => {
       const newIndex = prevIndex + 1;
       const maxStartIndex = maxAccessIndex - 1;
       return Math.min(newIndex, maxStartIndex);
     });
-  }, [avalImages]);
+  }, [images]);
 
   // Navigate to next set of images
   const handleNext = useCallback(() => {
-    if (avalImages.length === 0) return;
+    // if (avalImages.length === 0) return;
+    if (images.length === 0) return;
 
     setDisplayStartIndex((prevIndex) => Math.max(0, prevIndex - 1));
-  }, [avalImages]);
+  }, [images]);
 
   // Check if navigation is possible
   const canGoNext = useMemo(() => {
@@ -327,10 +378,10 @@ const ChatMedia = ({ heatLevel, avatarKey }: ChatMediaProps) => {
   }, [displayStartIndex]);
 
   const canGoPrev = useMemo(() => {
-    if (avalImages.length < 2 || imgSrcArr.length === 1) return false;
-    const maxAccessIndex = avalImages[avalImages.length - 1]?.index || 1;
+    if (images.length < 2 || imgSrcArr.length === 1) return false;
+    const maxAccessIndex = images[images.length - 1]?.index || 1;
     return displayStartIndex < maxAccessIndex - 1;
-  }, [avalImages, displayStartIndex, imgSrcArr.length]);
+  }, [images, displayStartIndex, imgSrcArr.length]);
 
   // Reset display when available images change
   useEffect(() => {
@@ -340,7 +391,8 @@ const ChatMedia = ({ heatLevel, avatarKey }: ChatMediaProps) => {
     //   timestamp: Date.now(),
     // });
 
-    if (avalImages.length === 0) {
+    // if (avalImages.length === 0) {
+    if (images.length === 0) {
       setDisplayStartIndex(0);
       setPrevAvalImagesLength(0);
       return;
@@ -349,24 +401,31 @@ const ChatMedia = ({ heatLevel, avatarKey }: ChatMediaProps) => {
     // If this is the first time setting avalImages, start at latest
     if (prevAvalImagesLength === 0) {
       setDisplayStartIndex(0);
-      setPrevAvalImagesLength(avalImages.length);
+      // setPrevAvalImagesLength(avalImages.length);
+      setPrevAvalImagesLength(images.length);
       return;
     }
 
     // If new images were added (heat level increased)
-    if (avalImages.length > prevAvalImagesLength) {
+    // if (avalImages.length > prevAvalImagesLength) {
+    if (images.length > prevAvalImagesLength) {
       // Always go to latest images when new ones are available
       setDisplayStartIndex(0);
-      setPrevAvalImagesLength(avalImages.length);
+      // setPrevAvalImagesLength(avalImages.length);
+      setPrevAvalImagesLength(images.length);
       return;
     }
 
     // If images decreased, reset to latest
-    if (avalImages.length < prevAvalImagesLength) {
+    // if (avalImages.length < prevAvalImagesLength) {
+    //   setDisplayStartIndex(0);
+    //   setPrevAvalImagesLength(avalImages.length);
+    // }
+    if (images.length < prevAvalImagesLength) {
       setDisplayStartIndex(0);
-      setPrevAvalImagesLength(avalImages.length);
+      setPrevAvalImagesLength(images.length);
     }
-  }, [avalImages.length, prevAvalImagesLength]);
+  }, [images.length, prevAvalImagesLength]);
 
   // Update imgSrcArr when display changes
   useEffect(() => {
@@ -390,18 +449,18 @@ const ChatMedia = ({ heatLevel, avatarKey }: ChatMediaProps) => {
 
     if (heatLevel <= MAX_HEAT_LEVEL) {
       setImgSrcArr([]);
-      // setAvalCollections([]);
+      setAvalCollections([]);
       // setCurCollections(['base']);
-      setAvalImages([]);
+      setAvalImages([]); // Only clear avalImages, let sync effect handle images
       return;
     }
 
     // Get available collections based on heatIndex
     const availableCollections = getAvailableCollections(heatIndex);
-    console.log('[Debug] availableCollections:', availableCollections);
+    // console.log('[Debug] availableCollections:', availableCollections);
 
-    // // Update state
-    // setAvalCollections([...availableCollections]);
+    // Update state
+    setAvalCollections([...availableCollections]);
     // setCurCollections([...availableCollections]);
 
     // Get image indexes for display
@@ -416,6 +475,7 @@ const ChatMedia = ({ heatLevel, avatarKey }: ChatMediaProps) => {
       availableCollections,
       maxAccessIndex
     );
+    // setImages(allAvailableImages);
     setAvalImages(allAvailableImages);
 
     // Generate image sources by passing avalImages as parameter
@@ -664,14 +724,78 @@ const ChatMedia = ({ heatLevel, avatarKey }: ChatMediaProps) => {
     preloadImages,
   ]);
 
+  // Initial sync of images with avalImages when component loads
+  useEffect(() => {
+    if (
+      selectedCollection === 'all' &&
+      avalImages.length > 0 &&
+      images.length === 0
+    ) {
+      setImages(avalImages);
+    }
+  }, [avalImages, selectedCollection, images.length]);
+
+  // Sync images with avalImages based on selected collection
+  useEffect(() => {
+    if (avalImages.length === 0) return;
+
+    if (selectedCollection === 'all') {
+      // If "all" is selected, keep images in sync with avalImages
+      if (images.length !== avalImages.length) {
+        console.log('New images available! Current selection: all');
+        setImages(avalImages);
+      }
+    } else {
+      // Check if selected collection still exists
+      const collectionExists = avalImages.some(
+        (img) => img.collectionName === selectedCollection
+      );
+      if (!collectionExists) {
+        console.log(
+          `Selected collection "${selectedCollection}" no longer exists, switching to "all"`
+        );
+        setSelectedCollection('all');
+        setImages(avalImages);
+        return;
+      }
+
+      // If specific collection is selected, filter avalImages
+      const filteredImageItems = avalImages.filter(
+        (i) => i.collectionName === selectedCollection
+      );
+
+      if (filteredImageItems.length !== images.length) {
+        console.log(
+          `New images available! Current selection: ${selectedCollection}`
+        );
+        setImages(filteredImageItems);
+      }
+    }
+  }, [avalImages, selectedCollection, images.length]);
+
+  // Clean up preloaded images cache
+  useEffect(() => {
+    return () => {
+      clearCache();
+    };
+  }, [clearCache]);
+
   // Debugging
   // useEffect(() => {
   //   console.log('[Debug] heatIndex', heatIndex);
   // }, [heatIndex]);
 
+  useEffect(() => {
+    console.log('[Debug] displayStartIndex:', displayStartIndex);
+  }, [displayStartIndex]);
+
+  useEffect(() => {
+    console.log('[Debug] avalCollections:', avalCollections);
+  }, [avalCollections]);
+
   // useEffect(() => {
-  //   console.log('[Debug] displayStartIndex:', displayStartIndex);
-  // }, [displayStartIndex]);
+  //   console.log('[Debug] curCollections:', curCollections);
+  // }, [curCollections]);
 
   // useEffect(() => {
   //   console.log('[Debug] curImageSet deps changed:', {
@@ -687,6 +811,7 @@ const ChatMedia = ({ heatLevel, avatarKey }: ChatMediaProps) => {
       '[Debug] curImageSet:',
       curImageSet.map((i) => i.globalIndex)
     );
+    console.log('[Debug] curImageSet:', curImageSet);
   }, [curImageSet]);
 
   useEffect(() => {
@@ -694,12 +819,10 @@ const ChatMedia = ({ heatLevel, avatarKey }: ChatMediaProps) => {
     console.log('[Debug] avalImages:', avalImages);
   }, [avalImages, avalImages.length]);
 
-  // Clean up preloaded images cache
   useEffect(() => {
-    return () => {
-      clearCache();
-    };
-  }, [clearCache]);
+    if (!images.length) return;
+    console.log('[Debug] images:', images);
+  }, [images]);
 
   return (
     <div
@@ -732,7 +855,7 @@ const ChatMedia = ({ heatLevel, avatarKey }: ChatMediaProps) => {
           <div className="z-10 relative -translate-y-4 h-full w-full flex-center">
             <div
               onClick={toggleMinimized}
-              data-expanded={expanded ? 'true' : 'false'}
+              data-expanded={expanded}
               className="chat-media_minimizer"
             >
               <div className="relative h-4 flex-center leading-none">
@@ -760,9 +883,7 @@ const ChatMedia = ({ heatLevel, avatarKey }: ChatMediaProps) => {
 
             {/* Main image */}
             <div
-              data-translate={
-                expanded && imgSrcArrLength === 2 ? 'true' : 'false'
-              }
+              data-translate={expanded && imgSrcArrLength === 2}
               className={cn(
                 'chat-media_main-item',
                 expanded
@@ -773,14 +894,6 @@ const ChatMedia = ({ heatLevel, avatarKey }: ChatMediaProps) => {
               )}
             >
               <div className="absolute inset-0 bg-background/80" />
-              {/* <div className="absolute inset-0 flex-center text-white bg-accent pointer-events-none">
-                <HeartIcon
-                  className={cn(
-                    'trans-a',
-                    expanded ? 'scale-600' : 'scale-200'
-                  )}
-                />
-              </div> */}
               {getCurrentImageSrc(0) && (
                 <Image
                   src={getCurrentImageSrc(0)!}
@@ -795,35 +908,24 @@ const ChatMedia = ({ heatLevel, avatarKey }: ChatMediaProps) => {
                   alt="Photo"
                 />
               )}
-              {/* <ChatMediaImage
-                imageSrc={getCurrentImageSrc(0)!}
-                opacity={getImageOpacity(0)}
-                expanded={expanded}
-              /> */}
 
               {/* Clickable area (expand / collapse) */}
               <div
                 onClick={toggleExpanded}
                 className="chat-media_clickable-area"
               >
-                <div
-                  data-active={expanded ? 'true' : 'false'}
-                  className="chat-media_icon"
-                >
+                <div data-active={expanded} className="chat-media_icon">
                   <MinimizeIcon />
                 </div>
               </div>
 
               {/* Navbar */}
-              <div
-                data-active={expanded ? 'true' : 'false'}
-                className="chat-media_navbar"
-              >
+              <div data-active={expanded} className="chat-media_navbar">
                 <div className="w-1/2">
                   <div
                     onClick={handlePrev}
                     data-side="left"
-                    data-active={canGoPrev ? 'true' : 'false'}
+                    data-active={canGoPrev}
                     className="chat-media_nav-item"
                   >
                     PREV
@@ -833,7 +935,7 @@ const ChatMedia = ({ heatLevel, avatarKey }: ChatMediaProps) => {
                   <div
                     onClick={handleNext}
                     data-side="right"
-                    data-active={canGoNext ? 'true' : 'false'}
+                    data-active={canGoNext}
                     className="chat-media_nav-item"
                   >
                     NEXT
@@ -894,6 +996,21 @@ const ChatMedia = ({ heatLevel, avatarKey }: ChatMediaProps) => {
                 )}
               </div>
             </div>
+          </div>
+
+          {/* Select collection */}
+          <div
+            className={cn(
+              'chat-media_select-collection trans-a',
+              expanded && avalCollections.length > 1
+                ? 'opacity-100'
+                : 'opacity-0'
+            )}
+          >
+            <SelectMediaCollection
+              avalCollections={avalCollections}
+              onSelect={handleSelectCollection}
+            />
           </div>
         </div>
       ) : null}

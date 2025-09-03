@@ -244,48 +244,47 @@ export const sharedEmotionMap = new Map<string, EmotionData>([
   [
     'excited',
     {
-      list: [
-        'excited',
-        'joyful',
-        'laughing',
-        'flirty',
-        'friendly',
-        'playful',
-        'smiling',
-      ],
-      length: 7,
+      list: ['excited', 'joyful', 'laughing', 'friendly', 'playful', 'smiling'],
+      length: 6,
     },
   ],
   [
     'friendly',
     {
-      list: ['friendly', 'playful', 'smiling'],
-      length: 4,
+      list: ['friendly', 'smiling'],
+      length: 2,
     },
   ],
   [
     'flirty',
     {
-      list: ['flirty', 'kiss'],
-      length: 2,
+      list: ['flirty', 'playful', 'smiling'],
+      length: 3,
     },
   ],
   [
     'aroused',
     {
-      list: ['aroused', 'craving'],
+      list: ['flirty', 'playful'],
       length: 2,
     },
   ],
   [
     'obsessed',
     {
-      list: ['obsessed', 'devoured'],
+      list: ['flirty', 'playful'],
       length: 2,
     },
   ],
   [
     'upset',
+    {
+      list: ['doubt', 'upset'],
+      length: 2,
+    },
+  ],
+  [
+    'error',
     {
       list: ['doubt', 'upset'],
       length: 2,
@@ -318,6 +317,10 @@ export const heatPhotoMap = new Map<AvatarKey, CollectionMap>([
       base: {
         totalPhotos: 15,
         description: 'Base collection',
+      },
+      tabletop: {
+        totalPhotos: 18,
+        description: 'On table',
       },
       masterpiece: {
         totalPhotos: 18,

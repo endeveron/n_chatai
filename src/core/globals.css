@@ -407,7 +407,7 @@
     --person-card-w: 188px;
     --avatar: 56px;
     --topbar-h: var(--bar-h);
-    --chat-input-h: var(--bar-h);
+    /* --chat-input-h: var(--bar-h); */
   }
 
   @media only screen and (min-height: 768px) {
@@ -508,7 +508,8 @@
   }
 
   .chat-messages {
-    height: calc(100dvh - (var(--topbar-h) + var(--chat-input-h)));
+    /* height: calc(100dvh - (var(--topbar-h) + var(--chat-input-h))); */
+    @apply flex-1;
   }
 
   .chat-message {
@@ -565,8 +566,8 @@
   /* Input */
 
   .chat-input {
-    @apply min-h-20 flex items-center;
-    height: var(--chat-input-h);
+    @apply h-20 flex items-center gap-2;
+    /* height: var(--chat-input-h); */
   }
 
   .chat-input input {
@@ -769,6 +770,10 @@
     @apply relative h-full;
   }
 
+  .chat-media_select-collection {
+    @apply absolute -bottom-6 left-1/2 -translate-x-1/2 pointer-events-auto;
+  }
+
   @media only screen and (min-width: 700px) {
     .chat-media_main-item[data-translate='true'] {
       @apply translate-x-20;
@@ -816,6 +821,9 @@
     .chat-media_item--active[data-key='right'] {
       @apply translate-x-10;
     }
+    .chat-media_select-collection {
+      @apply bottom-8 left-1/2 -translate-x-44;
+    }
   }
 
   @media only screen and (min-width: 880px) {
@@ -829,11 +837,11 @@
 
   /* ChatMedia end */
 
-  @media only screen and (min-height: 768px) {
+  /* @media only screen and (min-height: 768px) {
     .chat-input form {
       transform: translateY(-0.25rem);
     }
-  }
+  } */
 
   @media only screen and (max-width: 479px) {
     .chat-list[data-chat='xs'] {
@@ -928,7 +936,7 @@
 
   @media only screen and (min-width: 768px) {
     .new-chat-form_fields {
-      @apply flex-row;
+      @apply flex-row items-start;
     }
   }
 

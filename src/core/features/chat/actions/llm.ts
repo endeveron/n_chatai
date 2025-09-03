@@ -36,21 +36,25 @@ import {
 export const askAI = async ({
   chatId,
   chatContext,
+  humanName,
   message,
   personKey,
   isChatStart,
   path,
 }: {
   chatId: string;
+  humanName: string;
   chatContext: string;
   message: ChatMessageItem;
   personKey: PersonKey;
   isChatStart: boolean;
   path?: string;
-}): Promise<ServerActionResult<{
-  aiMessage: ChatMessageItem;
-  heatIndex?: number;
-}>> => {
+}): Promise<
+  ServerActionResult<{
+    aiMessage: ChatMessageItem;
+    heatIndex?: number;
+  }>
+> => {
   if (!chatId || !message.content || !personKey) {
     return configureCasualServerActionError(`askAI: Invalid arguments.`);
   }
@@ -114,6 +118,7 @@ export const askAI = async ({
         name: personData.name,
         instructions: personData.instructions,
       },
+      humanName,
       chatContext,
       personalityContext,
       isChatStart,

@@ -2,6 +2,7 @@ import { ObjectId } from 'mongoose';
 
 import {
   AvatarKey,
+  CollectionMap,
   PersonBaseData,
   PersonChatData,
 } from '@/core/features/chat/types/person';
@@ -22,7 +23,7 @@ export type Chat = {
   _id: ObjectId;
   title: string;
   user: ObjectId;
-  humanName: string | null;
+  humanName: string;
   personName: string;
   person: ObjectId;
   heatLevel: number;
@@ -35,7 +36,7 @@ export type ChatResponseData = {
   person: PersonChatData<string> & {
     name: string;
   };
-  humanName: string | null;
+  humanName: string;
   heatLevel: number;
   memory: MemoryNode[];
   messages: ChatMessageItem[];
@@ -113,7 +114,7 @@ export type CreateMessageArgs = ChatMessageItem & {
 
 export type CreateChatArgs = {
   userId: string;
-  title: string;
+  userName: string;
   personId: string;
   personName: string;
   path: string;
@@ -129,3 +130,5 @@ export interface NamePattern {
   priority: number;
   description: string;
 }
+
+export type ImageInfo = { index: number; collectionName: keyof CollectionMap };

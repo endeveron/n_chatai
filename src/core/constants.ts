@@ -17,7 +17,7 @@ const NODEMAILER_PASSWORD = process.env.NODEMAILER_PASSWORD as string;
 const APP_NAME = 'Chat AI';
 
 // LocalStorage keys
-const LANG_CODE_KEY = 'langCode';
+const LANG_CODE_KEY = 'lang-code';
 
 // Routes
 const SIGNIN_REDIRECT = '/signin';

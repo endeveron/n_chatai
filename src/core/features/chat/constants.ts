@@ -1,5 +1,4 @@
 // Local storage
-export const DECLINED_NAMES_KEY = 'declined-names';
 export const HEAT_LEVEL_KEY = 'heat-level';
 export const CHAT_MEDIA_MIN_KEY = 'chat-media-min';
 
@@ -247,6 +246,8 @@ export const NAME_RECOVERY_QUESTIONS = [
 // Heat section
 
 export const MAX_HEAT_LEVEL = 10;
-export const HEAT_LEVEL_UPDATE_INTERVAL = 1 * 60 * 1000; // 1 min in miliseconds
-export const HEAT_PHOTOS_COUNT = 6;
+
 export const HEAT_PHOTO_STEP = 2;
+
+// export const HEAT_LEVEL_UPDATE_INTERVAL = 1 * 60 * 1000; // 1 min in miliseconds
+export const HEAT_LEVEL_UPDATE_INTERVAL = 30 * 1000; // 30 sec in miliseconds

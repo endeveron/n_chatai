@@ -33,7 +33,7 @@ import { normalizeText } from '@/core/features/chat/utils/chat';
 
 export const createChat = async ({
   userId,
-  title,
+  userName,
   personId,
   personName,
   path,
@@ -42,11 +42,10 @@ export const createChat = async ({
     await mongoDB.connect();
 
     const chat = await ChatModel.create({
-      title,
       user: userId,
       person: personId,
       personName,
-      humanName: null,
+      humanName: userName,
       messages: [],
       heatLevel: 0,
       memory: [],

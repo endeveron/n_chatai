@@ -8,11 +8,9 @@ import { DeclineIcon } from '@/core/components/icons/DeclineIcon';
 import { ScrollArea } from '@/core/components/ui/ScrollArea';
 import {
   saveChatMemory,
-  saveHumanName,
   updateHeatLevel,
 } from '@/core/features/chat/actions/chat';
 import { askAI } from '@/core/features/chat/actions/llm';
-import AskForName from '@/core/features/chat/components/AskForName';
 import ChatBackgroundImage from '@/core/features/chat/components/ChatBackgroundImage';
 import ChatInput from '@/core/features/chat/components/ChatInput';
 import ChatMedia from '@/core/features/chat/components/ChatMedia';
@@ -32,7 +30,6 @@ import Topbar, {
   TopbarTitle,
 } from '@/core/features/chat/components/Topbar';
 import {
-  DECLINED_NAMES_KEY,
   HEAT_LEVEL_KEY,
   HEAT_LEVEL_UPDATE_INTERVAL,
   MEMORY_DEPTH,
@@ -46,11 +43,10 @@ import {
 import {
   configureChatContext,
   createErrorMessageItem,
-  extractNameFromInput,
-  extractNamesFromMemory,
   removeEmoji,
 } from '@/core/features/chat/utils/chat';
 import { useLocalStorage } from '@/core/hooks/useLocalStorage';
+import { useStorageMonitor } from '@/core/hooks/useStorageMonitor';
 import { cn } from '@/core/utils';
 
 interface ChatClientProps extends ChatData {
@@ -70,16 +66,15 @@ const ChatClient = ({
   const pathname = usePathname();
   const { getItem, setItem, removeItem } = useLocalStorage();
 
+  useStorageMonitor();
+
   const [isPending, setPending] = useState(false);
   const [messages, setMessages] = useState<ChatMessageItem[]>([]);
-  const [humanNameCandidate, setHumanNameCandidate] = useState<string | null>(
-    null
-  );
   const [heatLevel, setHeatLevel] = useState(0);
   const [isEditMemory, setEditMemory] = useState(false);
 
   const memoryMessagesRef = useRef<MemoryMessage[]>([]);
-  const humanNameRef = useRef<string | null>(null);
+  // const humanNameRef = useRef<string | null>(null);
   const memoryInitRef = useRef(false);
   const prevHeatLevelRef = useRef(0);
 
@@ -103,21 +98,8 @@ const ChatClient = ({
   const handleInputSubmit = async (input: string) => {
     let updatedMessages: ChatMessageItem[] = [];
 
+    setPending(true);
     try {
-      setPending(true);
-
-      // Extract human's name
-      if (!humanNameRef.current) {
-        const name = extractNameFromInput(input);
-        if (name) {
-          humanNameRef.current = name;
-        }
-        // console.log(
-        //   `[Debug] Probably human name found in the human message`,
-        //   name
-        // );
-      }
-
       // Configure human message
       const humanMessage = {
         content: input,
@@ -132,12 +114,13 @@ const ChatClient = ({
       const chatContext = configureChatContext({
         memoryMessagesRef,
         personAccuracy: person.accuracy,
-        humanName: humanName || humanNameRef.current,
+        humanName,
       });
 
       // Get answer from AI
       const res = await askAI({
         chatId,
+        humanName,
         chatContext,
         message: humanMessage,
         personKey: person.personKey,
@@ -217,7 +200,7 @@ const ChatClient = ({
 
           const saveRes = await saveChatMemory({
             chatId,
-            humanName: humanName || humanNameRef.current,
+            humanName,
             localMemoryMessages,
           });
 
@@ -256,52 +239,6 @@ const ChatClient = ({
     removeItem(`${HEAT_LEVEL_KEY}_${person.personKey}`);
   };
 
-  const handleAskForNameAccept = async () => {
-    if (!humanNameCandidate) return;
-
-    const humanName = humanNameCandidate;
-    console.log(`[Debug] Human name accepted. Saving...`);
-    humanNameRef.current = humanName;
-
-    setTimeout(() => {
-      setHumanNameCandidate(null);
-    }, 3500);
-
-    // Save/update human name in db
-    const res = await saveHumanName({
-      chatId,
-      humanName,
-    });
-
-    if (res?.success) {
-      console.log(`[Debug] Human name saved in db`);
-      // Remove declined names array from local storage
-      removeItem(`${DECLINED_NAMES_KEY}_${person.personKey}`);
-    }
-  };
-
-  const handleAskForNameDecline = () => {
-    if (!humanNameCandidate) return;
-
-    // Add declined name to local storage
-    const declinedNamesFromLS = getItem<string[]>(
-      `${DECLINED_NAMES_KEY}_${person.personKey}`
-    );
-    if (!declinedNamesFromLS) {
-      setItem(`${DECLINED_NAMES_KEY}_${person.personKey}`, [
-        humanNameCandidate,
-      ]);
-    } else {
-      const declinedNamesSet = new Set<string>(declinedNamesFromLS);
-      declinedNamesSet.add(humanNameCandidate);
-      setItem(`${DECLINED_NAMES_KEY}_${person.personKey}`, [
-        ...declinedNamesSet,
-      ]);
-    }
-
-    setHumanNameCandidate(null);
-  };
-
   const handleEditMemory = () => {
     setEditMemory(true);
   };
@@ -332,41 +269,6 @@ const ChatClient = ({
       memoryInitRef.current = true;
     }
   }, [memory, person.personKey]);
-
-  // Extract human name from the chat memory
-  useEffect(() => {
-    if (humanNameRef.current) return;
-
-    if (humanName) {
-      humanNameRef.current = humanName;
-      return;
-    }
-
-    if (!memory.length) return;
-
-    const nameCandidates = extractNamesFromMemory({
-      memoryMessagesRef,
-      personName: person.name,
-    });
-
-    if (nameCandidates.length) {
-      const nameCandidate = nameCandidates[0];
-
-      // Exit if the name-candidate is saved in the local storage as declined
-      const declinedNamesFromLS = getItem<string[]>(
-        `${DECLINED_NAMES_KEY}_${person.personKey}`
-      );
-      if (declinedNamesFromLS && declinedNamesFromLS.includes(nameCandidate)) {
-        return;
-      }
-
-      console.log(
-        `[Debug] Probably human name candidates found in the chat memory`,
-        nameCandidates
-      );
-      setHumanNameCandidate(nameCandidate);
-    }
-  }, [getItem, humanName, memory, person.name, person.personKey]);
 
   // Init heat level
   useEffect(() => {
@@ -457,7 +359,7 @@ const ChatClient = ({
 
           <ChatMedia heatLevel={heatLevel} avatarKey={person.avatarKey} />
 
-          <AskForName
+          {/* <AskForName
             allowToShow={!!humanNameCandidate && !messages.length}
             onAccept={handleAskForNameAccept}
             onDecline={handleAskForNameDecline}
@@ -467,7 +369,7 @@ const ChatClient = ({
               avatarBlur: person.avatarBlur,
             }}
             probablyName={humanNameCandidate}
-          />
+          /> */}
 
           <ChatInput onSubmit={handleInputSubmit} isPending={isPending} />
 

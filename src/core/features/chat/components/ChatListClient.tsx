@@ -51,7 +51,7 @@ const ChatListClient = ({ chatItems, userData }: ChatListClientProps) => {
     <div
       className="chat-list"
       data-chat={isChat && 'xs'}
-      data-new-chat={isNewChat && true}
+      data-new-chat={isNewChat}
     >
       <Topbar>
         <MainMenu userData={userData} />
