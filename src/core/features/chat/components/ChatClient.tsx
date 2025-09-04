@@ -46,7 +46,6 @@ import {
   removeEmoji,
 } from '@/core/features/chat/utils/chat';
 import { useLocalStorage } from '@/core/hooks/useLocalStorage';
-import { useStorageMonitor } from '@/core/hooks/useStorageMonitor';
 import { cn } from '@/core/utils';
 
 interface ChatClientProps extends ChatData {
@@ -65,8 +64,6 @@ const ChatClient = ({
 }: ChatClientProps) => {
   const pathname = usePathname();
   const { getItem, setItem, removeItem } = useLocalStorage();
-
-  useStorageMonitor();
 
   const [isPending, setPending] = useState(false);
   const [messages, setMessages] = useState<ChatMessageItem[]>([]);
@@ -298,7 +295,6 @@ const ChatClient = ({
       }
 
       prevHeatLevelRef.current = heatLevel;
-      console.log('[Debug] Updating heat level in db...');
 
       try {
         const res = await updateHeatLevel({
@@ -307,7 +303,7 @@ const ChatClient = ({
         });
 
         if (res?.success) {
-          console.log('[Debug] Heat level updated.');
+          console.log('[Debug] Heat level synchronized.');
           setItem<number>(`${HEAT_LEVEL_KEY}_${person.personKey}`, heatLevel);
         } else {
           console.error(res?.error.message ?? 'Unable to update heat level.');

@@ -6,6 +6,8 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/core/components/ui/DropdownMenu';
 import { CollectionMap } from '@/core/features/chat/types/person';
@@ -40,9 +42,7 @@ const SelectMediaCollection = ({
             </div>
           </DropdownMenuTrigger>
           <DropdownMenuContent>
-            <DropdownMenuItem onClick={() => handleSelect('all')} key="all">
-              All photos
-            </DropdownMenuItem>
+            <DropdownMenuLabel>Collections</DropdownMenuLabel>
             {avalCollections.map((colName) => (
               <DropdownMenuItem
                 onClick={() => handleSelect(colName)}
@@ -52,6 +52,13 @@ const SelectMediaCollection = ({
                 {toProperTitle(colName)}
               </DropdownMenuItem>
             ))}
+
+            <DropdownMenuSeparator />
+
+            <DropdownMenuItem onClick={() => handleSelect('all')} key="all">
+              <PhotoIcon className="icon--menu" />
+              Fresh photos
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       ) : null}

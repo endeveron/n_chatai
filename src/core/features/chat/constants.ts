@@ -249,5 +249,4 @@ export const MAX_HEAT_LEVEL = 10;
 
 export const HEAT_PHOTO_STEP = 2;
 
-// export const HEAT_LEVEL_UPDATE_INTERVAL = 1 * 60 * 1000; // 1 min in miliseconds
 export const HEAT_LEVEL_UPDATE_INTERVAL = 30 * 1000; // 30 sec in miliseconds

@@ -34,10 +34,11 @@ export function useStorageMonitor() {
     if (process.env.NODE_ENV !== 'development') return;
 
     const originalSetItem = localStorage.setItem;
+    const originalRemoveItem = localStorage.removeItem;
 
     localStorage.setItem = (key: string, value: string) => {
       if (!isSafeKey(key)) {
-        console.group('[LS Monitor] 🔍 localStorage.set');
+        console.group(`[LS Monitor] localStorage.setItem`);
         console.log('Key:', key);
         console.log('Value:', value);
         console.log('Stack:', new Error().stack);
@@ -49,7 +50,7 @@ export function useStorageMonitor() {
         );
 
         if (isSuspicious) {
-          console.error('[LS Monitor] 🚨 SUSPICIOUS localStorage activity!', {
+          console.warn('[LS Monitor] SUSPICIOUS localStorage activity!', {
             key,
             value,
           });
@@ -59,7 +60,15 @@ export function useStorageMonitor() {
       return originalSetItem.call(localStorage, key, value);
     };
 
-    console.log('[LS Monitor] Storage monitoring active');
+    localStorage.removeItem = (key: string) => {
+      if (!isSafeKey(key)) {
+        console.group(`[LS Monitor] localStorage.removeItem`);
+        console.log('Key:', key);
+        console.groupEnd();
+      }
+
+      return originalRemoveItem.call(localStorage, key);
+    };
 
     // Cleanup
     return () => {

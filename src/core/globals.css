@@ -708,6 +708,24 @@
     @apply opacity-100 pointer-events-auto;
   }
 
+  .instant-message_tooltip {
+    @apply absolute z-20 top-1 dark:font-semibold w-max max-w-full px-4 py-2 text-inversed-foreground bg-inversed-background rounded-2xl left-1/2 -translate-x-1/2 -translate-y-full pointer-events-none opacity-0  transition-opacity duration-200;
+  }
+
+  .instant-message_btn:hover .instant-message_tooltip {
+    @apply pointer-events-auto opacity-100;
+  }
+
+  /* @media only screen and (min-width: 700px) {
+    .instant-message_btn {
+      @apply relative;
+    }
+
+    .instant-message_tooltip {
+      @apply top-auto bottom-12 max-w-70 translate-y-0;
+    }
+  } */
+
   /* ChatMedia */
 
   .chat-media_minimizer {
@@ -822,7 +840,10 @@
       @apply translate-x-10;
     }
     .chat-media_select-collection {
-      @apply bottom-8 left-1/2 -translate-x-44;
+      @apply bottom-8 -translate-x-44;
+    }
+    .chat-media_new-images {
+      @apply absolute left-1/2 pointer-events-auto bottom-8 translate-x-34;
     }
   }
 

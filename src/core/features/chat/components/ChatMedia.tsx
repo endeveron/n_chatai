@@ -1,7 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { CloseIcon } from '@/core/components/icons/CloseIcon';
 import { MinimizeIcon } from '@/core/components/icons/MinimizeIcon';
@@ -48,7 +48,9 @@ const ChatMedia = ({ heatLevel, avatarKey }: ChatMediaProps) => {
   const [images, setImages] = useState<ImageInfo[]>([]);
   const [avalImages, setAvalImages] = useState<ImageInfo[]>([]);
   const [displayStartIndex, setDisplayStartIndex] = useState<number>(0);
-  const [prevAvalImagesLength, setPrevAvalImagesLength] = useState<number>(0);
+  const [prevImagesLength, setPrevImagesLength] = useState<number>(0);
+  const [imageUpdatesFrozen, setImageUpdatesFrozen] = useState(false);
+  const [newImagesCount, setNewImagesCount] = useState(0);
   const [curImageSet, setCurImageSet] = useState<
     {
       globalIndex: number;
@@ -71,6 +73,14 @@ const ChatMedia = ({ heatLevel, avatarKey }: ChatMediaProps) => {
     },
   });
 
+  const prevAvalImagesLengthRef = useRef(0);
+
+  const heatIndex = useMemo(() => {
+    return Math.max(heatLevel - MAX_HEAT_LEVEL, 1);
+  }, [heatLevel]);
+
+  const prevHeatIndexRef = useRef(heatIndex);
+
   const personPhotoData = useMemo((): {
     collections: CollectionMap;
     collectionNames: (keyof CollectionMap)[];
@@ -85,10 +95,6 @@ const ChatMedia = ({ heatLevel, avatarKey }: ChatMediaProps) => {
       collectionNames,
     };
   }, [avatarKey]);
-
-  const heatIndex = useMemo(() => {
-    return Math.max(heatLevel - MAX_HEAT_LEVEL, 1);
-  }, [heatLevel]);
 
   // const getCollectionNames = (
   //   avatarKey: AvatarKey
@@ -112,6 +118,20 @@ const ChatMedia = ({ heatLevel, avatarKey }: ChatMediaProps) => {
       removeItem(key);
     }
     setMinimized(value);
+  };
+
+  const resetNewImagesCount = () => {
+    if (prevAvalImagesLengthRef.current === avalImages.length) {
+      setImageUpdatesFrozen(false);
+      setNewImagesCount(0);
+      if (selectedCollection !== 'all') {
+        setSelectedCollection('all');
+      }
+    }
+  };
+
+  const handleViewNewPhotos = () => {
+    resetNewImagesCount();
   };
 
   useEffect(() => {
@@ -258,9 +278,9 @@ const ChatMedia = ({ heatLevel, avatarKey }: ChatMediaProps) => {
       const collectionInfo = getImageCollectionInfo(imgIndex, availableImages);
 
       if (!collectionInfo) {
-        console.warn(
-          `[generateImgSrc] No collection info found for index ${imgIndex}`
-        );
+        // console.warn(
+        //   `[generateImgSrc] No collection info found for index ${imgIndex}`
+        // );
         return '';
       }
 
@@ -305,7 +325,7 @@ const ChatMedia = ({ heatLevel, avatarKey }: ChatMediaProps) => {
         if (idx >= 1) displayIndexes.push(idx);
       }
 
-      // Convert indexes to ImageInfo objects first, then use mapToDisplayFormat
+      // Convert indexes to ImageInfo objects
       const foundItems = displayIndexes
         .map((idx) => imageItems.find((img) => img.index === idx))
         .filter((item): item is ImageInfo => item !== undefined);
@@ -321,8 +341,12 @@ const ChatMedia = ({ heatLevel, avatarKey }: ChatMediaProps) => {
     if (key === 'all') {
       setImages(avalImages);
       setDisplayStartIndex(0);
+      if (newImagesCount) resetNewImagesCount();
       return;
     }
+
+    // Freeze image updates when selecting a specific collection
+    setImageUpdatesFrozen(true);
 
     const filteredImageItems = avalImages.filter(
       (i) => i.collectionName === key
@@ -334,13 +358,11 @@ const ChatMedia = ({ heatLevel, avatarKey }: ChatMediaProps) => {
 
   // Update active image set
   useEffect(() => {
-    // if (avalImages.length === 0) return;
     if (images.length === 0) return;
-    // const newImageSet = configureImageSet(avalImages);
+
     const newImageSet = configureImageSet(images);
     setCurImageSet(newImageSet);
   }, [
-    // avalImages,
     images,
     getImageIndexes,
     heatIndex,
@@ -351,10 +373,9 @@ const ChatMedia = ({ heatLevel, avatarKey }: ChatMediaProps) => {
 
   // Navigate to previous set of images
   const handlePrev = useCallback(() => {
-    // if (avalImages.length === 0) return;
     if (images.length === 0) return;
 
-    // const maxAccessIndex = avalImages[avalImages.length - 1]?.index || 1;
+    // Get the index of the latest image
     const maxAccessIndex = images[images.length - 1]?.index || 1;
 
     setDisplayStartIndex((prevIndex) => {
@@ -366,7 +387,6 @@ const ChatMedia = ({ heatLevel, avatarKey }: ChatMediaProps) => {
 
   // Navigate to next set of images
   const handleNext = useCallback(() => {
-    // if (avalImages.length === 0) return;
     if (images.length === 0) return;
 
     setDisplayStartIndex((prevIndex) => Math.max(0, prevIndex - 1));
@@ -383,49 +403,64 @@ const ChatMedia = ({ heatLevel, avatarKey }: ChatMediaProps) => {
     return displayStartIndex < maxAccessIndex - 1;
   }, [images, displayStartIndex, imgSrcArr.length]);
 
-  // Reset display when available images change
+  // Freeze/Unfreeze control based on displayStartIndex
+  useEffect(() => {
+    if (displayStartIndex > 0) {
+      // User navigated back - freeze updates
+      if (!imageUpdatesFrozen) {
+        setImageUpdatesFrozen(true);
+      }
+    } else if (
+      displayStartIndex === 0 &&
+      imageUpdatesFrozen &&
+      selectedCollection === 'all'
+    ) {
+      // Only unfreeze if BOTH conditions are cleared:
+      // - Back to latest (displayStartIndex === 0)
+      // - AND viewing all collections (selectedCollection === 'all')
+      const unfreezeTimeout = setTimeout(() => {
+        setImageUpdatesFrozen(false);
+      }, 50);
+
+      return () => clearTimeout(unfreezeTimeout);
+    }
+  }, [displayStartIndex, imageUpdatesFrozen, selectedCollection]);
+
+  // Reset display when `images` changes
   useEffect(() => {
     // console.log('[Debug] RESET EFFECT triggered', {
     //   avalImagesLength: avalImages.length,
-    //   prevLength: prevAvalImagesLength,
+    //   prevLength: prevImagesLength,
     //   timestamp: Date.now(),
     // });
 
-    // if (avalImages.length === 0) {
     if (images.length === 0) {
       setDisplayStartIndex(0);
-      setPrevAvalImagesLength(0);
+      setPrevImagesLength(0);
       return;
     }
 
     // If this is the first time setting avalImages, start at latest
-    if (prevAvalImagesLength === 0) {
+    if (prevImagesLength === 0) {
       setDisplayStartIndex(0);
-      // setPrevAvalImagesLength(avalImages.length);
-      setPrevAvalImagesLength(images.length);
+      setPrevImagesLength(images.length);
       return;
     }
 
     // If new images were added (heat level increased)
-    // if (avalImages.length > prevAvalImagesLength) {
-    if (images.length > prevAvalImagesLength) {
+    if (images.length > prevImagesLength) {
       // Always go to latest images when new ones are available
       setDisplayStartIndex(0);
-      // setPrevAvalImagesLength(avalImages.length);
-      setPrevAvalImagesLength(images.length);
+      setPrevImagesLength(images.length);
       return;
     }
 
     // If images decreased, reset to latest
-    // if (avalImages.length < prevAvalImagesLength) {
-    //   setDisplayStartIndex(0);
-    //   setPrevAvalImagesLength(avalImages.length);
-    // }
-    if (images.length < prevAvalImagesLength) {
+    if (images.length < prevImagesLength) {
       setDisplayStartIndex(0);
-      setPrevAvalImagesLength(images.length);
+      setPrevImagesLength(images.length);
     }
-  }, [images.length, prevAvalImagesLength]);
+  }, [images.length, prevImagesLength]);
 
   // Update imgSrcArr when display changes
   useEffect(() => {
@@ -438,7 +473,7 @@ const ChatMedia = ({ heatLevel, avatarKey }: ChatMediaProps) => {
     setImgSrcArr(imgSources);
   }, [curImageSet]);
 
-  // Main logic to update images
+  // Main logic to update images. Updates avalImages when heatIndex changes.
   useEffect(() => {
     // console.log('[Debug] MAIN LOGIC EFFECT triggered', {
     //   heatLevel,
@@ -490,6 +525,29 @@ const ChatMedia = ({ heatLevel, avatarKey }: ChatMediaProps) => {
     generateImgSrc,
     heatIndex,
   ]);
+
+  // Detect heatIndex decreases and force unfreeze
+  useEffect(() => {
+    const prevHeatIdx = prevHeatIndexRef.current;
+
+    if (heatIndex < prevHeatIdx) {
+      // Heat decreased - force unfreeze and reset to latest
+      // console.log(
+      //   `[Debug] Heat decreased from ${prevHeatIdx} to ${heatIndex} - forcing unfreeze`
+      // );
+      setImageUpdatesFrozen(false);
+      setDisplayStartIndex(0);
+      setNewImagesCount(0);
+
+      // If we were on a specific collection, switch back to 'all' to see the updated state
+      if (selectedCollection !== 'all') {
+        setSelectedCollection('all');
+      }
+    }
+
+    // Update the tracked heatIndex
+    prevHeatIndexRef.current = heatIndex;
+  }, [heatIndex, selectedCollection]);
 
   // Helper function to get the current image source for display
   const getCurrentImageSrc = (index: number): string | null => {
@@ -729,21 +787,45 @@ const ChatMedia = ({ heatLevel, avatarKey }: ChatMediaProps) => {
     if (
       selectedCollection === 'all' &&
       avalImages.length > 0 &&
-      images.length === 0
+      images.length === 0 &&
+      !imageUpdatesFrozen
     ) {
       setImages(avalImages);
+      setNewImagesCount(0);
     }
-  }, [avalImages, selectedCollection, images.length]);
+  }, [avalImages, selectedCollection, images.length, imageUpdatesFrozen]);
 
   // Sync images with avalImages based on selected collection
   useEffect(() => {
     if (avalImages.length === 0) return;
 
+    // First, check for global avalImages growth (regardless of selected collection)
+    const prevAvalImgLng = prevAvalImagesLengthRef.current;
+    if (avalImages.length > prevAvalImgLng && prevAvalImgLng > 0) {
+      const globalIncrement = avalImages.length - prevAvalImgLng;
+
+      if (imageUpdatesFrozen) {
+        // Frozen: increment new images count and log
+        setNewImagesCount((prev) => prev + globalIncrement);
+        // console.log(
+        //   '[Debug] New images available. Current selection:',
+        //   selectedCollection
+        // );
+      }
+    }
+
+    // Update the tracked length
+    prevAvalImagesLengthRef.current = avalImages.length;
+
+    // Then handle the actual image updates (only when not frozen)
+    if (imageUpdatesFrozen) return; // CORRECTED: was !imageUpdatesFrozen
+
     if (selectedCollection === 'all') {
-      // If "all" is selected, keep images in sync with avalImages
+      // If "all" is selected, sync with avalImages
       if (images.length !== avalImages.length) {
-        console.log('New images available! Current selection: all');
+        // console.log('[Debug] New images available. Current selection: all');
         setImages(avalImages);
+        setNewImagesCount(0);
       }
     } else {
       // Check if selected collection still exists
@@ -752,10 +834,11 @@ const ChatMedia = ({ heatLevel, avatarKey }: ChatMediaProps) => {
       );
       if (!collectionExists) {
         console.log(
-          `Selected collection "${selectedCollection}" no longer exists, switching to "all"`
+          `[Debug] Selected collection "${selectedCollection}" no longer exists, switching to "all"`
         );
         setSelectedCollection('all');
         setImages(avalImages);
+        setNewImagesCount(0);
         return;
       }
 
@@ -765,13 +848,14 @@ const ChatMedia = ({ heatLevel, avatarKey }: ChatMediaProps) => {
       );
 
       if (filteredImageItems.length !== images.length) {
-        console.log(
-          `New images available! Current selection: ${selectedCollection}`
-        );
+        // console.log(
+        //   `[Debug] New images available. Current selection: ${selectedCollection}`
+        // );
         setImages(filteredImageItems);
+        setNewImagesCount(0);
       }
     }
-  }, [avalImages, selectedCollection, images.length]);
+  }, [avalImages, selectedCollection, images.length, imageUpdatesFrozen]);
 
   // Clean up preloaded images cache
   useEffect(() => {
@@ -785,13 +869,13 @@ const ChatMedia = ({ heatLevel, avatarKey }: ChatMediaProps) => {
   //   console.log('[Debug] heatIndex', heatIndex);
   // }, [heatIndex]);
 
-  useEffect(() => {
-    console.log('[Debug] displayStartIndex:', displayStartIndex);
-  }, [displayStartIndex]);
+  // useEffect(() => {
+  //   console.log('[Debug] displayStartIndex:', displayStartIndex);
+  // }, [displayStartIndex]);
 
-  useEffect(() => {
-    console.log('[Debug] avalCollections:', avalCollections);
-  }, [avalCollections]);
+  // useEffect(() => {
+  //   console.log('[Debug] avalCollections:', avalCollections);
+  // }, [avalCollections]);
 
   // useEffect(() => {
   //   console.log('[Debug] curCollections:', curCollections);
@@ -805,24 +889,36 @@ const ChatMedia = ({ heatLevel, avatarKey }: ChatMediaProps) => {
   //   });
   // }, [avalImages, heatIndex, displayStartIndex]);
 
-  useEffect(() => {
-    if (!curImageSet.length) return;
-    console.log(
-      '[Debug] curImageSet:',
-      curImageSet.map((i) => i.globalIndex)
-    );
-    console.log('[Debug] curImageSet:', curImageSet);
-  }, [curImageSet]);
+  // useEffect(() => {
+  //   if (!curImageSet.length) return;
+  //   console.log(
+  //     '[Debug] curImageSet:',
+  //     curImageSet.map((i) => i.globalIndex)
+  //   );
+  //   // console.log('[Debug] curImageSet:', curImageSet);
+  // }, [curImageSet]);
 
-  useEffect(() => {
-    if (!avalImages.length) return;
-    console.log('[Debug] avalImages:', avalImages);
-  }, [avalImages, avalImages.length]);
+  // useEffect(() => {
+  //   if (!avalImages.length) return;
+  //   // console.log('[Debug] avalImages:', avalImages);
+  //   console.log('[Debug] avalImages:', avalImages.length);
+  //   console.log('[Debug] prevAvalImages:', prevAvalImagesLengthRef.current);
+  // }, [avalImages, avalImages.length]);
 
-  useEffect(() => {
-    if (!images.length) return;
-    console.log('[Debug] images:', images);
-  }, [images]);
+  // useEffect(() => {
+  //   if (!images.length) return;
+  //   // console.log('[Debug] images:', images);
+  //   console.log('[Debug] images:', images.length);
+  // }, [images]);
+
+  // useEffect(() => {
+  //   if (!newImagesCount) return;
+  //   console.log('[Debug] newImagesCount:', newImagesCount);
+  // }, [newImagesCount]);
+
+  // useEffect(() => {
+  //   console.log('[Debug] imageUpdatesFrozen:', imageUpdatesFrozen);
+  // }, [imageUpdatesFrozen]);
 
   return (
     <div
@@ -1004,13 +1100,35 @@ const ChatMedia = ({ heatLevel, avatarKey }: ChatMediaProps) => {
               'chat-media_select-collection trans-a',
               expanded && avalCollections.length > 1
                 ? 'opacity-100'
-                : 'opacity-0'
+                : 'opacity-0 pointer-events-none scale-0'
             )}
           >
             <SelectMediaCollection
               avalCollections={avalCollections}
               onSelect={handleSelectCollection}
             />
+          </div>
+
+          {/* New images */}
+          <div
+            className={cn(
+              'chat-media_new-images trans-a',
+              expanded && newImagesCount
+                ? 'opacity-70 hover:opacity-100'
+                : 'opacity-0 pointer-events-none scale-0'
+            )}
+          >
+            <Button
+              className="h-10"
+              onClick={handleViewNewPhotos}
+              size="sm"
+              variant="accent"
+            >
+              <span className="text-sm text-foreground font-bold">
+                {newImagesCount}
+              </span>{' '}
+              new photo{newImagesCount > 1 ? 's' : ''}
+            </Button>
           </div>
         </div>
       ) : null}

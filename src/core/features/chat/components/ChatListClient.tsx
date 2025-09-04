@@ -13,6 +13,7 @@ import {
   ChatItem as TChatItem,
   UserData,
 } from '@/core/features/chat/types/chat';
+import { useStorageMonitor } from '@/core/hooks/useStorageMonitor';
 
 interface ChatListClientProps {
   chatItems: TChatItem[] | null;
@@ -21,6 +22,8 @@ interface ChatListClientProps {
 const ChatListClient = ({ chatItems, userData }: ChatListClientProps) => {
   const pathname = usePathname();
   const router = useRouter();
+
+  useStorageMonitor();
 
   const isChat = useMemo(() => {
     return pathname.includes('chat');
