@@ -1,7 +1,5 @@
-import { ERROR_MESSAGES } from '@/core/features/chat/constants';
 import { SpeechType } from '@/core/features/speech/useSpeech';
 import { ErrorWithCode, ServerActionError } from '@/core/types/common';
-import { getRandom } from '@/core/utils';
 
 export async function logErrorAndSpeak(
   error: unknown,
@@ -60,39 +58,4 @@ export const getErrorMessageFromSearchParams = (
   const isErrCodeExist = errCodeMap.has(errCodeNum);
   if (!isErrCodeExist) throw new Error('Invalid error code.');
   return errCodeMap.get(errCodeNum);
-};
-
-/**
- * Generates a casual error message for user engagement when handling server action errors.
- * @param {unknown} [err] - If an error is provided, it will be logged to the console using
- * `console.error(err).
- * @returns a `ServerActionError` object with the properties `success` set to `false` and
- * `error` set to an object with a `message` property containing a random error message.
- */
-export const configureCasualServerActionError = (
-  err?: unknown
-): ServerActionError => {
-  if (err) console.error(err);
-
-  // Use a casual error message to improve user engagement
-  const randomErrMsg = getRandom(ERROR_MESSAGES, 14);
-
-  return {
-    success: false,
-    error: { message: randomErrMsg },
-  };
-};
-
-/**
- * Generates a casual error message for user engagement.
- * @param {unknown} [err] - If an error is provided, it will be logged to the console using
- * `console.error(err).
- * @returns a random casual error message.
- */
-export const getCasualErrorMessage = (err?: unknown): string => {
-  if (err) console.error(err);
-
-  // Use a casual error message to improve user engagement
-  const randomErrMsg = getRandom(ERROR_MESSAGES, 14);
-  return randomErrMsg;
 };

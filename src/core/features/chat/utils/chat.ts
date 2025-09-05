@@ -7,13 +7,13 @@ import {
   EMOTION_LIST,
   ERROR_MESSAGES,
   NAMES,
-} from '@/core/features/chat/constants';
+} from '@/core/features/chat/data/conversation';
 import {
   artFutureEmotionMap,
   mangoEmotionMap,
   modelArtistEmotionMap,
   sharedEmotionMap,
-} from '@/core/features/chat/maps';
+} from '@/core/features/chat/data/maps';
 import {
   ChatMessageItem,
   MemoryMessage,
@@ -26,6 +26,7 @@ import {
 } from '@/core/features/chat/types/person';
 import { getRandom } from '@/core/utils';
 import { MessageContent, MessageContentText } from '@langchain/core/messages';
+import { ServerActionError } from '@/core/types/common';
 
 /**
  * Returns a random name based on the specified gender.
@@ -33,7 +34,7 @@ import { MessageContent, MessageContentText } from '@langchain/core/messages';
  * @returns A random name from the list of names based on the specified gender.
  */
 export const getRandomName = (gender: Gender = Gender.female) => {
-  const list = NAMES[gender];
+  const list = NAMES[gender as keyof typeof NAMES];
   return list[Math.floor(Math.random() * list.length)];
 };
 
@@ -388,3 +389,38 @@ export const configureChatContext = ({
 
   return `\n\n[CHAT HISTORY]${chatSummary}${chatContext}`;
 };
+
+/**
+ * Generates a casual error message for user engagement when handling server action errors.
+ * @param {unknown} [err] - If an error is provided, it will be logged to the console using
+ * `console.error(err).
+ * @returns a `ServerActionError` object with the properties `success` set to `false` and
+ * `error` set to an object with a `message` property containing a random error message.
+ */
+export const configureCasualServerActionError = (
+  err?: unknown
+): ServerActionError => {
+  if (err) console.error(err);
+
+  // Use a casual error message to improve user engagement
+  const randomErrMsg = getRandom(ERROR_MESSAGES, 14);
+
+  return {
+    success: false,
+    error: { message: randomErrMsg },
+  };
+};
+
+// /**
+//  * Generates a casual error message for user engagement.
+//  * @param {unknown} [err] - If an error is provided, it will be logged to the console using
+//  * `console.error(err).
+//  * @returns a random casual error message.
+//  */
+// export const getCasualErrorMessage = (err?: unknown): string => {
+//   if (err) console.error(err);
+
+//   // Use a casual error message to improve user engagement
+//   const randomErrMsg = getRandom(ERROR_MESSAGES, 14);
+//   return randomErrMsg;
+// };

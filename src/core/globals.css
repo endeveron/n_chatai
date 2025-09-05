@@ -450,7 +450,16 @@
   .chat-list,
   .chat,
   .new-chat {
-    @apply w-dvw flex flex-col;
+    @apply flex flex-col;
+  }
+
+  .chat-list,
+  .chat {
+    @apply w-dvw;
+  }
+
+  .new-chat {
+    @apply w-full;
   }
 
   .chat-list,
@@ -467,10 +476,6 @@
   .chat-list[data-new-chat='true'] {
     @apply hidden;
   }
-
-  /* .chat-list_items {
-    height: calc(100dvh - var(--topbar-h));
-  } */
 
   /* Item */
 
@@ -617,7 +622,8 @@
 
   .new-chat {
     @apply items-center;
-    max-width: 100dvw;
+    /* max-width: 100dvw; */
+    max-width: calc(100dvw - 16px);
   }
 
   .new-chat .topbar {
@@ -634,11 +640,11 @@
   }
 
   .new-chat-form {
-    @apply p-4;
+    @apply p-6 pt-0 transition-all duration-300;
   }
 
-  .new-chat-form.inactive {
-    @apply opacity-40;
+  .new-chat-form[data-active='false'] {
+    @apply opacity-0 scale-95;
   }
 
   .new-chat-form_fields > div {
@@ -650,24 +656,6 @@
   }
 
   /* People */
-
-  .people-list_wrapper {
-    @apply w-full pb-2 my-4 px-2;
-    max-width: fit-content;
-  }
-
-  .people-list_wrapper .scroll-area {
-    scroll-snap-type: x mandatory;
-  }
-
-  /* For x mandatory */
-  .scroll-area > div {
-    display: block !important;
-  }
-
-  .people-list {
-    @apply flex gap-4 pt-6 pb-2;
-  }
 
   .person-card {
     @apply box-border flex flex-col items-center w-44 cursor-pointer transition-colors;
@@ -715,16 +703,6 @@
   .instant-message_btn:hover .instant-message_tooltip {
     @apply pointer-events-auto opacity-100;
   }
-
-  /* @media only screen and (min-width: 700px) {
-    .instant-message_btn {
-      @apply relative;
-    }
-
-    .instant-message_tooltip {
-      @apply top-auto bottom-12 max-w-70 translate-y-0;
-    }
-  } */
 
   /* ChatMedia */
 
@@ -792,7 +770,7 @@
     @apply absolute -bottom-6 left-1/2 -translate-x-1/2 pointer-events-auto;
   }
 
-  @media only screen and (min-width: 700px) {
+  @media only screen and (min-width: 600px) {
     .chat-media_main-item[data-translate='true'] {
       @apply translate-x-20;
     }
@@ -824,6 +802,14 @@
     .chat-media_item--active[data-key='right'] {
       @apply -translate-x-2;
     }
+
+    .chat-media_select-collection {
+      @apply bottom-8 -translate-x-44;
+    }
+
+    .chat-media_new-images {
+      @apply absolute left-1/2 pointer-events-auto bottom-8 translate-x-34;
+    }
   }
 
   @media only screen and (min-width: 700px) and (max-width: 880px) {
@@ -836,14 +822,9 @@
     .chat-media_item--active[data-key='left'] {
       @apply -translate-x-70;
     }
+
     .chat-media_item--active[data-key='right'] {
       @apply translate-x-10;
-    }
-    .chat-media_select-collection {
-      @apply bottom-8 -translate-x-44;
-    }
-    .chat-media_new-images {
-      @apply absolute left-1/2 pointer-events-auto bottom-8 translate-x-34;
     }
   }
 
@@ -851,6 +832,7 @@
     .chat-media_item--active[data-key='left'] {
       @apply -translate-x-80;
     }
+
     .chat-media_item--active[data-key='right'] {
       @apply translate-x-20;
     }
@@ -884,8 +866,12 @@
       width: 100%;
     }
 
+    .topbar_navback {
+      @apply -mr-6;
+    }
+
     .chat .topbar_navback {
-      display: none;
+      @apply hidden pointer-events-none;
     }
 
     /* Chat Notification */
@@ -928,10 +914,11 @@
     } */
   }
 
-  @media only screen and (min-width: 480px) and (max-width: 599px) {
+  @media only screen and (min-width: 480px) and (max-width: 767px) {
     .chat-item {
       padding-top: var(--gap);
       padding-bottom: var(--gap);
+      width: 180px;
     }
 
     .chat-item_avatar-wrapper {
@@ -944,20 +931,18 @@
     }
   }
 
-  @media only screen and (min-width: 600px) {
+  @media only screen and (min-width: 768px) {
     .chat-list {
       width: 280px;
       min-width: 280px;
     }
 
-    .new-chat-button {
-      @apply px-10;
-    }
-  }
-
-  @media only screen and (min-width: 768px) {
     .new-chat-form_fields {
       @apply flex-row items-start;
+    }
+
+    .new-chat-button {
+      @apply px-10;
     }
   }
 
@@ -978,11 +963,7 @@
     }
 
     .new-chat .topbar_navback {
-      display: none;
-    }
-
-    .new-chat .people-list_wrapper {
-      width: calc(100dvw - 296px);
+      @apply hidden pointer-events-none;
     }
 
     .chat-details {

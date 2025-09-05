@@ -52,7 +52,7 @@ const ChatInput = ({ onSubmit, isPending }: TChatInputProps) => {
   return (
     <div className="chat-input chat-container">
       <InstantMessage
-        onSubmit={() => form.handleSubmit(handleSubmit)}
+        onSubmit={form.handleSubmit(handleSubmit)}
         onUpdate={(message) => form.setValue('message', message)}
         onReset={() => form.setValue('message', '')}
       />

@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 
-import { DEFAULT_EMOTION_KEY } from '@/core/features/chat/constants';
+import { DEFAULT_EMOTION_KEY } from '@/core/features/chat/data/conversation';
 import { AvatarKey } from '@/core/features/chat/types/person';
 import { cn } from '@/core/utils';
 import { useEffect, useMemo, useState } from 'react';
@@ -34,12 +34,7 @@ const Avatar = ({
   }, [avatarKey, emotion]);
 
   const mainAvatar = (
-    <div
-      className={cn(
-        'relative avatar h-full overflow-hidden rounded-full bg-muted/40',
-        isFade && 'dark:shadow-xl dark:shadow-background trans-c'
-      )}
-    >
+    <div className="relative avatar h-full overflow-hidden rounded-full bg-muted/40">
       <Image
         src={src}
         className={cn(

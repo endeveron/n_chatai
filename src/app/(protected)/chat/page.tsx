@@ -25,7 +25,7 @@ export default async function ChatPage() {
     userId = res.data;
   }
 
-  const peopleRes = await getPeople();
+  const peopleRes = await getPeople(userId);
   if (!peopleRes?.success || !peopleRes.data) {
     throw new Error('Could not retrieve people data.');
   } else {

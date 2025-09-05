@@ -3,7 +3,8 @@ import { GoogleGenerativeAIEmbeddings } from '@langchain/google-genai';
 import { MongoDBAtlasVectorSearch } from '@langchain/mongodb';
 
 import { getPersonDataForLLM } from '@/core/features/chat/actions/person';
-import { QUERY_PATTERNS } from '@/core/features/chat/constants';
+
+import { QUERY_PATTERNS } from '@/core/features/chat/data/conversation';
 import {
   ContextCategory,
   PersonDataForLLM,

@@ -1,9 +1,10 @@
 'use client';
 
 import { usePathname, useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { createChat } from '@/core/features/chat/actions/chat';
+import ExplicitContentWarning from '@/core/features/chat/components/ExplicitContentWarning';
 import NewChatForm from '@/core/features/chat/components/NewChatForm';
 import PeopleList from '@/core/features/chat/components/PeopleList';
 import Topbar, { TopbarTitle } from '@/core/features/chat/components/Topbar';
@@ -15,18 +16,20 @@ import {
 } from '@/core/features/chat/types/person';
 import { getRandomName } from '@/core/features/chat/utils/chat';
 import { useError } from '@/core/hooks/useError';
+import { cn } from '@/core/utils';
+import { NavBack } from '@/core/features/chat/components/NavBack';
 
 const personInitValue: SelectPerson = {
   _id: '',
   gender: Gender.female,
 };
 
-type CreateChatProps = {
+interface NewChatProps {
   userId: string;
   people: PersonCardData[];
-};
+}
 
-const NewChat = ({ userId, people }: CreateChatProps) => {
+const NewChat = ({ userId, people }: NewChatProps) => {
   const router = useRouter();
   const pathname = usePathname();
   const { toastError } = useError();
@@ -34,7 +37,14 @@ const NewChat = ({ userId, people }: CreateChatProps) => {
   const [isPending, setPending] = useState(false);
   const [person, setPerson] = useState<SelectPerson>(personInitValue);
 
+  const ref = useRef<HTMLDivElement>(null);
+
   const personId = person._id;
+  const isAvailable = people.length > 0;
+
+  const handleNavBack = () => {
+    router.back();
+  };
 
   const handleFormSubmit = async (values: CreateChatSchema) => {
     let personName = values.personName;
@@ -69,26 +79,61 @@ const NewChat = ({ userId, people }: CreateChatProps) => {
     router.back();
   };
 
+  const scrollToBottom = () => {
+    window.scrollTo({
+      top: document.body.scrollHeight,
+      behavior: 'smooth',
+    });
+  };
+
+  useEffect(() => {
+    if (!personId) return;
+    scrollToBottom();
+  }, [personId]);
+
   return (
     <section className="new-chat fade">
       <Topbar>
-        <TopbarTitle>New Chat</TopbarTitle>
+        <NavBack onClick={handleNavBack} className="topbar_navback" />
+        {isAvailable ? <TopbarTitle>New Chat</TopbarTitle> : null}
       </Topbar>
 
-      <h3 className="mt-4 py-4 text-title">Select an AI personality</h3>
-      <PeopleList
-        people={people}
-        currentPersonId={personId}
-        onSelect={setPerson}
-      />
-      <div className="chat-container column-stack">
-        <NewChatForm
-          isPending={isPending}
-          isActive={!!personId}
-          onSubmit={handleFormSubmit}
-          onCancel={handleFormCancel}
-        />
-      </div>
+      {isAvailable ? (
+        <div ref={ref} className="py-8 chat-container flex flex-col gap-8">
+          <ExplicitContentWarning purpose="chat" />
+          <div className="border-2 border-muted/20 rounded-xl">
+            <h3 className="w-fit ml-2 px-4 pb-1 text-title bg-background -translate-y-1/2">
+              Select chat mate
+            </h3>
+            <PeopleList
+              people={people}
+              currentPersonId={personId}
+              onSelect={setPerson}
+            />
+          </div>
+
+          <div
+            className={cn(
+              'border-2 border-muted/20 rounded-xl trans-o',
+              personId ? 'opacity-100' : 'opacity-0'
+            )}
+          >
+            <h3 className="w-fit ml-2 px-4 pb-1 text-title bg-background -translate-y-1/2">
+              Start chat
+            </h3>
+            <NewChatForm
+              isPending={isPending}
+              isActive={!!personId}
+              onSubmit={handleFormSubmit}
+              onCancel={handleFormCancel}
+            />
+          </div>
+        </div>
+      ) : (
+        <h3 className="text-title text-center mt-20">
+          There are no available chat mates
+        </h3>
+      )}
     </section>
   );
 };

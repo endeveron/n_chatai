@@ -1,6 +1,5 @@
 'use client';
 
-import { ScrollArea, ScrollBar } from '@/core/components/ui/ScrollArea';
 import PersonCard from '@/core/features/chat/components/PersonCard';
 import {
   PersonCardData,
@@ -19,19 +18,16 @@ const PeopleList = ({
   onSelect,
 }: TPeopleListProps) => {
   return (
-    <ScrollArea className="people-list_wrapper">
-      <div className="people-list">
-        {people.map((p) => (
-          <PersonCard
-            {...(p as PersonCardData)}
-            currentPersonId={currentPersonId}
-            onSelect={onSelect}
-            key={p._id}
-          />
-        ))}
-      </div>
-      <ScrollBar orientation="horizontal" />
-    </ScrollArea>
+    <div className="py-6 grid grid-cols-[repeat(auto-fit,176px)] justify-center gap-x-2 gap-y-8">
+      {people.map((p) => (
+        <PersonCard
+          {...(p as PersonCardData)}
+          currentPersonId={currentPersonId}
+          onSelect={onSelect}
+          key={p._id}
+        />
+      ))}
+    </div>
   );
 };
 

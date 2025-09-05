@@ -1,6 +1,6 @@
 'use client';
 
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 
@@ -26,7 +26,6 @@ import HeatHeart from '@/core/features/chat/components/HeatHeart';
 import Statistics from '@/core/features/chat/components/Statistics';
 import Topbar, {
   TopbarContent,
-  TopbarNavBack,
   TopbarTitle,
 } from '@/core/features/chat/components/Topbar';
 import {
@@ -47,6 +46,7 @@ import {
 } from '@/core/features/chat/utils/chat';
 import { useLocalStorage } from '@/core/hooks/useLocalStorage';
 import { cn } from '@/core/utils';
+import { NavBack } from '@/core/features/chat/components/NavBack';
 
 interface ChatClientProps extends ChatData {
   chatId: string;
@@ -62,6 +62,7 @@ const ChatClient = ({
   heatLevel: fetchedHeatLevel,
   memory,
 }: ChatClientProps) => {
+  const router = useRouter();
   const pathname = usePathname();
   const { getItem, setItem, removeItem } = useLocalStorage();
 
@@ -83,6 +84,10 @@ const ChatClient = ({
   //     console.error(err);
   //   }
   // };
+
+  const handleNavBack = () => {
+    router.push('/');
+  };
 
   const handleUpHeat = () => {
     setHeatLevel((prev) => prev + 1);
@@ -325,7 +330,7 @@ const ChatClient = ({
       {chatId ? (
         <>
           <Topbar>
-            <TopbarNavBack navPath="/" />
+            <NavBack onClick={handleNavBack} className="topbar_navback" />
             <Statistics />
             {/* <Button onClick={handleDev} size="sm" variant="default">
               DEV

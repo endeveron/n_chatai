@@ -78,7 +78,7 @@ const SignUpForm = () => {
             type="submit"
             variant="accent"
           >
-            Continue
+            I am 18 or older - Continue
           </Button>
           <div className="auth-form_link">
             <Link href="/signin" scroll={false}>

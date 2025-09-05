@@ -17,7 +17,7 @@ import {
   createChatSchema,
   CreateChatSchema,
 } from '@/core/features/chat/schemas/chat';
-import { cn } from '@/core/utils';
+import { useEffect } from 'react';
 
 type TCreateChatProps = {
   isPending: boolean;
@@ -45,13 +45,18 @@ const NewChatForm = ({
     form.reset();
   };
 
+  useEffect(() => {
+    if (isActive) {
+      form.setFocus('userName');
+    }
+  }, [form, isActive]);
+
   return (
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(handleSubmit)}
-        className={cn('new-chat-form card', {
-          inactive: isPending || !isActive,
-        })}
+        data-active={!isPending && isActive}
+        className="new-chat-form"
       >
         <div className="new-chat-form_fields">
           <FormField
@@ -61,7 +66,7 @@ const NewChatForm = ({
               <FormItem>
                 <FormLabel className="new-chat-form_label">
                   Your name
-                  <span className="text-title font-normal">required</span>
+                  <span className="text-title">required</span>
                 </FormLabel>
                 <FormControl>
                   <FormInput {...field} />
@@ -76,7 +81,7 @@ const NewChatForm = ({
             render={({ field }) => (
               <FormItem>
                 <FormLabel className="new-chat-form_label">
-                  AI person name
+                  Name of your chat buddy
                   <span className="text-muted font-normal">optional</span>
                 </FormLabel>
                 <FormControl>
@@ -90,9 +95,10 @@ const NewChatForm = ({
 
         <div className="new-chat-form_buttons flex my-2 justify-center gap-4">
           <Button loading={isPending} type="submit">
-            Start chat
+            I am 18 or older - Start chat
           </Button>
           <Button
+            className="min-w-24"
             loading={isPending}
             variant="secondary"
             onClick={onCancel}

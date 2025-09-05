@@ -9,7 +9,7 @@ import {
   SystemMessage,
 } from '@langchain/core/messages';
 
-import { INSTRUCTIONS } from '@/core/features/chat/constants';
+import { INSTRUCTIONS } from '@/core/features/chat/data/conversation';
 import { MemoryMessage, MessageRole } from '@/core/features/chat/types/chat';
 import { PersonDataForPrompt } from '@/core/features/chat/types/person';
 

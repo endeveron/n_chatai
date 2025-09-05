@@ -13,6 +13,7 @@ import {
 } from '@/core/features/chat/types/chat';
 import { PersonKey } from '@/core/features/chat/types/person';
 import {
+  configureCasualServerActionError,
   createAltMessageItem,
   extractEmotionFromAIMessageContent,
   normalizeText,
@@ -28,10 +29,7 @@ import {
 } from '@/core/features/chat/utils/person';
 import { mongoDB } from '@/core/lib/mongo';
 import { ServerActionResult } from '@/core/types/common';
-import {
-  configureCasualServerActionError,
-  handleActionError,
-} from '@/core/utils/error';
+import { handleActionError } from '@/core/utils/error';
 
 export const askAI = async ({
   chatId,

@@ -1,9 +1,7 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
 import { PropsWithChildren } from 'react';
 
-import { NavBackIcon } from '@/core/components/icons/NavBackIcon';
 import { cn } from '@/core/utils';
 
 type TopbarProps = PropsWithChildren & {
@@ -31,26 +29,12 @@ export const TopbarContent = ({ className, children }: TopbarProps) => {
   );
 };
 
-export const TopbarNavBack = ({ navPath }: { navPath?: string }) => {
-  const router = useRouter();
-
-  const handleNavigate = () => {
-    if (!navPath) return;
-    if (navPath === '-1') router.back();
-    else router.push(navPath);
-  };
-
-  return (
-    !!navPath && (
-      <div className="topbar_navback w-6 h-6" onClick={handleNavigate}>
-        <NavBackIcon className="icon--action" />
-      </div>
-    )
-  );
-};
-
 export const TopbarTitle = ({ className, children }: TopbarProps) => {
-  return <h2 className={cn('select-none', className)}>{children}</h2>;
+  return (
+    <h2 className={cn('flex flex-1 justify-center select-none', className)}>
+      {children}
+    </h2>
+  );
 };
 
 export default Topbar;

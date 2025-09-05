@@ -64,7 +64,6 @@ const ChatListClient = ({ chatItems, userData }: ChatListClientProps) => {
       </Topbar>
 
       {chatItems ? (
-        // <ScrollArea className="chat-list_items">
         <ScrollArea>
           {chatItems.map((c) => (
             <ChatItem

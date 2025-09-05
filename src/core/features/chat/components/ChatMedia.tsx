@@ -12,7 +12,7 @@ import {
   HEAT_PHOTO_STEP,
   MAX_HEAT_LEVEL,
 } from '@/core/features/chat/constants';
-import { heatPhotoMap } from '@/core/features/chat/maps';
+import { heatPhotoMap } from '@/core/features/chat/data/maps';
 import { AvatarKey, CollectionMap } from '@/core/features/chat/types/person';
 import { useImagePreloader } from '@/core/hooks/useImagePreloader';
 import { useLocalStorage } from '@/core/hooks/useLocalStorage';
