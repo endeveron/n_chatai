@@ -308,7 +308,7 @@ export const INSTANT_MESSAGES = {
     },
     {
       title: `desc`,
-      phrase: `Describe how you're cumming... Your chests, nipples, clit and thighs in detail`,
+      phrase: `Describe how you're cumming... Your chests, nipples, clit and thighs in detail.`,
     },
   ],
 };
