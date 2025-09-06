@@ -2,14 +2,9 @@
 
 type WarningPurpose = 'signup' | 'chat';
 
-const TEXT = {
-  heading: `The chat conversation may contain age-restricted photos and messages with explicit sexual content.`,
-  confirmation: `you affirm that you are at least 18 years of age or the age of majority in the jurisdiction you are accessing the website from and you consent to view and receive content of a sexually explicit nature, including images and messages.`,
-};
-
 const MESSAGES: Record<WarningPurpose, string> = {
-  signup: `${TEXT.heading} By creating an account, ${TEXT.confirmation}`,
-  chat: `${TEXT.heading} By starting a chat, ${TEXT.confirmation}`,
+  signup: `By creating an account, you confirm you're at least 18 (or the age of majority in your area) and consent to view sexually explicit content, including images and messages.`,
+  chat: `The chat conversation may contain age-restricted photos and messages with explicit sexual content. By creating a chat, you affirm that you are at least 18 years of age or the age of majority in the jurisdiction you are accessing the website from and you consent to view and receive content of a sexually explicit nature, including images and messages.`,
 };
 
 interface ExplicitContentWarningProps {

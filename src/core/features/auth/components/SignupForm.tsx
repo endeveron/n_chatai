@@ -1,7 +1,6 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -19,6 +18,7 @@ import {
 import FormLoading from '@/core/components/ui/FormLoading';
 import { signUp } from '@/core/features/auth/actions';
 import { SignUpSchema, signUpSchema } from '@/core/features/auth/schemas';
+import ExplicitContentWarning from '@/core/features/chat/components/ExplicitContentWarning';
 import { useError } from '@/core/hooks/useError';
 import { cn } from '@/core/utils';
 
@@ -72,6 +72,9 @@ const SignUpForm = () => {
               </FormItem>
             )}
           />
+          <div className="max-w-64">
+            <ExplicitContentWarning purpose="signup" />
+          </div>
           <Button
             loading={isPending}
             className="auth-form_button"
@@ -80,11 +83,11 @@ const SignUpForm = () => {
           >
             I am 18 or older - Continue
           </Button>
-          <div className="auth-form_link">
+          {/* <div className="auth-form_link">
             <Link href="/signin" scroll={false}>
               Already have an account ?
             </Link>
-          </div>
+          </div> */}
         </form>
         <FormLoading loadigIconClassName="-mt-14" isPending={isPending} />
       </div>

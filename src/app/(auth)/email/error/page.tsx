@@ -36,7 +36,7 @@ export default async function EmailErrorPage({
 
   return (
     <AnimatedCard>
-      <CardTitle>Oops!</CardTitle>
+      <CardTitle className="text-error">Oops!</CardTitle>
       <CardContent>
         <p className="-mt-2 text-center">{errorMessage}</p>
 

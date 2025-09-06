@@ -85,7 +85,7 @@ const ChatMenu = ({
       // Navigate to chat list page
       router.push(DEFAULT_REDIRECT);
     } catch (err: unknown) {
-      console.log(err);
+      console.error(`ChatMenu handleDeleteChat ${err}`);
       toastError(err);
     }
   };

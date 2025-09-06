@@ -23,6 +23,7 @@ import {
   DrawerContent,
 } from '@/core/features/chat/components/Drawer';
 import HeatHeart from '@/core/features/chat/components/HeatHeart';
+import { NavBack } from '@/core/features/chat/components/NavBack';
 import Statistics from '@/core/features/chat/components/Statistics';
 import Topbar, {
   TopbarContent,
@@ -46,7 +47,6 @@ import {
 } from '@/core/features/chat/utils/chat';
 import { useLocalStorage } from '@/core/hooks/useLocalStorage';
 import { cn } from '@/core/utils';
-import { NavBack } from '@/core/features/chat/components/NavBack';
 
 interface ChatClientProps extends ChatData {
   chatId: string;
@@ -72,14 +72,13 @@ const ChatClient = ({
   const [isEditMemory, setEditMemory] = useState(false);
 
   const memoryMessagesRef = useRef<MemoryMessage[]>([]);
-  // const humanNameRef = useRef<string | null>(null);
   const memoryInitRef = useRef(false);
   const prevHeatLevelRef = useRef(0);
 
   // const handleDev = async () => {
   //   try {
-  //     const translateRes = await deleteAllGlossariesAction();
-  //     console.log('translateRes', translateRes);
+  //     const res = await createInvite();
+  //     console.log('res', res);
   //   } catch (err: unknown) {
   //     console.error(err);
   //   }
@@ -160,9 +159,9 @@ const ChatClient = ({
 
           if (heatIndex > 0) {
             newHeatLevel = heatLevel + heatIndex;
-            console.log('[Debug] Increase heat level');
+            // console.log('[Debug] Increase heat level');
           } else if (heatIndex === 0 && heatLevel > 0) {
-            console.log('[Debug] Decrease heat level');
+            // console.log('[Debug] Decrease heat level');
             newHeatLevel = heatLevel - heatIndex;
           }
 
@@ -181,13 +180,13 @@ const ChatClient = ({
           (m) => m.role !== MessageRole.system
         );
 
-        const rest = MEMORY_DEPTH - recentMessages.length;
-        if (rest > 0) {
-          console.log(`[Debug] ${rest} messages left until summary.`);
-        }
+        // const rest = MEMORY_DEPTH - recentMessages.length;
+        // if (rest > 0) {
+        //   console.log(`[Debug] ${rest} messages left until summary.`);
+        // }
 
         if (recentMessages.length >= MEMORY_DEPTH) {
-          console.log('[Debug] Creating memory...');
+          // console.log('[Debug] Creating memory...');
           let localMemoryMessages: MemoryMessage[] = [];
 
           // If person's accuracy = 1 => AI didn't provide fictitious facts, there is no any
@@ -216,14 +215,15 @@ const ChatClient = ({
               context: saveRes.data,
               timestamp: Date.now(),
             });
-            console.log('[Debug] Memory created');
-          } else {
-            console.warn('[Debug] Memory not created');
+            // console.log('[Debug] Memory created');
           }
+          // else {
+          //   console.warn('[Debug] Memory not created');
+          // }
         }
       }
     } catch (err: unknown) {
-      console.log(err);
+      console.error(`ChatClient handleInputSubmit: ${err}`);
       setMessages([...updatedMessages, createErrorMessageItem()]);
     } finally {
       setPending(false);
@@ -261,7 +261,6 @@ const ChatClient = ({
     if (memoryInitRef.current) return;
 
     if (memory.length) {
-      // console.log(`[Debug] Recieved memories for ${person.personKey}`, memory);
       const parsedMemory = memory.map((m) => ({
         role: MessageRole.system,
         context: m.context,
@@ -308,7 +307,7 @@ const ChatClient = ({
         });
 
         if (res?.success) {
-          console.log('[Debug] Heat level synchronized.');
+          // console.log('[Debug] Heat level synchronized.');
           setItem<number>(`${HEAT_LEVEL_KEY}_${person.personKey}`, heatLevel);
         } else {
           console.error(res?.error.message ?? 'Unable to update heat level.');
@@ -357,29 +356,13 @@ const ChatClient = ({
             avatarBlur={person.avatarBlur}
             isTyping={isPending}
           />
-
           <ChatMedia heatLevel={heatLevel} avatarKey={person.avatarKey} />
-
-          {/* <AskForName
-            allowToShow={!!humanNameCandidate && !messages.length}
-            onAccept={handleAskForNameAccept}
-            onDecline={handleAskForNameDecline}
-            personData={{
-              name: person.name,
-              avatarKey: person.avatarKey,
-              avatarBlur: person.avatarBlur,
-            }}
-            probablyName={humanNameCandidate}
-          /> */}
-
           <ChatInput onSubmit={handleInputSubmit} isPending={isPending} />
-
           <ChatBackgroundImage
             src={`/images/people/${person.avatarKey}/chat-bg.png`}
             alt={`${person.name} - ${person.title}`}
             isActive={messages.length < 6}
           />
-
           <Drawer open={isEditMemory} onChange={setEditMemory}>
             <DrawerContent className="h-120">
               <div className="flex items-center justify-between">
@@ -390,7 +373,6 @@ const ChatClient = ({
                   </div>
                 </DrawerClose>
               </div>
-
               <ScrollArea className="my-4">
                 <div className="flex flex-col gap-2">
                   {memory.map((m) => (

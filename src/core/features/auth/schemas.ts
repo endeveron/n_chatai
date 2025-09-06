@@ -4,6 +4,20 @@ const email = z.string().email({
   message: 'Please provide a valid email',
 });
 
+export const inviteSchema = z.object({
+  code: z
+    .string()
+    .min(1, {
+      message: 'Code is required',
+    })
+    .max(10, {
+      message: 'Invalid code',
+    })
+    .regex(/^[a-zA-Z0-9]+$/, {
+      message: 'Invalid code',
+    }),
+});
+
 export const signUpSchema = z.object({
   email,
 });
@@ -54,6 +68,7 @@ export const onboardingSchema = z
     message: 'Passwords does not match',
   });
 
+export type InviteSchema = z.infer<typeof inviteSchema>;
 export type SignInSchema = z.infer<typeof signInSchema>;
 export type SignUpSchema = z.infer<typeof signUpSchema>;
 export type OnboardingSchema = z.infer<typeof onboardingSchema>;

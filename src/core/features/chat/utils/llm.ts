@@ -50,7 +50,7 @@ export const configureBaseSystemMessage = ({
 
   const instructions = `[INSTRUCTIONS]\n${baseInstructions} Play a role of ${personName} using relevant details from the provided context. ${INSTRUCTIONS.base}${instructionsGreet}${accuracyInstructions}\n${INSTRUCTIONS.extractEmotion}${context}`;
 
-  console.log(`\n\n[Debug] configureBaseSystemMessage: ${instructions}\n`);
+  // console.log(`\n\n[Debug] configureBaseSystemMessage: ${instructions}\n`);
 
   return new SystemMessage({
     content: instructions,
@@ -80,7 +80,7 @@ export const createSummaryMessage = ({
     INSTRUCTIONS.createSummary
   }\n\n[CONTEXT]\n${contextLines.join('\n')}`;
 
-  console.log('\n\n[Debug] createSummaryMessage > instructions:', instructions);
+  // console.log('\n\n[Debug] createSummaryMessage > instructions:', instructions);
 
   return new HumanMessage({
     content: instructions,

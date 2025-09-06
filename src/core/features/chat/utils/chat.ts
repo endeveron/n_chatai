@@ -139,9 +139,9 @@ export const getPersonalEmotion = ({
 }) => {
   let emotionData: EmotionData;
 
-  console.log(
-    `[Debug] getPersonalEmotion:, emotionKey: ${emotionKey}, personKey: ${personKey}`
-  );
+  // console.log(
+  //   `[Debug] getPersonalEmotion:, emotionKey: ${emotionKey}, personKey: ${personKey}`
+  // );
 
   switch (personKey) {
     case PersonKey.artFuture:
@@ -165,9 +165,9 @@ export const getPersonalEmotion = ({
   }
 
   if (!emotionData) {
-    console.warn(
-      `[Debug] getPersonalEmotion: Unable to get an emotion for ${emotionKey} key.`
-    );
+    // console.warn(
+    //   `[Debug] getPersonalEmotion: Unable to get an emotion for ${emotionKey} key.`
+    // );
     const defaultData = sharedEmotionMap.get(DEFAULT_EMOTION_KEY)!;
     return getRandom(defaultData.list, defaultData.length);
   }
@@ -223,10 +223,10 @@ export const extractEmotionFromAIMessageContent = ({
       personKey,
     });
 
-    console.log('initialEmotionKey:', initialEmotionKey);
-    console.log('emotionKey:', emotionKey);
-    console.log('emotion:', emotion);
-    console.log('\n');
+    // console.log('[Debug] initialEmotionKey:', initialEmotionKey);
+    // console.log('[Debug] emotionKey:', emotionKey);
+    // console.log('[Debug] emotion:', emotion);
+    // console.log('\n');
 
     return {
       aiMsgText,

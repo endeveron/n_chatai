@@ -1,6 +1,6 @@
 'use server';
 
-import { ObjectId } from 'mongoose';
+import { Types } from 'mongoose';
 
 import ChatModel from '@/core/features/chat/models/chat';
 import PersonModel from '@/core/features/chat/models/person';
@@ -68,7 +68,7 @@ export const getPeople = async (
 export const getPersonDataForLLM = async ({
   chatId,
 }: {
-  chatId: ObjectId | string;
+  chatId: Types.ObjectId | string;
 }): Promise<ServerActionResult<PersonDataForLLM>> => {
   try {
     await mongoDB.connect();

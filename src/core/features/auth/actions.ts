@@ -8,6 +8,8 @@ import { AuthError } from 'next-auth';
 import { signIn as nextSignIn } from '~/auth';
 
 import { BASE_URL, DEFAULT_REDIRECT, EMAIL_JWT } from '@/core/constants';
+import InviteModel from '@/core/features/auth/models/invite';
+import UserModel from '@/core/features/auth/models/user';
 import {
   CreateUserArgs,
   Credentials,
@@ -23,11 +25,50 @@ import {
   sendEmail,
   SendEmailArgs,
 } from '@/core/lib/nodemailer';
-import UserModel from '@/core/models/user';
 import { EmailType, ServerActionResult } from '@/core/types/common';
 import { User, UserRole } from '@/core/types/user';
+import { generateCode } from '@/core/utils';
 import { handleActionError } from '@/core/utils/error';
 import { configureUser } from '@/core/utils/user';
+
+export const createInviteCode = async (): Promise<ServerActionResult> => {
+  try {
+    await mongoDB.connect();
+
+    await InviteModel.create({
+      code: generateCode(8),
+    });
+
+    return {
+      success: true,
+    };
+  } catch (err: unknown) {
+    return handleActionError('Unable to create a new user', err);
+  }
+};
+
+export const checkInviteCode = async (
+  code: string
+): Promise<ServerActionResult> => {
+  try {
+    await mongoDB.connect();
+
+    const codeDoc = await InviteModel.findOne({ code });
+
+    if (!codeDoc || codeDoc.userId) {
+      return {
+        success: false,
+        error: { message: 'Invalid code' },
+      };
+    }
+
+    return {
+      success: true,
+    };
+  } catch (err: unknown) {
+    return handleActionError('Unable to create a new user', err);
+  }
+};
 
 /**
  * Creates a new user in a database and returns the user's object ID.
@@ -71,8 +112,9 @@ export const onboardUser = async ({
   userId,
   name,
   password,
+  inviteCode,
 }: OnboardUserArgs): Promise<ServerActionResult> => {
-  if (!userId || !password) {
+  if (!userId || !password || !inviteCode) {
     return handleActionError('onboardUser: Invalid input data provided');
   }
 
@@ -82,7 +124,7 @@ export const onboardUser = async ({
     // Find the user
     const user = await UserModel.findById(userId);
     if (!user) {
-      handleActionError('Invalid user ID', null, true);
+      return handleActionError('Unable to find user for the provided ID');
     }
 
     // Hash the password
@@ -95,6 +137,15 @@ export const onboardUser = async ({
       user.password = hashedPassword;
       await user.save();
     }
+
+    // Mark the invite code as used
+    const code = await InviteModel.findOne({ code: inviteCode });
+    if (!code || code.userId) {
+      return handleActionError('Invalid invite code');
+    }
+    code.userId = user._id;
+    code.timestamp = Date.now();
+    await code.save();
 
     return {
       success: true,

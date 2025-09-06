@@ -113,7 +113,7 @@ const SignInForm = () => {
           >
             Sign in
           </Button>
-          <Link href="/signup" scroll={false} className="auth-form_link">
+          <Link href="/invite" scroll={false} className="auth-form_link">
             Create an account
           </Link>
         </form>

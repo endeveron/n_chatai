@@ -1,4 +1,4 @@
-import { ObjectId } from 'mongoose';
+import { Types } from 'mongoose';
 
 export enum UserRole {
   user = 'user',
@@ -6,7 +6,7 @@ export enum UserRole {
 }
 
 export type User = {
-  _id: ObjectId;
+  _id: Types.ObjectId;
   id: string;
   name?: string;
   email: string;

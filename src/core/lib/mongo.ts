@@ -205,7 +205,7 @@ export const mongoDB = {
         },
       });
 
-      console.log(`[Debug] MongoDB: Created search index for 'person_vector'.`);
+      // console.log(`[Debug] MongoDB: Created search index for 'person_vector'.`);
     } catch (error) {
       console.error(
         `MongoDB: Failed to create search index for 'person_vector':`,

@@ -210,7 +210,7 @@ export const INSTANT_MESSAGES = {
     { title: `kiss`, phrase: `Another kiss for your beautiful thighs...` },
     {
       title: `thong`,
-      phrase: `Slowly take off your panties... Kissing your beautiful nipples... So hot!`,
+      phrase: `I slowly take off your panties... Toying with your beautiful nipples...`,
     },
     {
       title: `moan`,

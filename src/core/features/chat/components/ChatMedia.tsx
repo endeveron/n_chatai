@@ -833,9 +833,9 @@ const ChatMedia = ({ heatLevel, avatarKey }: ChatMediaProps) => {
         (img) => img.collectionName === selectedCollection
       );
       if (!collectionExists) {
-        console.log(
-          `[Debug] Selected collection "${selectedCollection}" no longer exists, switching to "all"`
-        );
+        // console.log(
+        //   `[Debug] Selected collection "${selectedCollection}" no longer exists, switching to "all"`
+        // );
         setSelectedCollection('all');
         setImages(avalImages);
         setNewImagesCount(0);

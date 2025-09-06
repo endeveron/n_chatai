@@ -422,9 +422,9 @@ export const getMongoVectorStoreForPerson = async ({
   // Try to get the vector store from the vectorStoreMap
   const storeFromMap = vectorStoreMap.get('person');
   if (storeFromMap) {
-    console.log(
-      `[Debug] getMongoVectorStoreForPerson: Vector store retrieved from vectorStoreMap`
-    );
+    // console.log(
+    //   `[Debug] getMongoVectorStoreForPerson: Vector store retrieved from vectorStoreMap`
+    // );
     return storeFromMap;
   }
 
@@ -450,14 +450,14 @@ export const getMongoVectorStoreForPerson = async ({
       embeddingKey: 'embedding',
     });
 
-    console.log(
-      `[Debug] getMongoVectorStoreForPerson: Created 'person' vector store (MongoDBAtlasVectorSearch).`
-    );
+    // console.log(
+    //   `[Debug] getMongoVectorStoreForPerson: Created 'person' vector store (MongoDBAtlasVectorSearch).`
+    // );
 
     if (personDocCount === 0) {
-      console.log(
-        `[Debug] getMongoVectorStoreForPerson: Creating new documents for 'person' vector store`
-      );
+      // console.log(
+      //   `[Debug] getMongoVectorStoreForPerson: Creating new documents for 'person' vector store`
+      // );
 
       // Assign meta tags
       const personContextWithTags = personContext.map((context) => {
@@ -484,9 +484,9 @@ export const getMongoVectorStoreForPerson = async ({
 
       // Add documents to the shared collection
       await vectorStore.addDocuments(documents);
-      console.log(
-        `[Debug] getMongoVectorStoreForPerson: Documents for '${personKey}' added to 'person' vector store.`
-      );
+      // console.log(
+      //   `[Debug] getMongoVectorStoreForPerson: Documents for '${personKey}' added to 'person' vector store.`
+      // );
 
       // Create the search index (will only create once for the for 'person_vectors' collection).
       await mongoDB.createSearchIndex();
@@ -500,21 +500,22 @@ export const getMongoVectorStoreForPerson = async ({
         firstContextWord
       );
       if (!indexReady) {
-        console.warn(
-          '[Debug] getMongoVectorStoreForPerson: Vector search index may not be fully ready, proceeding anyway.'
-        );
+        // console.warn(
+        //   '[Debug] getMongoVectorStoreForPerson: Vector search index may not be fully ready, proceeding anyway.'
+        // );
       }
-    } else {
-      console.log(
-        `[Debug] getMongoVectorStoreForPerson: Use existing collection for '${personKey}' from 'person' vector store.`
-      );
     }
+    // else {
+    //   console.log(
+    //     `[Debug] getMongoVectorStoreForPerson: Use existing collection for '${personKey}' from 'person' vector store.`
+    //   );
+    // }
 
     // Save to map for future requests
     vectorStoreMap.set('person', vectorStore);
-    console.log(
-      `[Debug] getMongoVectorStoreForPerson: Vector store 'person' cached in vectorStoreMap`
-    );
+    // console.log(
+    //   `[Debug] getMongoVectorStoreForPerson: Vector store 'person' cached in vectorStoreMap`
+    // );
 
     return vectorStore;
   } catch (err: unknown) {
@@ -691,7 +692,7 @@ export const getContextFromVectorStore = async ({
   let categoryDocuments: Document[] = [];
 
   const retrival = getRetrivalConfig(query);
-  console.log(`[Debug] getContextFromVectorStore: retrival`, retrival);
+  // console.log(`[Debug] getContextFromVectorStore: retrival`, retrival);
 
   // Retrieve the documents using metadata 'category' tag
   categoryDocuments = await vectorStore.similaritySearch(query, retrival.k, {
@@ -777,20 +778,21 @@ export const waitForIndexReady = async (
 
       // If we get results, the index is ready
       if (results && results.length > 0) {
-        console.log(
-          `[Debug] Index is ready for person '${personKey}' - found ${results.length} results`
-        );
+        // console.log(
+        //   `[Debug] Index is ready for person '${personKey}' - found ${results.length} results`
+        // );
         return true;
       }
 
-      console.log(
-        `[Debug] Index not ready yet for '${personKey}' - no results found, waiting...`
-      );
+      // console.log(
+      //   `[Debug] Index not ready yet for '${personKey}' - no results found, waiting...`
+      // );
       await new Promise((resolve) => setTimeout(resolve, 3000));
-    } catch (error) {
-      console.log(
-        `[Debug] Index not ready for '${personKey}' - error: ${error}, waiting...`
-      );
+    } catch (err: unknown) {
+      console.error(`waitForIndexReady: ${err}`);
+      // console.log(
+      //   `[Debug] Index not ready for '${personKey}' - error: ${error}, waiting...`
+      // );
       await new Promise((resolve) => setTimeout(resolve, 3000));
     }
   }

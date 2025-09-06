@@ -105,12 +105,12 @@ export function useGoogleTTS(): UseTTSReturn {
         audio.onended = () => setIsPlaying(false);
 
         audio.onerror = () => {
-          if (audio.error) {
-            console.log('Audio error details:', {
-              code: audio.error.code,
-              message: audio.error.message,
-            });
-          }
+          // if (audio.error) {
+          //   console.log('[Debug] Audio error details:', {
+          //     code: audio.error.code,
+          //     message: audio.error.message,
+          //   });
+          // }
 
           setError('Failed to play audio');
           setIsLoading(false);

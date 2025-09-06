@@ -192,11 +192,11 @@ export const askAI = async ({
       };
     }
 
-    console.log('[Debug] askAI > content:', normalizedContent);
-    console.log('[Debug] askAI > emotion:', emotion);
-    console.log('[Debug] askAI > heatIndex:', heatIndex);
-    console.log('[Debug] askAI > usageMetadata:', usageMetadata);
-    console.log('');
+    // console.log('[Debug] askAI > content:', normalizedContent);
+    // console.log('[Debug] askAI > emotion:', emotion);
+    // console.log('[Debug] askAI > heatIndex:', heatIndex);
+    // console.log('[Debug] askAI > usageMetadata:', usageMetadata);
+    // console.log('');
 
     // Configure AI message
     const timestamp = new Date().getTime();

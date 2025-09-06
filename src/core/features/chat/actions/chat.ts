@@ -26,7 +26,7 @@ import {
 import { AvatarKey } from '@/core/features/chat/types/person';
 import { createSummaryMessage } from '@/core/features/chat/utils/llm';
 import { mongoDB } from '@/core/lib/mongo';
-import UserModel from '@/core/models/user';
+import UserModel from '@/core/features/auth/models/user';
 import { ServerActionResult } from '@/core/types/common';
 import { handleActionError } from '@/core/utils/error';
 import { normalizeText } from '@/core/features/chat/utils/chat';
@@ -463,9 +463,9 @@ export const saveChatMemory = async ({
       noEmojis: true,
     });
 
-    console.log('\n\n[Debug] saveChatMemory > summary:', normalizedContent);
-    console.log('[Debug] saveChatMemory > usageMetadata:', usageMetadata);
-    console.log('');
+    // console.log('\n\n[Debug] saveChatMemory > summary:', normalizedContent);
+    // console.log('[Debug] saveChatMemory > usageMetadata:', usageMetadata);
+    // console.log('');
 
     chat.memory.push({
       context: normalizedContent,
@@ -502,7 +502,7 @@ export const deleteChatMemoryItem = async ({
 
     let memory = [...chat.memory];
     if (!memory.length) {
-      console.log('[Debug] deleteChatMemoryItem: chat.memory is empty');
+      // console.log('[Debug] deleteChatMemoryItem: chat.memory is empty');
       return {
         success: true,
       };

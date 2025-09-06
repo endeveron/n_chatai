@@ -4,6 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
 
 import { Button } from '@/core/components/ui/Button';
 import {
@@ -21,11 +22,13 @@ import FormLoading from '@/core/components/ui/FormLoading';
 import { DEFAULT_REDIRECT } from '@/core/constants';
 import { onboardUser } from '@/core/features/auth/actions';
 import VisibilityToggle from '@/core/features/auth/components/VisibilityToggle';
+import { INVITE_CODE_KEY } from '@/core/features/auth/constants';
 import {
   OnboardingSchema,
   onboardingSchema,
 } from '@/core/features/auth/schemas';
 import { useError } from '@/core/hooks/useError';
+import { useLocalStorage } from '@/core/hooks/useLocalStorage';
 import { cn } from '@/core/utils';
 
 type TOnboardingFormProps = {
@@ -35,6 +38,7 @@ type TOnboardingFormProps = {
 const OnboardingForm = ({ userId }: TOnboardingFormProps) => {
   const router = useRouter();
   const { toastError } = useError();
+  const { getItem, removeItem } = useLocalStorage();
 
   const [pwdVisible, setPwdVisible] = useState(false);
   const [confirmPwdVisible, setConfirmPwdVisible] = useState(false);
@@ -52,14 +56,26 @@ const OnboardingForm = ({ userId }: TOnboardingFormProps) => {
   const onSubmit = async (values: OnboardingSchema) => {
     try {
       setPending(true);
+
+      // Get invite code from the local storage
+      const inviteCode = getItem<string>(INVITE_CODE_KEY);
+      if (!inviteCode) {
+        toast('Could not retrieve invite code');
+        return;
+      }
+
       const res = await onboardUser({
         userId: userId,
         name: values.name,
         password: values.password,
+        inviteCode,
       });
 
       // If success redirect to signin
       if (res?.success) {
+        // Remove invite code from the local storage
+        removeItem(INVITE_CODE_KEY);
+        // Redirect to the signin page
         router.replace(`/signin?redirectTo=${DEFAULT_REDIRECT.slice(1)}`);
         return;
       }
@@ -77,7 +93,7 @@ const OnboardingForm = ({ userId }: TOnboardingFormProps) => {
       <div className="relative">
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className={cn('auth-form ', isPending && 'inactive')}
+          className={cn('auth-form mx-4', isPending && 'inactive')}
         >
           <FormField
             control={form.control}

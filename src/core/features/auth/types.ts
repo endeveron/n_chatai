@@ -1,7 +1,14 @@
+import { Types } from 'mongoose';
 import { Session } from 'next-auth';
 import { JWT } from 'next-auth/jwt';
 
 import { UserRole } from '@/core/types/user';
+
+export type Invite = {
+  code: string;
+  userId?: Types.ObjectId;
+  timestamp?: number;
+};
 
 export interface JwtEmailPayload {
   userId: string;
@@ -72,6 +79,7 @@ export type OnboardUserArgs = {
   userId: string;
   name?: string;
   password: string;
+  inviteCode: string;
 };
 
 export type CreateUserArgs = {

@@ -1,4 +1,4 @@
-import { ObjectId } from 'mongoose';
+import { Types } from 'mongoose';
 
 import {
   AvatarKey,
@@ -20,12 +20,12 @@ export type ChatTokens = {
 
 // Chat document in db
 export type Chat = {
-  _id: ObjectId;
+  _id: Types.ObjectId;
   title: string;
-  user: ObjectId;
+  user: Types.ObjectId;
   humanName: string;
   personName: string;
-  person: ObjectId;
+  person: Types.ObjectId;
   heatLevel: number;
   memory: MemoryNode[];
   tokens: ChatTokens;
@@ -79,8 +79,8 @@ export type BaseChatMessage = {
 };
 
 export type ChatMessageDb = BaseChatMessage & {
-  _id: ObjectId;
-  chatId: ObjectId;
+  _id: Types.ObjectId;
+  chatId: Types.ObjectId;
   expiresAt: Date;
 };
 

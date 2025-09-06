@@ -1,11 +1,10 @@
 import mongoose from 'mongoose';
 
-import { generateReferralCode } from '@/core/utils';
+import { generateCode } from '@/core/utils';
 
 export const configureUser = ({ email }: { email: string }) => {
   const _id = new mongoose.Types.ObjectId();
   const userId = _id.toString();
-  const referralCode = generateReferralCode();
 
   // Properties to be added by mongoose:
   // - emailConfirmed: false,
@@ -17,7 +16,7 @@ export const configureUser = ({ email }: { email: string }) => {
     id: userId,
     email,
     referralProgram: {
-      code: referralCode,
+      code: generateCode(8),
     },
     statistics: [],
     activity: [],

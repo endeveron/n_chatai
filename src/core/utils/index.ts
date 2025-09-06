@@ -1,10 +1,29 @@
 import { type ClassValue, clsx } from 'clsx';
+import crypto from 'crypto';
 import { twMerge } from 'tailwind-merge';
 
 import { LangCode, Phrase } from '@/core/types';
 
+const alphanumCharset = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
+}
+
+/**
+ * Generates a cryptographically secure random code of a specified length using alphanumeric characters.
+ * @param [length=8] - The code length. Default is 8 characters.
+ * @returns A randomly generated code.
+ */
+export function generateCode(length = 8) {
+  const bytes = crypto.randomBytes(length);
+  let code = '';
+
+  for (let i = 0; i < length; i++) {
+    const index = bytes[i] % alphanumCharset.length;
+    code += alphanumCharset[index];
+  }
+  return code;
 }
 
 /**
@@ -33,20 +52,6 @@ export const getRandomPhrase = (
   const object = phrases[Math.floor(Math.random() * phrases.length)];
   return object[lang as keyof Phrase];
 };
-
-/**
- * Generates a random referral code of a specified length using alphanumeric characters.
- * @param [length=10] - The referral code length. Default is 10 characters.
- * @returns A randomly generated referral code.
- */
-export function generateReferralCode(length = 10) {
-  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-  let code = '';
-  for (let i = 0; i < length; i++) {
-    code += chars[Math.floor(Math.random() * chars.length)];
-  }
-  return code;
-}
 
 /**
  * Scales a number by a given factor and rounds it to a specified number of decimal places.

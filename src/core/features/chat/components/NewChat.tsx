@@ -103,7 +103,7 @@ const NewChat = ({ userId, people }: NewChatProps) => {
           <ExplicitContentWarning purpose="chat" />
           <div className="border-2 border-muted/20 rounded-xl">
             <h3 className="w-fit ml-2 px-4 pb-1 text-title bg-background -translate-y-1/2">
-              Select chat mate
+              Select a Chat Mate
             </h3>
             <PeopleList
               people={people}
@@ -119,7 +119,7 @@ const NewChat = ({ userId, people }: NewChatProps) => {
             )}
           >
             <h3 className="w-fit ml-2 px-4 pb-1 text-title bg-background -translate-y-1/2">
-              Start chat
+              Start a Chat
             </h3>
             <NewChatForm
               isPending={isPending}

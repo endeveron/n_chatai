@@ -4,8 +4,8 @@ import Credentials from 'next-auth/providers/credentials';
 import { authorizeUser, signInSocial } from '@/core/features/auth/actions';
 import authConfig from '@/core/features/auth/config';
 import { signInSchema } from '@/core/features/auth/schemas';
-import { UserRole } from '@/core/types/user';
 import { CustomToken, SocialProvider } from '@/core/features/auth/types';
+import { UserRole } from '@/core/types/user';
 
 export const {
   handlers: { GET, POST },
@@ -120,4 +120,21 @@ export const {
       },
     }),
   ],
+  logger: {
+    error(error) {
+      if (error?.name === 'CredentialsSignin') {
+        // Suppress this specific error
+        return;
+      }
+
+      // Log other errors normally
+      console.error('[auth][error]', error);
+    },
+    warn(error) {
+      console.warn('[auth][warn]', error);
+    },
+    debug(error) {
+      console.debug('[auth][debug]', error);
+    },
+  },
 });

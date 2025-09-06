@@ -51,7 +51,7 @@ const initializeClient = async (): Promise<DeepLOperationResult> => {
     const { apiKey, options } = getDeepLConfig();
     deeplCache.client = new deepl.Translator(apiKey, options);
 
-    logger.info('[Debug] DeepL: Client initialized successfully');
+    // logger.info('[Debug] DeepL: Client initialized successfully');
     return null;
   } catch (error) {
     console.error(error);
@@ -91,7 +91,7 @@ const getGlossary = async ({
       deeplCache.glossary.sourceLang === sourceLang &&
       deeplCache.glossary.targetLang === targetLang
     ) {
-      logger.info(`[Debug] DeepL: Using cached glossary "${name}"`);
+      // logger.info(`[Debug] DeepL: Using cached glossary "${name}"`);
       return { glossary: deeplCache.glossary };
     }
 
@@ -107,7 +107,7 @@ const getGlossary = async ({
     if (existingGlossary) {
       // Cache and return existing glossary
       deeplCache.glossary = existingGlossary;
-      logger.info(`[Debug] DeepL: Found existing glossary "${name}"`);
+      // logger.info(`[Debug] DeepL: Found existing glossary "${name}"`);
       return { glossary: existingGlossary };
     }
 
@@ -128,11 +128,11 @@ const getGlossary = async ({
 
     // Cache the new glossary
     deeplCache.glossary = newGlossary;
-    logger.info(
-      `[Debug] DeepL: Created new glossary "${name}" with ${
-        Object.keys(entries).length
-      } entries`
-    );
+    // logger.info(
+    //   `[Debug] DeepL: Created new glossary "${name}" with ${
+    //     Object.keys(entries).length
+    //   } entries`
+    // );
 
     return { glossary: newGlossary };
   } catch (error) {
@@ -161,7 +161,7 @@ const listGlossaries = async (): Promise<{
     }
 
     const glossaries = await deeplCache.client.listGlossaries();
-    logger.info(`[Debug] DeepL: Found ${glossaries.length} glossaries`);
+    // logger.info(`[Debug] DeepL: Found ${glossaries.length} glossaries`);
 
     return { glossaries };
   } catch (error) {
@@ -195,7 +195,7 @@ const deleteGlossary = async (
       deeplCache.glossary = null;
     }
 
-    logger.info(`[Debug] DeepL: Successfully deleted glossary ${glossaryId}`);
+    // logger.info(`[Debug] DeepL: Successfully deleted glossary ${glossaryId}`);
     return { success: true };
   } catch (error) {
     console.error(error);
@@ -228,9 +228,9 @@ const deleteGlossaries = async (
     }
   }
 
-  logger.info(
-    `[Debug] DeepL: Deleted ${totalDeleted}/${glossaryIds.length} glossaries`
-  );
+  // logger.info(
+  //   `[Debug] DeepL: Deleted ${totalDeleted}/${glossaryIds.length} glossaries`
+  // );
 
   return { results, totalDeleted };
 };
@@ -305,18 +305,18 @@ const translateText = async (
       });
 
       if (glossaryError) {
-        logger.warn(
-          `[Debug] DeepL: Glossary error, proceeding without glossary - ${glossaryError}`
-        );
+        // logger.warn(
+        //   `[Debug] DeepL: Glossary error, proceeding without glossary - ${glossaryError}`
+        // );
       } else if (glossary) {
         // Add glossary to translation options
         translationOptions = {
           ...translationOptions,
           glossary: glossary.glossaryId,
         };
-        logger.info(
-          `[Debug] DeepL: Using glossary "${glossaryName}" for translation`
-        );
+        // logger.info(
+        //   `[Debug] DeepL: Using glossary "${glossaryName}" for translation`
+        // );
       }
     }
 
@@ -336,11 +336,11 @@ const translateText = async (
       deeplOptions
     );
 
-    logger.info(
-      `[Debug] DeepL: Successfully translated text to ${targetLang}${
-        options?.useGlossary ? ' with glossary' : ''
-      }`
-    );
+    // logger.info(
+    //   `[Debug] DeepL: Successfully translated text to ${targetLang}${
+    //     options?.useGlossary ? ' with glossary' : ''
+    //   }`
+    // );
     return { result };
   } catch (error) {
     console.error(error);

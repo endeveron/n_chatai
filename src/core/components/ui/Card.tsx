@@ -46,7 +46,7 @@ const AnimatedCard = forwardRef<HTMLDivElement, AnimatedCardProps>(
 
     return (
       <div
-        className="fixed inset-0 ab flex items-center justify-center"
+        className="fixed inset-0 flex items-center justify-center"
         onClick={(e) => {
           if (e.target === e.currentTarget && onClose) {
             onClose();
@@ -56,7 +56,7 @@ const AnimatedCard = forwardRef<HTMLDivElement, AnimatedCardProps>(
         <div
           ref={ref}
           className={cn(
-            'relative max-w-md flex-center flex-col px-4 sm:px-8 py-8 rounded-2xl bg-card cursor-default trans-a',
+            'm-4 relative max-w-md flex-center flex-col px-4 sm:px-8 py-8 rounded-2xl bg-card cursor-default trans-a',
             isVisible
               ? 'scale-100 opacity-100 translate-y-0'
               : 'scale-95 opacity-0 translate-y-2',
@@ -95,7 +95,7 @@ const CardDescription = forwardRef<
 >(({ children, className, ...props }, ref) => {
   if (!children) return null;
   return (
-    <div ref={ref} className={cn('mb-6 -mt-2 text-sm', className)} {...props}>
+    <div ref={ref} className={cn('mb-4 -mt-3 text-sm', className)} {...props}>
       {children}
     </div>
   );

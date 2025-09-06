@@ -18,7 +18,7 @@ const ErrorDialog = ({ error, onReset }: TErrorProps) => {
 
   return (
     <AnimatedCard>
-      <CardTitle>Oops!</CardTitle>
+      <CardTitle className="text-error">Oops!</CardTitle>
       <CardContent>
         <p className="mb-8 text-center">
           {error?.message || 'Something went wrong.'}
