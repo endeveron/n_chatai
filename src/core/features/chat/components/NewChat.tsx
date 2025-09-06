@@ -17,7 +17,6 @@ import {
 import { getRandomName } from '@/core/features/chat/utils/chat';
 import { useError } from '@/core/hooks/useError';
 import { cn } from '@/core/utils';
-import { NavBack } from '@/core/features/chat/components/NavBack';
 
 const personInitValue: SelectPerson = {
   _id: '',
@@ -25,11 +24,12 @@ const personInitValue: SelectPerson = {
 };
 
 interface NewChatProps {
-  userId: string;
   people: PersonCardData[];
+  userId: string;
+  userName?: string | null;
 }
 
-const NewChat = ({ userId, people }: NewChatProps) => {
+const NewChat = ({ people, userId, userName }: NewChatProps) => {
   const router = useRouter();
   const pathname = usePathname();
   const { toastError } = useError();
@@ -41,10 +41,6 @@ const NewChat = ({ userId, people }: NewChatProps) => {
 
   const personId = person._id;
   const isAvailable = people.length > 0;
-
-  const handleNavBack = () => {
-    router.back();
-  };
 
   const handleFormSubmit = async (values: CreateChatSchema) => {
     let personName = values.personName;
@@ -94,7 +90,6 @@ const NewChat = ({ userId, people }: NewChatProps) => {
   return (
     <section className="new-chat fade">
       <Topbar>
-        <NavBack onClick={handleNavBack} className="topbar_navback" />
         {isAvailable ? <TopbarTitle>New Chat</TopbarTitle> : null}
       </Topbar>
 
@@ -122,6 +117,7 @@ const NewChat = ({ userId, people }: NewChatProps) => {
               Start a Chat
             </h3>
             <NewChatForm
+              userName={userName}
               isPending={isPending}
               isActive={!!personId}
               onSubmit={handleFormSubmit}

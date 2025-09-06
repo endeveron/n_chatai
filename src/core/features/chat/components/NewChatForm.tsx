@@ -1,6 +1,7 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 
 import { Button } from '@/core/components/ui/Button';
@@ -17,13 +18,13 @@ import {
   createChatSchema,
   CreateChatSchema,
 } from '@/core/features/chat/schemas/chat';
-import { useEffect } from 'react';
 
 type TCreateChatProps = {
   isPending: boolean;
   isActive: boolean;
   onSubmit: (values: CreateChatSchema) => void;
   onCancel: () => void;
+  userName?: string | null;
 };
 
 const NewChatForm = ({
@@ -31,11 +32,12 @@ const NewChatForm = ({
   isPending,
   onCancel,
   onSubmit,
+  userName,
 }: TCreateChatProps) => {
   const form = useForm<CreateChatSchema>({
     resolver: zodResolver(createChatSchema),
     defaultValues: {
-      userName: '',
+      userName: userName ?? '',
       personName: '',
     },
   });
@@ -46,10 +48,10 @@ const NewChatForm = ({
   };
 
   useEffect(() => {
-    if (isActive) {
+    if (isActive && !userName) {
       form.setFocus('userName');
     }
-  }, [form, isActive]);
+  }, [form, isActive, userName]);
 
   return (
     <Form {...form}>

@@ -14,6 +14,7 @@ export default async function ChatPage() {
 
   let userId = session.user.id!;
   const userEmail = session.user.email!;
+  const userName = session.user.name;
   let people: PersonCardData[] | null = null;
 
   // Handle case if the user id provided by google
@@ -34,7 +35,11 @@ export default async function ChatPage() {
 
   return (
     <main className="relative">
-      {people ? <NewChat userId={userId} people={people} /> : <Loading />}
+      {people ? (
+        <NewChat userId={userId} userName={userName} people={people} />
+      ) : (
+        <Loading />
+      )}
     </main>
   );
 }
