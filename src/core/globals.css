@@ -569,7 +569,7 @@
   }
 
   .chat-message[data-role='ai'] .shadow-avatar {
-    @apply absolute z-20 opacity-0 left-2 -top-18 transition-opacity duration-300 pointer-events-none scale-[2.5];
+    @apply absolute z-20 opacity-0 left-2 -top-18 transition-opacity duration-700 pointer-events-none scale-[2.5];
   }
 
   @media only screen and (min-width: 800px) {

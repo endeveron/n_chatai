@@ -20,7 +20,7 @@ import {
 } from '@/core/features/chat/schemas/chat';
 
 type TCreateChatProps = {
-  isPending: boolean;
+  // isPending: boolean;
   isActive: boolean;
   onSubmit: (values: CreateChatSchema) => void;
   onCancel: () => void;
@@ -29,7 +29,7 @@ type TCreateChatProps = {
 
 const NewChatForm = ({
   isActive,
-  isPending,
+  // isPending,
   onCancel,
   onSubmit,
   userName,
@@ -57,7 +57,7 @@ const NewChatForm = ({
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(handleSubmit)}
-        data-active={!isPending && isActive}
+        data-active={isActive}
         className="new-chat-form"
       >
         <div className="new-chat-form_fields">
@@ -96,12 +96,9 @@ const NewChatForm = ({
         </div>
 
         <div className="new-chat-form_buttons flex my-2 justify-center gap-4">
-          <Button loading={isPending} type="submit">
-            I am 18 or older - Start chat
-          </Button>
+          <Button type="submit">I am 18 or older - Start chat</Button>
           <Button
             className="min-w-24"
-            loading={isPending}
             variant="secondary"
             onClick={onCancel}
             type="button"

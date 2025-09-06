@@ -17,6 +17,7 @@ import {
 import { getRandomName } from '@/core/features/chat/utils/chat';
 import { useError } from '@/core/hooks/useError';
 import { cn } from '@/core/utils';
+import Loading from '@/core/components/ui/Loading';
 
 const personInitValue: SelectPerson = {
   _id: '',
@@ -107,23 +108,30 @@ const NewChat = ({ people, userId, userName }: NewChatProps) => {
             />
           </div>
 
-          <div
-            className={cn(
-              'border-2 border-muted/20 rounded-xl trans-o',
-              personId ? 'opacity-100' : 'opacity-0'
-            )}
-          >
-            <h3 className="w-fit ml-2 px-4 pb-1 text-title bg-background -translate-y-1/2">
-              Start a Chat
-            </h3>
-            <NewChatForm
-              userName={userName}
-              isPending={isPending}
-              isActive={!!personId}
-              onSubmit={handleFormSubmit}
-              onCancel={handleFormCancel}
-            />
-          </div>
+          {isPending ? (
+            <div className="w-full my-23">
+              <Loading />
+            </div>
+          ) : (
+            <div
+              className={cn(
+                'border-2 border-muted/20 rounded-xl trans-o',
+                personId && !isPending
+                  ? 'opacity-100'
+                  : 'opacity-0 pointer-events-none'
+              )}
+            >
+              <h3 className="w-fit ml-2 px-4 pb-1 text-title bg-background -translate-y-1/2">
+                Start a Chat
+              </h3>
+              <NewChatForm
+                userName={userName}
+                isActive={!!personId}
+                onSubmit={handleFormSubmit}
+                onCancel={handleFormCancel}
+              />
+            </div>
+          )}
         </div>
       ) : (
         <h3 className="text-title text-center mt-20">

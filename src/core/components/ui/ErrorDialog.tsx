@@ -17,7 +17,7 @@ const ErrorDialog = ({ error, onReset }: TErrorProps) => {
   const router = useRouter();
 
   return (
-    <AnimatedCard>
+    <AnimatedCard className="border border-border/80 bg-popover/20">
       <CardTitle className="text-error">Oops!</CardTitle>
       <CardContent>
         <p className="mb-8 text-center">
