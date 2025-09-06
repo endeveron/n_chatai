@@ -54,12 +54,7 @@ const Avatar = ({
     return (
       <div className="relative">
         {/* Shadow Avatar */}
-        <div
-          className={cn(
-            'absolute z-20 opacity-0 left-2 -top-18 transition-opacity duration-700 pointer-events-none',
-            isShadow && 'dark:opacity-10 dark:scale-[2.5]'
-          )}
-        >
+        <div data-shadow={isShadow} className="shadow-avatar">
           <div className="avatar h-full overflow-hidden relative rounded-full fade-circle">
             <Image
               src={src}

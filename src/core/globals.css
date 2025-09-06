@@ -560,12 +560,26 @@
   }
 
   .chat-message[data-role='human'] .chat-message_content {
-    @apply bg-gradient-to-r from-brand to-brand-secondary text-brand-foreground font-medium ml-11 dark:ml-32;
+    @apply bg-gradient-to-r from-brand to-brand-secondary text-brand-foreground font-medium ml-11;
     border-bottom-right-radius: 0;
   }
 
   .chat-message .avatar {
     @apply absolute top-[-1px] left-0 z-10 w-14 h-14 shrink-0;
+  }
+
+  .chat-message[data-role='ai'] .shadow-avatar {
+    @apply absolute z-20 opacity-0 left-2 -top-18 transition-opacity duration-300 pointer-events-none scale-[2.5];
+  }
+
+  @media only screen and (min-width: 800px) {
+    .chat-message[data-role='ai'] .shadow-avatar[data-shadow='true'] {
+      @apply dark:opacity-10;
+    }
+
+    .chat-message[data-role='human'] .chat-message_content {
+      @apply dark:ml-30;
+    }
   }
 
   /* Input */
