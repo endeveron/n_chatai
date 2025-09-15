@@ -190,7 +190,7 @@ export const mongoDB = {
             {
               type: 'vector',
               path: 'embedding',
-              numDimensions: 768, // Google Generative AI embeddings dimension
+              numDimensions: 3072, // Google Generative AI embeddings dimension
               similarity: 'cosine',
             },
             {

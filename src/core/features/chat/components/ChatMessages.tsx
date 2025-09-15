@@ -13,6 +13,7 @@ interface ChatMessagesProps {
   avatarKey: AvatarKey;
   avatarBlur: string;
   isTyping: boolean;
+  isPremium: boolean;
 }
 
 const ChatMessages = ({
@@ -20,6 +21,7 @@ const ChatMessages = ({
   avatarKey,
   avatarBlur,
   isTyping,
+  isPremium,
 }: ChatMessagesProps) => {
   const ref = useRef<HTMLDivElement>(null);
 
@@ -61,6 +63,7 @@ const ChatMessages = ({
           translation={m.translation}
           timestamp={m.timestamp}
           onScroll={scrollToBottom}
+          isPremium={isPremium}
         />
       ))}
       {typingMessageEl}

@@ -31,6 +31,46 @@ import { mongoDB } from '@/core/lib/mongo';
 import { ServerActionResult } from '@/core/types/common';
 import { handleActionError } from '@/core/utils/error';
 
+export const testLLM = async (
+  message: string
+): Promise<ServerActionResult<string>> => {
+  console.log('testLLM');
+
+  try {
+    const humanMessage = new HumanMessage({
+      content: [
+        {
+          type: 'text',
+          text: message,
+        },
+        // {
+        //   type: "image_url",
+        //   image_url: `data:image/png;base64,${image}`,
+        // },
+      ],
+    });
+
+    const prompt = ChatPromptTemplate.fromMessages([humanMessage]);
+
+    const chain = prompt.pipe(llm);
+    const aiMsg = await chain.invoke({});
+
+    const content = aiMsg.content.toString();
+
+    // const usageMetadata = aiMsg.usage_metadata;
+    // console.log('[Debug] askAI: aiMsg', aiMsg);
+    // console.log('[Debug] askAI: usageMetadata', usageMetadata);
+
+    return {
+      success: true,
+      data: content,
+    };
+  } catch (err: unknown) {
+    console.error(`askAI: ${err}`);
+    return configureCasualServerActionError(err);
+  }
+};
+
 export const askAI = async ({
   chatId,
   chatContext,
@@ -92,13 +132,11 @@ export const askAI = async ({
       personKey,
       personContext: personData.context,
     });
-
     if (!vectorStore) {
       return handleActionError('Unable to retrieve vector store');
     }
 
     const query = message.content;
-    // await debugVectorStore(query, vectorStore);
 
     const personalityContext = await getContextFromVectorStore({
       query,
@@ -118,7 +156,7 @@ export const askAI = async ({
       },
       humanName,
       chatContext,
-      personalityContext,
+      personalityContext: '',
       isChatStart,
       isEmojiPermitted: true,
     });
@@ -140,8 +178,6 @@ export const askAI = async ({
       systemMessage,
       humanMessage,
     ]);
-
-    // console.log('[Debug] askAI: prompt', prompt);
 
     const chain = prompt.pipe(llm);
     const aiMsg = await chain.invoke({});
@@ -192,11 +228,11 @@ export const askAI = async ({
       };
     }
 
-    // console.log('[Debug] askAI > content:', normalizedContent);
-    // console.log('[Debug] askAI > emotion:', emotion);
-    // console.log('[Debug] askAI > heatIndex:', heatIndex);
-    // console.log('[Debug] askAI > usageMetadata:', usageMetadata);
-    // console.log('');
+    console.log('[Debug] askAI > content:', normalizedContent);
+    console.log('[Debug] askAI > emotion:', emotion);
+    console.log('[Debug] askAI > heatIndex:', heatIndex);
+    console.log('[Debug] askAI > usageMetadata:', usageMetadata);
+    console.log('');
 
     // Configure AI message
     const timestamp = new Date().getTime();

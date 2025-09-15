@@ -10,7 +10,7 @@ export const MEMORY_LENGTH_FOR_CLIENT = 20;
 // - Include in the memory context for processing
 export const MEMORY_DEPTH = 10;
 
-export const RECENT_MESSAGES_LIMIT = 64;
+export const RECENT_MESSAGES_LIMIT = 80;
 
 export const CHAT_MESSAGE_LIFETIME = 180 * 24 * 60 * 60 * 1000; // 180 days
 

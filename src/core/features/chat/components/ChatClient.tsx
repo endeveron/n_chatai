@@ -73,18 +73,6 @@ const ChatClient = ({
   const memoryInitRef = useRef(false);
   const prevHeatLevelRef = useRef(0);
 
-  useEffect(() => {
-    if (!userId) return;
-
-    const prevUserId = getItem(USER_ID_KEY);
-    if (prevUserId === userId) return;
-
-    // Update user id in local storage
-    setItem(USER_ID_KEY, userId);
-    // Reset prev data in local storage
-    removeItem(CHAT_MEDIA_MIN_KEY);
-  }, [userId, getItem, setItem, removeItem]);
-
   // const handleDev = async () => {
   //   try {
   //     const res = await createInvite();
@@ -278,7 +266,9 @@ const ChatClient = ({
   // Init heat level
   useEffect(() => {
     setHeatLevel(fetchedHeatLevel);
-  }, [fetchedHeatLevel]);
+    prevHeatLevelRef.current = fetchedHeatLevel;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Update heat level at interval
   useEffect(() => {
@@ -308,6 +298,18 @@ const ChatClient = ({
       clearInterval(interval);
     };
   }, [chatId, heatLevel, person.personKey, setItem]);
+
+  useEffect(() => {
+    if (!userId) return;
+
+    const prevUserId = getItem(USER_ID_KEY);
+    if (prevUserId === userId) return;
+
+    // Update user id in local storage
+    setItem(USER_ID_KEY, userId);
+    // Reset prev data in local storage
+    removeItem(CHAT_MEDIA_MIN_KEY);
+  }, [userId, getItem, setItem, removeItem]);
 
   return (
     <section
@@ -341,6 +343,7 @@ const ChatClient = ({
             avatarKey={person.avatarKey}
             avatarBlur={person.avatarBlur}
             isTyping={isPending}
+            isPremium={isPremium}
           />
           <ChatMedia heatLevel={heatLevel} avatarKey={person.avatarKey} />
           <ChatInput

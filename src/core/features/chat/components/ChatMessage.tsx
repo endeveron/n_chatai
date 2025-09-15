@@ -15,6 +15,7 @@ import { useClipboard } from '@/core/hooks/useClipboard';
 type ChatMessageProps = BaseChatMessage & {
   avatarKey: AvatarKey;
   avatarBlur: string;
+  isPremium: boolean;
   onScroll: () => void;
 };
 
@@ -26,6 +27,7 @@ const ChatMessage = ({
   emotion,
   role,
   translation,
+  isPremium,
   onScroll,
 }: ChatMessageProps) => {
   const { copy } = useClipboard();
@@ -105,15 +107,19 @@ const ChatMessage = ({
           className="chat-message_content"
         >
           {/* Translate button */}
-          {isAi && content && !translation && !localTranslation && (
-            <div
-              onClick={handleTranslate}
-              className="chat-message_translate-button"
-              title="Translate message"
-            >
-              <TranslateIcon className="icon--action" />
-            </div>
-          )}
+          {isPremium &&
+            isAi &&
+            content &&
+            !translation &&
+            !localTranslation && (
+              <div
+                onClick={handleTranslate}
+                className="chat-message_translate-button"
+                title="Translate message"
+              >
+                <TranslateIcon className="icon--action" />
+              </div>
+            )}
 
           {content}
 

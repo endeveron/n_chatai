@@ -3,7 +3,6 @@ import { GoogleGenerativeAIEmbeddings } from '@langchain/google-genai';
 import { MongoDBAtlasVectorSearch } from '@langchain/mongodb';
 
 import { getPersonDataForLLM } from '@/core/features/chat/actions/person';
-
 import { QUERY_PATTERNS } from '@/core/features/chat/data/conversation';
 import {
   ContextCategory,
@@ -420,13 +419,13 @@ export const getMongoVectorStoreForPerson = async ({
   personContext: string[];
 }): Promise<MongoDBAtlasVectorSearch | undefined> => {
   // Try to get the vector store from the vectorStoreMap
-  const storeFromMap = vectorStoreMap.get('person');
-  if (storeFromMap) {
-    // console.log(
-    //   `[Debug] getMongoVectorStoreForPerson: Vector store retrieved from vectorStoreMap`
-    // );
-    return storeFromMap;
-  }
+  // const storeFromMap = vectorStoreMap.get('person');
+  // if (storeFromMap) {
+  //   // console.log(
+  //   //   `[Debug] getMongoVectorStoreForPerson: Vector store retrieved from vectorStoreMap`
+  //   // );
+  //   return storeFromMap;
+  // }
 
   try {
     // Get MongoDB database
@@ -435,7 +434,10 @@ export const getMongoVectorStoreForPerson = async ({
     const collection = db.collection(collectionName);
 
     // Create embeddings instance
-    const embeddings = new GoogleGenerativeAIEmbeddings();
+    const embeddings = new GoogleGenerativeAIEmbeddings({
+      apiKey: process.env.GOOGLE_API_KEY,
+      model: 'gemini-embedding-001',
+    });
 
     // // Check if collection has documents
     // const docCount = await collection.countDocuments();
@@ -695,16 +697,33 @@ export const getContextFromVectorStore = async ({
   // console.log(`[Debug] getContextFromVectorStore: retrival`, retrival);
 
   // Retrieve the documents using metadata 'category' tag
-  categoryDocuments = await vectorStore.similaritySearch(query, retrival.k, {
-    preFilter: {
-      $and: [
-        { category: { $in: retrival.categories } },
-        { personKey: personKey },
-      ],
-    },
-  });
+  const timeoutPromise = new Promise((_, reject) =>
+    setTimeout(() => reject(new Error('Timeout after 10 seconds')), 10000)
+  );
 
-  return parseDocumentContent(categoryDocuments);
+  try {
+    categoryDocuments = (await Promise.race([
+      vectorStore.similaritySearch(query, retrival.k, {
+        preFilter: {
+          $and: [
+            { category: { $in: retrival.categories } },
+            { personKey: personKey },
+          ],
+        },
+      }),
+      timeoutPromise,
+    ])) as Document[];
+  } catch (error: unknown) {
+    console.error(
+      `Vector search failed/timed out, returning empty results.`,
+      error
+    );
+    categoryDocuments = [];
+  }
+
+  return categoryDocuments.length
+    ? parseDocumentContent(categoryDocuments)
+    : '';
 
   // EXTRA retrival options
   //
@@ -743,23 +762,6 @@ export const getContextFromVectorStore = async ({
   //   `[Debug] getContextFromVectorStore: catched up "aboutYou" pattern.`
   // );
 };
-
-// export const debugVectorStore = async (
-//   query: string,
-//   store: MongoDBAtlasVectorSearch,
-//   count = 5
-// ) => {
-//   const raw = await store.similaritySearch(query, count);
-//   console.log(`[Debug] debugVectorStore: Top ${count} results:`);
-//   raw.forEach((doc, i) =>
-//     console.log(
-//       `  ${i + 1}. [${doc.metadata?.category}] "${doc.pageContent.slice(
-//         0,
-//         50
-//       )}..."`
-//     )
-//   );
-// };
 
 export const waitForIndexReady = async (
   vectorStore: MongoDBAtlasVectorSearch,
