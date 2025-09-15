@@ -17,13 +17,9 @@ import {
   cleanChat as clean,
   deleteChat,
 } from '@/core/features/chat/actions/chat';
-import { HEAT_LEVEL_KEY } from '@/core/features/chat/constants';
-import { PersonKey } from '@/core/features/chat/types/person';
 import { useError } from '@/core/hooks/useError';
-import { useLocalStorage } from '@/core/hooks/useLocalStorage';
 
 interface ChatMenuProps {
-  personKey: PersonKey;
   isMemories: boolean;
   cleanChat: {
     show: boolean;
@@ -35,14 +31,12 @@ interface ChatMenuProps {
 }
 
 const ChatMenu = ({
-  personKey,
   isMemories,
   cleanChat,
   onCleaned,
   onEditMemory,
 }: ChatMenuProps) => {
   const router = useRouter();
-  const { removeItem } = useLocalStorage();
   const { toastError } = useError();
 
   const handleEditMemory = async () => {
@@ -79,8 +73,6 @@ const ChatMenu = ({
         toastError(res);
         return;
       }
-      // Delete heat level key from the local storage
-      removeItem(`${HEAT_LEVEL_KEY}_${personKey}`);
 
       // Navigate to chat list page
       router.push(DEFAULT_REDIRECT);

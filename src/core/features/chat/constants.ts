@@ -1,6 +1,6 @@
 // Local storage
-export const HEAT_LEVEL_KEY = 'heat-level';
 export const CHAT_MEDIA_MIN_KEY = 'chat-media-min';
+export const USER_ID_KEY = 'user';
 
 // Number of memory nodes (elements of the human message context) that need to be sent to the client
 export const MEMORY_LENGTH_FOR_CLIENT = 20;

@@ -3,12 +3,18 @@
 import { useEffect } from 'react';
 
 // Static keys
-const safeKeys = ['__nextjs-dev-tools-position', 'lang-code', 'theme'];
+const safeKeys = [
+  '__nextjs-dev-tools-position',
+  'lang-code',
+  'theme',
+  'user',
+  'chat-media-min',
+];
 
 // Dynamic key patterns
 const safeKeyPatterns = [
   /^heat-level(_.*)?$/, // Matches 'heat-level' and 'heat-level_*'
-  /^chat-media-min(_.*)?$/, // Matches 'chat-media-min' and 'chat-media-min_*'
+  // /^chat-media-min(_.*)?$/, // Matches 'chat-media-min' and 'chat-media-min_*'
 ];
 
 const suspiciousPatterns = [

@@ -16,7 +16,6 @@ import {
 } from '@/core/features/chat/types/person';
 import { getRandomName } from '@/core/features/chat/utils/chat';
 import { useError } from '@/core/hooks/useError';
-import { cn } from '@/core/utils';
 
 const personInitValue: SelectPerson = {
   _id: '',
@@ -107,22 +106,26 @@ const NewChat = ({ people, userId, userName }: NewChatProps) => {
             />
           </div>
 
-          <div
-            className={cn(
-              'border-2 border-muted/20 rounded-xl trans-o',
-              personId ? 'opacity-100' : 'opacity-0'
-            )}
-          >
-            <h3 className="w-fit ml-2 px-4 pb-1 text-title bg-background -translate-y-1/2">
+          <div className="border-2 border-muted/20 rounded-xl">
+            <h3 className="w-fit ml-2 px-4 text-title bg-background -translate-y-1/2">
               Start a Chat
             </h3>
-            <NewChatForm
-              userName={userName}
-              isPending={isPending}
-              isActive={!!personId}
-              onSubmit={handleFormSubmit}
-              onCancel={handleFormCancel}
-            />
+
+            <div className="relative">
+              <NewChatForm
+                userName={userName}
+                isPending={isPending}
+                isActive={!!personId}
+                onSubmit={handleFormSubmit}
+                onCancel={handleFormCancel}
+              />
+
+              {!personId ? (
+                <div className="absolute inset-0 flex-center text-sm text-muted/60 pb-10 cursor-default">
+                  Please select a chat mate from the list above
+                </div>
+              ) : null}
+            </div>
           </div>
         </div>
       ) : (

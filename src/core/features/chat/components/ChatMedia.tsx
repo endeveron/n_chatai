@@ -111,11 +111,11 @@ const ChatMedia = ({ heatLevel, avatarKey }: ChatMediaProps) => {
 
   const toggleMinimized = () => {
     const value = !minimized;
-    const key = `${CHAT_MEDIA_MIN_KEY}_${avatarKey}`;
+    // const key = `${CHAT_MEDIA_MIN_KEY}_${avatarKey}`;
     if (value) {
-      setItem(key, value);
+      setItem(CHAT_MEDIA_MIN_KEY, value);
     } else {
-      removeItem(key);
+      removeItem(CHAT_MEDIA_MIN_KEY);
     }
     setMinimized(value);
   };
@@ -135,7 +135,8 @@ const ChatMedia = ({ heatLevel, avatarKey }: ChatMediaProps) => {
   };
 
   useEffect(() => {
-    const itemInLS = getItem<boolean>(`${CHAT_MEDIA_MIN_KEY}_${avatarKey}`);
+    // const itemInLS = getItem<boolean>(`${CHAT_MEDIA_MIN_KEY}_${avatarKey}`);
+    const itemInLS = getItem<boolean>(CHAT_MEDIA_MIN_KEY);
     if (itemInLS) {
       setMinimized(true);
     }

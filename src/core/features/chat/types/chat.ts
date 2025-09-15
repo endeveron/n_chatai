@@ -55,6 +55,8 @@ export type ChatData = Pick<
 export type ChatClientData = ChatData & {
   messages: ChatMessageItem[];
   chatId: string;
+  userId: string;
+  isPremium: boolean;
 };
 
 export type ChatItem = {

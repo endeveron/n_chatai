@@ -17,7 +17,9 @@ export default async function ChatPage({
   if (!session?.user) return redirect(SIGNIN_REDIRECT);
 
   const { id: chatId } = await params;
+  const userId = session.user.id;
   const userEmail = session.user.email;
+  const isPremium = session.user.isPremium;
 
   if (!chatId) throw new Error('Unable to get chat id.');
   if (!userEmail) throw new Error('Unable to get user email.');
@@ -39,11 +41,16 @@ export default async function ChatPage({
   if (!res.data) return null;
 
   // Configure data
-  const chatClientData = { chatId, ...res.data } as ChatClientData;
+  const chatClientData = {
+    chatId,
+    userId,
+    isPremium,
+    ...res.data,
+  } as ChatClientData;
   const person = res.data.person;
 
   if (!chatClientData || !person) {
-    throw new Error('No chat data.');
+    throw new Error('Invalid chat data.');
   }
 
   return (

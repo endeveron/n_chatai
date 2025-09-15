@@ -33,9 +33,10 @@ const inputValidation = zod.object({
 type TChatInputProps = {
   onSubmit: (input: string) => void;
   isPending: boolean;
+  isPremium: boolean;
 };
 
-const ChatInput = ({ onSubmit, isPending }: TChatInputProps) => {
+const ChatInput = ({ onSubmit, isPending, isPremium }: TChatInputProps) => {
   const form = useForm<zod.infer<typeof inputValidation>>({
     resolver: zodResolver(inputValidation),
     defaultValues: { message: '' },
@@ -51,11 +52,13 @@ const ChatInput = ({ onSubmit, isPending }: TChatInputProps) => {
 
   return (
     <div className="chat-input chat-container">
-      <InstantMessage
-        onSubmit={form.handleSubmit(handleSubmit)}
-        onUpdate={(message) => form.setValue('message', message)}
-        onReset={() => form.setValue('message', '')}
-      />
+      {isPremium ? (
+        <InstantMessage
+          onSubmit={form.handleSubmit(handleSubmit)}
+          onUpdate={(message) => form.setValue('message', message)}
+          onReset={() => form.setValue('message', '')}
+        />
+      ) : null}
 
       <Form {...form}>
         <form

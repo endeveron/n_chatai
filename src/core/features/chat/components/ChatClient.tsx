@@ -30,12 +30,13 @@ import Topbar, {
   TopbarTitle,
 } from '@/core/features/chat/components/Topbar';
 import {
-  HEAT_LEVEL_KEY,
+  CHAT_MEDIA_MIN_KEY,
   HEAT_LEVEL_UPDATE_INTERVAL,
   MEMORY_DEPTH,
+  USER_ID_KEY,
 } from '@/core/features/chat/constants';
 import {
-  ChatData,
+  ChatClientData,
   ChatMessageItem,
   MemoryMessage,
   MessageRole,
@@ -48,20 +49,17 @@ import {
 import { useLocalStorage } from '@/core/hooks/useLocalStorage';
 import { cn } from '@/core/utils';
 
-interface ChatClientProps extends ChatData {
-  chatId: string;
-  messages: ChatMessageItem[];
-}
-
 const ChatClient = ({
   chatId,
+  userId,
   title,
   messages: fetchedMessages,
   person,
   humanName,
   heatLevel: fetchedHeatLevel,
   memory,
-}: ChatClientProps) => {
+  isPremium,
+}: ChatClientData) => {
   const router = useRouter();
   const pathname = usePathname();
   const { getItem, setItem, removeItem } = useLocalStorage();
@@ -74,6 +72,18 @@ const ChatClient = ({
   const memoryMessagesRef = useRef<MemoryMessage[]>([]);
   const memoryInitRef = useRef(false);
   const prevHeatLevelRef = useRef(0);
+
+  useEffect(() => {
+    if (!userId) return;
+
+    const prevUserId = getItem(USER_ID_KEY);
+    if (prevUserId === userId) return;
+
+    // Update user id in local storage
+    setItem(USER_ID_KEY, userId);
+    // Reset prev data in local storage
+    removeItem(CHAT_MEDIA_MIN_KEY);
+  }, [userId, getItem, setItem, removeItem]);
 
   // const handleDev = async () => {
   //   try {
@@ -166,10 +176,6 @@ const ChatClient = ({
           }
 
           if (newHeatLevel && newHeatLevel >= 0) {
-            setItem<number>(
-              `${HEAT_LEVEL_KEY}_${person.personKey}`,
-              newHeatLevel
-            );
             setHeatLevel(newHeatLevel);
           }
         }
@@ -237,8 +243,6 @@ const ChatClient = ({
     memoryMessagesRef.current = memoryMessagesRef.current.filter(
       (m) => m.role === MessageRole.system
     );
-    // Delete heat level key from the local storage
-    removeItem(`${HEAT_LEVEL_KEY}_${person.personKey}`);
   };
 
   const handleEditMemory = () => {
@@ -273,23 +277,8 @@ const ChatClient = ({
 
   // Init heat level
   useEffect(() => {
-    // Check heat level from the local storage
-    const heatLevelFromLS =
-      getItem<number>(`${HEAT_LEVEL_KEY}_${person.personKey}`) ?? 0;
-
-    // Get the greater of the heat level values
-    const greaterLevel = Math.max(heatLevelFromLS, fetchedHeatLevel);
-    setHeatLevel(greaterLevel);
-    prevHeatLevelRef.current = greaterLevel;
-
-    // Update heat level value in local storage
-    if (heatLevelFromLS < greaterLevel) {
-      setItem<number>(
-        `${HEAT_LEVEL_KEY}_${person.personKey}`,
-        fetchedHeatLevel
-      );
-    }
-  }, [fetchedHeatLevel, person.personKey, getItem, setItem]);
+    setHeatLevel(fetchedHeatLevel);
+  }, [fetchedHeatLevel]);
 
   // Update heat level at interval
   useEffect(() => {
@@ -300,20 +289,18 @@ const ChatClient = ({
 
       prevHeatLevelRef.current = heatLevel;
 
+      const errMsg = 'Unable to update heat level in db.';
       try {
         const res = await updateHeatLevel({
           chatId,
           heatLevel,
         });
 
-        if (res?.success) {
-          // console.log('[Debug] Heat level synchronized.');
-          setItem<number>(`${HEAT_LEVEL_KEY}_${person.personKey}`, heatLevel);
-        } else {
-          console.error(res?.error.message ?? 'Unable to update heat level.');
+        if (!res?.success) {
+          console.error(res?.error.message ?? errMsg);
         }
       } catch (err: unknown) {
-        console.error(err);
+        console.error(`${errMsg} ${err}`);
       }
     }, HEAT_LEVEL_UPDATE_INTERVAL);
 
@@ -343,7 +330,6 @@ const ChatClient = ({
               </div>
             </TopbarContent>
             <ChatMenu
-              personKey={person.personKey}
               isMemories={memory.length > 0}
               cleanChat={{ show: !!messages.length, chatId, path: pathname }}
               onCleaned={handleCleanChat}
@@ -357,7 +343,11 @@ const ChatClient = ({
             isTyping={isPending}
           />
           <ChatMedia heatLevel={heatLevel} avatarKey={person.avatarKey} />
-          <ChatInput onSubmit={handleInputSubmit} isPending={isPending} />
+          <ChatInput
+            onSubmit={handleInputSubmit}
+            isPending={isPending}
+            isPremium={isPremium}
+          />
           <ChatBackgroundImage
             src={`/images/people/${person.avatarKey}/chat-bg.png`}
             alt={`${person.name} - ${person.title}`}

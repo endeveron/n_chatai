@@ -442,6 +442,10 @@
     padding-left: var(--gap-1-2);
   }
 
+  .new-chat .chat-container {
+    max-width: 800px;
+  }
+
   .column-stack,
   .chat-input {
     box-sizing: border-box;
