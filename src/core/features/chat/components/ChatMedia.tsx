@@ -7,18 +7,18 @@ import { CloseIcon } from '@/core/components/icons/CloseIcon';
 import { MinimizeIcon } from '@/core/components/icons/MinimizeIcon';
 import { Button } from '@/core/components/ui/Button';
 import { ASSET_URL } from '@/core/constants';
+import SelectMediaCollection from '@/core/features/chat/components/SelectMediaCollection';
 import {
   CHAT_MEDIA_MIN_KEY,
   HEAT_PHOTO_STEP,
   MAX_HEAT_LEVEL,
 } from '@/core/features/chat/constants';
 import { heatPhotoMap } from '@/core/features/chat/data/maps';
+import { ImageInfo } from '@/core/features/chat/types/chat';
 import { AvatarKey, CollectionMap } from '@/core/features/chat/types/person';
 import { useImagePreloader } from '@/core/hooks/useImagePreloader';
 import { useLocalStorage } from '@/core/hooks/useLocalStorage';
 import { cn } from '@/core/utils';
-import SelectMediaCollection from '@/core/features/chat/components/SelectMediaCollection';
-import { ImageInfo } from '@/core/features/chat/types/chat';
 
 const SIDE_IMAGE_FADEIN_DELAY = 100;
 

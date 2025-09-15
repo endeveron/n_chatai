@@ -1,9 +1,9 @@
 import type { Metadata, Viewport } from 'next';
 import { Mulish } from 'next/font/google';
 
-import { Providers } from '@/core/context/providers';
 import { Toaster } from '@/core/components/ui/Sonner';
-import { ASSET_URL, BASE_URL } from '@/core/constants';
+import { APP_NAME, BASE_URL } from '@/core/constants';
+import { Providers } from '@/core/context/providers';
 
 import '@/core/globals.css';
 
@@ -18,39 +18,38 @@ const mulishSans = Mulish({
 });
 
 export const metadata: Metadata = {
-  title: 'Chat AI',
-  applicationName: 'Chat AI',
-  description: 'Beautiful AI companion',
+  title: `${APP_NAME} – Your hot chat mate`,
+  applicationName: APP_NAME,
+  description: `Enter a world of fantasy with Chat AI. Pick your perfect sultry companion for flirty, emotional, or fully NSFW chats — all just a click away.`,
   creator: 'Endeveron',
   metadataBase: new URL(BASE_URL),
   openGraph: {
-    title: 'Chat AI',
-    description: `Chat AI - Beautiful AI companion`,
-    siteName: 'Chat AI',
+    title: `${APP_NAME} – Your hot chat mate`,
+    description: `Enter a world of fantasy with Chat AI. Pick your perfect sultry companion for flirty, emotional, or fully NSFW chats — all just a click away.`,
+    siteName: APP_NAME,
     type: 'website',
     url: '/',
     locale: 'en_US',
     images: [
       {
-        url: `${BASE_URL}/images/og-image.png`,
+        url: `${BASE_URL}/images/open-graph/og-image.jpg`,
         width: 1200,
         height: 630,
         alt: `OG Image`,
-        type: 'image/png',
+        type: 'image/jpg',
       },
       {
-        url: `${BASE_URL}/images/og-image-square.png`,
+        url: `${BASE_URL}/images/open-graph/og-image-square.jpg`,
         width: 1200,
         height: 1200,
         alt: `OG Image`,
-        type: 'image/png',
+        type: 'image/jpg',
       },
     ],
   },
   icons: {
     icon: {
-      // url: 'https://chatai-sigma-three.vercel.app/favicon.ico',
-      url: `${ASSET_URL}/icons/favicon.ico`,
+      url: `${BASE_URL}/images/icons/favicon.ico`,
       type: 'image/image/ico',
     },
   },
