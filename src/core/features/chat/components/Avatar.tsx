@@ -1,11 +1,11 @@
 'use client';
 
 import Image from 'next/image';
+import { useEffect, useMemo, useState } from 'react';
 
 import { DEFAULT_EMOTION_KEY } from '@/core/features/chat/data/conversation';
 import { AvatarKey } from '@/core/features/chat/types/person';
 import { cn } from '@/core/utils';
-import { useEffect, useMemo, useState } from 'react';
 
 interface AvatarProps {
   avatarKey: AvatarKey;
@@ -59,7 +59,7 @@ const Avatar = ({
             <Image
               src={src}
               className={cn(
-                'object-cover aspect-square h-full w-full text-sm grayscale-25',
+                'object-cover aspect-square h-full w-full text-sm grayscale-50',
                 className
               )}
               placeholder="blur"

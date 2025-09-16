@@ -31,7 +31,12 @@ export const TopbarContent = ({ className, children }: TopbarProps) => {
 
 export const TopbarTitle = ({ className, children }: TopbarProps) => {
   return (
-    <h2 className={cn('flex flex-1 justify-center select-none', className)}>
+    <h2
+      className={cn(
+        'flex flex-1 justify-center font-bold select-none',
+        className
+      )}
+    >
       {children}
     </h2>
   );

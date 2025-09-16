@@ -48,7 +48,7 @@ const ChatMessages = ({
 
   return (
     <ScrollArea
-      className="fade chat-messages chat-container column-stack"
+      className="chat-messages chat-container column-stack fade"
       ref={ref}
     >
       {messages.map((m) => (

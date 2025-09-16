@@ -14,7 +14,7 @@ interface ExplicitContentWarningProps {
 const ExplicitContentWarning = ({ purpose }: ExplicitContentWarningProps) => {
   return (
     <div className="flex items-center justify-center flex-col p-4 gap-4 rounded-xl border-2 border-accent/30 bg-accent/10 cursor-default">
-      <div className="w-24 h-8 shrink-0 flex-center text-5xl text-accent font-black leading-0">
+      <div className="w-24 h-8 shrink-0 flex-center text-5xl text-accent font-bold leading-0">
         18+
       </div>
       <div className="text-sm">{MESSAGES[purpose]}</div>

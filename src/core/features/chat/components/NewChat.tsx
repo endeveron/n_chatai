@@ -16,6 +16,7 @@ import {
 } from '@/core/features/chat/types/person';
 import { getRandomName } from '@/core/features/chat/utils/chat';
 import { useError } from '@/core/hooks/useError';
+import { ScrollArea } from '@/core/components/ui/ScrollArea';
 
 const personInitValue: SelectPerson = {
   _id: '',
@@ -75,10 +76,15 @@ const NewChat = ({ people, userId, userName }: NewChatProps) => {
   };
 
   const scrollToBottom = () => {
-    window.scrollTo({
-      top: document.body.scrollHeight,
-      behavior: 'smooth',
-    });
+    // window.scrollTo({
+    //   top: document.body.scrollHeight,
+    //   behavior: 'smooth',
+    // });
+    // Wait briefly to ensure the component is mounted
+    setTimeout(() => {
+      if (!ref.current) return;
+      ref.current.scrollTo(0, ref.current.scrollHeight);
+    }, 100);
   };
 
   useEffect(() => {
@@ -87,53 +93,55 @@ const NewChat = ({ people, userId, userName }: NewChatProps) => {
   }, [personId]);
 
   return (
-    <section className="new-chat fade">
+    <div className="fade new-chat">
       <Topbar>
         {isAvailable ? <TopbarTitle>New Chat</TopbarTitle> : null}
       </Topbar>
 
-      {isAvailable ? (
-        <div ref={ref} className="py-8 chat-container flex flex-col gap-8">
-          <ExplicitContentWarning purpose="chat" />
-          <div className="border-2 border-muted/20 rounded-xl">
-            <h3 className="w-fit ml-2 px-4 pb-1 text-title bg-background -translate-y-1/2">
-              Select a Chat Mate
-            </h3>
-            <PeopleList
-              people={people}
-              currentPersonId={personId}
-              onSelect={setPerson}
-            />
-          </div>
-
-          <div className="border-2 border-muted/20 rounded-xl">
-            <h3 className="w-fit ml-2 px-4 text-title bg-background -translate-y-1/2">
-              Start a Chat
-            </h3>
-
-            <div className="relative">
-              <NewChatForm
-                userName={userName}
-                isPending={isPending}
-                isActive={!!personId}
-                onSubmit={handleFormSubmit}
-                onCancel={handleFormCancel}
+      <ScrollArea ref={ref}>
+        {isAvailable ? (
+          <div className="chat-container py-8 flex flex-col gap-8">
+            <ExplicitContentWarning purpose="chat" />
+            <div className="border-2 border-muted/20 rounded-xl">
+              <h3 className="w-fit ml-2 px-4 pb-1 text-title bg-background -translate-y-1/2">
+                Select a Chat Mate
+              </h3>
+              <PeopleList
+                people={people}
+                currentPersonId={personId}
+                onSelect={setPerson}
               />
+            </div>
 
-              {!personId ? (
-                <div className="absolute inset-0 flex-center text-sm text-muted/60 pb-10 cursor-default">
-                  Please select a chat mate from the list above
-                </div>
-              ) : null}
+            <div className="border-2 border-muted/20 rounded-xl">
+              <h3 className="w-fit ml-2 px-4 text-title bg-background -translate-y-1/2">
+                Start a Chat
+              </h3>
+
+              <div className="relative">
+                <NewChatForm
+                  userName={userName}
+                  isPending={isPending}
+                  isActive={!!personId}
+                  onSubmit={handleFormSubmit}
+                  onCancel={handleFormCancel}
+                />
+
+                {!personId ? (
+                  <div className="absolute inset-0 flex-center text-sm text-muted/60 pb-10 cursor-default">
+                    Please select a chat mate from the list above
+                  </div>
+                ) : null}
+              </div>
             </div>
           </div>
-        </div>
-      ) : (
-        <h3 className="text-title text-center mt-20">
-          There are no available chat mates
-        </h3>
-      )}
-    </section>
+        ) : (
+          <h3 className="text-title text-center mt-20">
+            There are no available chat mates
+          </h3>
+        )}
+      </ScrollArea>
+    </div>
   );
 };
 

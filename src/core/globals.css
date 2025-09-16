@@ -185,8 +185,8 @@
 .fade-circle {
   mask: radial-gradient(
     circle,
-    black 20%,
-    rgba(0, 0, 0, 0.4) 40%,
+    black 30%,
+    rgba(0, 0, 0, 0.2) 50%,
     rgba(0, 0, 0, 0) 60%,
     transparent 100%
   );
@@ -417,6 +417,7 @@
   }
 
   .chat,
+  .new-chat,
   .chat .topbar,
   .chat-messages,
   .chat-input {
@@ -440,10 +441,6 @@
     max-width: 720px;
     padding-right: var(--gap-1-2);
     padding-left: var(--gap-1-2);
-  }
-
-  .new-chat .chat-container {
-    max-width: 800px;
   }
 
   .column-stack,
@@ -516,8 +513,8 @@
     align-self: stretch;
   }
 
-  .chat-messages {
-    /* height: calc(100dvh - (var(--topbar-h) + var(--chat-input-h))); */
+  .chat-messages,
+  .new-chat {
     @apply flex-1;
   }
 
@@ -639,9 +636,7 @@
   }
 
   .new-chat {
-    @apply items-center;
-    /* max-width: 100dvw; */
-    max-width: calc(100dvw - 16px);
+    @apply items-center max-w-dvw;
   }
 
   .new-chat .topbar {
