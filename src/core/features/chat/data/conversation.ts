@@ -3,6 +3,7 @@ export const NAMES = {
     'Amelia',
     'Ariana',
     'Caroline',
+    'Crystal',
     'Daniela',
     'Emily',
     'Emma',

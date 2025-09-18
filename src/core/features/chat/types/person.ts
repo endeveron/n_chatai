@@ -52,9 +52,9 @@ export type PersonDataForVectorStore = Pick<
 
 export enum PersonKey {
   artFuture = 'artFuture',
-  devJourney = 'devJourney',
-  modelArtist = 'modelArtist',
+  gloria = 'gloria',
   mango = 'mango',
+  modelArtist = 'modelArtist',
   musican = 'musican',
   positiveShot = 'positiveShot',
 }
@@ -62,8 +62,8 @@ export enum PersonKey {
 export enum AvatarKey {
   blonde = 'blonde',
   brunette = 'brunette',
-  choco = 'choco',
   cutie = 'cutie',
+  gloria = 'gloria',
   honey = 'honey',
   mango = 'mango',
 }

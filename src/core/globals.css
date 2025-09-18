@@ -185,8 +185,8 @@
 .fade-circle {
   mask: radial-gradient(
     circle,
-    black 30%,
-    rgba(0, 0, 0, 0.2) 50%,
+    black 25%,
+    rgba(0, 0, 0, 0.1) 50%,
     rgba(0, 0, 0, 0) 60%,
     transparent 100%
   );

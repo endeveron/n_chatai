@@ -10,6 +10,7 @@ import {
 } from '@/core/features/chat/data/conversation';
 import {
   artFutureEmotionMap,
+  gloriaEmotionMap,
   mangoEmotionMap,
   modelArtistEmotionMap,
   sharedEmotionMap,
@@ -24,9 +25,9 @@ import {
   Gender,
   PersonKey,
 } from '@/core/features/chat/types/person';
+import { ServerActionError } from '@/core/types/common';
 import { getRandom } from '@/core/utils';
 import { MessageContent, MessageContentText } from '@langchain/core/messages';
-import { ServerActionError } from '@/core/types/common';
 
 /**
  * Returns a random name based on the specified gender.
@@ -149,6 +150,11 @@ export const getPersonalEmotion = ({
         emotionData = artFutureEmotionMap.get(emotionKey) as EmotionData;
       }
       break;
+    case PersonKey.gloria:
+      {
+        emotionData = gloriaEmotionMap.get(emotionKey) as EmotionData;
+      }
+      break;
     case PersonKey.mango:
       {
         emotionData = mangoEmotionMap.get(emotionKey) as EmotionData;
@@ -223,6 +229,8 @@ export const extractEmotionFromAIMessageContent = ({
       personKey,
     });
 
+    // console.log('[Debug] personKey:', personKey);
+    // console.log('[Debug] heatIndex:', heatIndex);
     // console.log('[Debug] initialEmotionKey:', initialEmotionKey);
     // console.log('[Debug] emotionKey:', emotionKey);
     // console.log('[Debug] emotion:', emotion);

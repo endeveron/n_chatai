@@ -472,7 +472,7 @@ export const getMongoVectorStoreForPerson = async ({
         };
       });
 
-      // Generate langchain documents
+      // Convert to LangChain documents
       const documents: Document[] = personContextWithTags.map(
         (item: { content: string; category: ContextCategory }) =>
           new Document({

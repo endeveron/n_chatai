@@ -240,6 +240,101 @@ export const mangoEmotionMap = new Map<
   ],
 ]);
 
+export const gloriaEmotionMap = new Map<
+  string,
+  {
+    list: string[];
+    length: number;
+  }
+>([
+  [
+    'excited',
+    {
+      list: ['friendly', 'smiling'],
+      length: 2,
+    },
+  ],
+  [
+    'friendly',
+    {
+      list: ['friendly', 'curious', 'mischievous', 'smiling'],
+      length: 4,
+    },
+  ],
+  // Heat index 1
+  [
+    'flirty',
+    {
+      list: [
+        'curious',
+        'flirty',
+        'flirty-2',
+        'flirty-3',
+        'lying',
+        'playful',
+        'shy',
+        'shy-2',
+        'smiling',
+      ],
+      length: 9,
+    },
+  ],
+  // Heat index 2
+  [
+    'aroused',
+    {
+      list: [
+        'anticipatory',
+        'anticipatory-2',
+        'anticipatory-3',
+        'anticipatory-4',
+        'aroused',
+        'aroused-2',
+        'aroused-3',
+        'desiring',
+        'desiring-2',
+        'feeling-2',
+        'hungry',
+        'hungry-2',
+        'teasing',
+      ],
+      length: 13,
+    },
+  ],
+  // Heat index 3
+  [
+    'obsessed',
+    {
+      list: [
+        'aching',
+        'aching-2',
+        'feeling',
+        'feeling-2',
+        'inflamed',
+        'inflamed-2',
+        'insatiable',
+        'obsessed',
+        'possessed',
+      ],
+      length: 9,
+    },
+  ],
+  [
+    'upset',
+    {
+      list: ['upset'],
+      length: 1,
+    },
+  ],
+  [
+    'error',
+    {
+      list: ['upset', 'shy'],
+      length: 2,
+    },
+  ],
+]);
+
 export const sharedEmotionMap = new Map<string, EmotionData>([
   [
     'excited',
@@ -299,6 +394,23 @@ export const heatPhotoMap = new Map<AvatarKey, CollectionMap>([
       base: {
         totalPhotos: 10,
         description: 'Base collection',
+      },
+    },
+  ],
+  [
+    AvatarKey.gloria,
+    {
+      base: {
+        totalPhotos: 12,
+        description: 'Base collection',
+      },
+      upskirt: {
+        totalPhotos: 15,
+        description: 'Upskirt',
+      },
+      dream: {
+        totalPhotos: 15,
+        description: 'Mesh dream',
       },
     },
   ],
