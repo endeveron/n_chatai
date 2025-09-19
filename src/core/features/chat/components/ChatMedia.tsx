@@ -96,22 +96,12 @@ const ChatMedia = ({ heatLevel, avatarKey }: ChatMediaProps) => {
     };
   }, [avatarKey]);
 
-  // const getCollectionNames = (
-  //   avatarKey: AvatarKey
-  // ): (keyof CollectionMap)[] => {
-  //   const collections = heatPhotoMap.get(avatarKey);
-  //   return collections
-  //     ? (Object.keys(collections) as (keyof CollectionMap)[])
-  //     : [];
-  // };
-
   const toggleExpanded = () => {
     setExpanded((prev) => !prev);
   };
 
   const toggleMinimized = () => {
     const value = !minimized;
-    // const key = `${CHAT_MEDIA_MIN_KEY}_${avatarKey}`;
     if (value) {
       setItem(CHAT_MEDIA_MIN_KEY, value);
     } else {
@@ -135,7 +125,6 @@ const ChatMedia = ({ heatLevel, avatarKey }: ChatMediaProps) => {
   };
 
   useEffect(() => {
-    // const itemInLS = getItem<boolean>(`${CHAT_MEDIA_MIN_KEY}_${avatarKey}`);
     const itemInLS = getItem<boolean>(CHAT_MEDIA_MIN_KEY);
     if (itemInLS) {
       setMinimized(true);
@@ -286,10 +275,7 @@ const ChatMedia = ({ heatLevel, avatarKey }: ChatMediaProps) => {
       }
 
       const { collectionName, localIndex } = collectionInfo;
-      // Image src for local / vercel hosted images
-      // return `/images/people/${avatarKey}/heat/${collectionName}/${localIndex}.jpg`;
 
-      // Image src for externally hosted images
       return `${ASSET_URL}/photos/${avatarKey}/${collectionName}/${localIndex}.jpg`;
     },
     [avatarKey, getImageCollectionInfo]
@@ -429,12 +415,6 @@ const ChatMedia = ({ heatLevel, avatarKey }: ChatMediaProps) => {
 
   // Reset display when `images` changes
   useEffect(() => {
-    // console.log('[Debug] RESET EFFECT triggered', {
-    //   avalImagesLength: avalImages.length,
-    //   prevLength: prevImagesLength,
-    //   timestamp: Date.now(),
-    // });
-
     if (images.length === 0) {
       setDisplayStartIndex(0);
       setPrevImagesLength(0);
@@ -465,24 +445,12 @@ const ChatMedia = ({ heatLevel, avatarKey }: ChatMediaProps) => {
 
   // Update imgSrcArr when display changes
   useEffect(() => {
-    // console.log('[Debug] IMG UPDATE EFFECT triggered', {
-    //   curImageSetLength: curImageSet.length,
-    //   timestamp: Date.now(),
-    // });
-
     const imgSources = curImageSet.map((item) => item.imageSrc);
     setImgSrcArr(imgSources);
   }, [curImageSet]);
 
   // Main logic to update images. Updates avalImages when heatIndex changes.
   useEffect(() => {
-    // console.log('[Debug] MAIN LOGIC EFFECT triggered', {
-    //   heatLevel,
-    //   heatIndex,
-    //   timestamp: Date.now(),
-    //   stack: new Error().stack?.split('\n')[2], // Shows what triggered it
-    // });
-
     if (heatLevel <= MAX_HEAT_LEVEL) {
       setImgSrcArr([]);
       setAvalCollections([]);
@@ -497,7 +465,6 @@ const ChatMedia = ({ heatLevel, avatarKey }: ChatMediaProps) => {
 
     // Update state
     setAvalCollections([...availableCollections]);
-    // setCurCollections([...availableCollections]);
 
     // Get image indexes for display
     const imgIndexes = getImageIndexes(heatIndex);
@@ -511,7 +478,6 @@ const ChatMedia = ({ heatLevel, avatarKey }: ChatMediaProps) => {
       availableCollections,
       maxAccessIndex
     );
-    // setImages(allAvailableImages);
     setAvalImages(allAvailableImages);
 
     // Generate image sources by passing avalImages as parameter
@@ -618,11 +584,6 @@ const ChatMedia = ({ heatLevel, avatarKey }: ChatMediaProps) => {
 
   // Handle imgSrcArr changes and trigger transitions with preloading
   useEffect(() => {
-    // console.log('[Debug] TRANSITION EFFECT triggered', {
-    //   imgSrcArrLength: imgSrcArr.length,
-    //   timestamp: Date.now(),
-    // });
-
     setTransitionState((prev) => {
       const hasChanges =
         imgSrcArr.length !== prev.previousSources.length ||
@@ -808,10 +769,6 @@ const ChatMedia = ({ heatLevel, avatarKey }: ChatMediaProps) => {
       if (imageUpdatesFrozen) {
         // Frozen: increment new images count and log
         setNewImagesCount((prev) => prev + globalIncrement);
-        // console.log(
-        //   '[Debug] New images available. Current selection:',
-        //   selectedCollection
-        // );
       }
     }
 
@@ -864,62 +821,6 @@ const ChatMedia = ({ heatLevel, avatarKey }: ChatMediaProps) => {
       clearCache();
     };
   }, [clearCache]);
-
-  // Debugging
-  // useEffect(() => {
-  //   console.log('[Debug] heatIndex', heatIndex);
-  // }, [heatIndex]);
-
-  // useEffect(() => {
-  //   console.log('[Debug] displayStartIndex:', displayStartIndex);
-  // }, [displayStartIndex]);
-
-  // useEffect(() => {
-  //   console.log('[Debug] avalCollections:', avalCollections);
-  // }, [avalCollections]);
-
-  // useEffect(() => {
-  //   console.log('[Debug] curCollections:', curCollections);
-  // }, [curCollections]);
-
-  // useEffect(() => {
-  //   console.log('[Debug] curImageSet deps changed:', {
-  //     avalImagesLength: avalImages.length,
-  //     heatIndex,
-  //     displayStartIndex,
-  //   });
-  // }, [avalImages, heatIndex, displayStartIndex]);
-
-  // useEffect(() => {
-  //   if (!curImageSet.length) return;
-  //   console.log(
-  //     '[Debug] curImageSet:',
-  //     curImageSet.map((i) => i.globalIndex)
-  //   );
-  //   // console.log('[Debug] curImageSet:', curImageSet);
-  // }, [curImageSet]);
-
-  // useEffect(() => {
-  //   if (!avalImages.length) return;
-  //   // console.log('[Debug] avalImages:', avalImages);
-  //   console.log('[Debug] avalImages:', avalImages.length);
-  //   console.log('[Debug] prevAvalImages:', prevAvalImagesLengthRef.current);
-  // }, [avalImages, avalImages.length]);
-
-  // useEffect(() => {
-  //   if (!images.length) return;
-  //   // console.log('[Debug] images:', images);
-  //   console.log('[Debug] images:', images.length);
-  // }, [images]);
-
-  // useEffect(() => {
-  //   if (!newImagesCount) return;
-  //   console.log('[Debug] newImagesCount:', newImagesCount);
-  // }, [newImagesCount]);
-
-  // useEffect(() => {
-  //   console.log('[Debug] imageUpdatesFrozen:', imageUpdatesFrozen);
-  // }, [imageUpdatesFrozen]);
 
   return (
     <div

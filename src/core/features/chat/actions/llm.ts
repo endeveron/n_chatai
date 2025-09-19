@@ -30,46 +30,7 @@ import {
 import { mongoDB } from '@/core/lib/mongo';
 import { ServerActionResult } from '@/core/types/common';
 import { handleActionError } from '@/core/utils/error';
-
-export const testLLM = async (
-  message: string
-): Promise<ServerActionResult<string>> => {
-  console.log('testLLM');
-
-  try {
-    const humanMessage = new HumanMessage({
-      content: [
-        {
-          type: 'text',
-          text: message,
-        },
-        // {
-        //   type: "image_url",
-        //   image_url: `data:image/png;base64,${image}`,
-        // },
-      ],
-    });
-
-    const prompt = ChatPromptTemplate.fromMessages([humanMessage]);
-
-    const chain = prompt.pipe(llm);
-    const aiMsg = await chain.invoke({});
-
-    const content = aiMsg.content.toString();
-
-    // const usageMetadata = aiMsg.usage_metadata;
-    // console.log('[Debug] askAI: aiMsg', aiMsg);
-    // console.log('[Debug] askAI: usageMetadata', usageMetadata);
-
-    return {
-      success: true,
-      data: content,
-    };
-  } catch (err: unknown) {
-    console.error(`askAI: ${err}`);
-    return configureCasualServerActionError(err);
-  }
-};
+import { AI_RESPONSE_WAITING_TIME_SEC } from '@/core/features/chat/constants';
 
 export const askAI = async ({
   chatId,
@@ -97,7 +58,22 @@ export const askAI = async ({
     return configureCasualServerActionError(`askAI: Invalid arguments.`);
   }
 
-  try {
+  const timeoutPromise = new Promise<never>((_, reject) =>
+    setTimeout(
+      () =>
+        reject(
+          new Error(`Timeout after ${AI_RESPONSE_WAITING_TIME_SEC} seconds`)
+        ),
+      AI_RESPONSE_WAITING_TIME_SEC * 1000
+    )
+  );
+
+  const mainLogic = async (): Promise<
+    ServerActionResult<{
+      aiMessage: ChatMessageItem;
+      heatIndex?: number;
+    }>
+  > => {
     // Retrieve person data either from local map or db.
     const personData = await getPersonData({
       chatId,
@@ -228,11 +204,12 @@ export const askAI = async ({
       };
     }
 
-    // console.log('[Debug] askAI > content:', normalizedContent);
-    // console.log('[Debug] askAI > emotion:', emotion);
-    // console.log('[Debug] askAI > heatIndex:', heatIndex);
-    // console.log('[Debug] askAI > usageMetadata:', usageMetadata);
-    // console.log('');
+    //   console.group('[Debug] askAI');
+    //   console.log('content:', normalizedContent);
+    //   console.log('emotion:', emotion);
+    //   console.log('heatIndex:', heatIndex);
+    //   console.log('usageMetadata:', usageMetadata);
+    //   console.groupEnd();
 
     // Configure AI message
     const timestamp = new Date().getTime();
@@ -265,6 +242,10 @@ export const askAI = async ({
       success: false,
       error: { message: 'Unable to save message pair in db.' },
     };
+  };
+
+  try {
+    return await Promise.race([mainLogic(), timeoutPromise]);
   } catch (err: unknown) {
     console.error(`askAI: ${err}`);
     return configureCasualServerActionError(err);
@@ -301,3 +282,37 @@ export const updateLLMUsageStatistics = async ({
     return handleActionError('Unable to update usage statistics', err);
   }
 };
+
+// export const testLLM = async (
+//   message: string
+// ): Promise<ServerActionResult<string>> => {
+//   try {
+//     const humanMessage = new HumanMessage({
+//       content: [
+//         {
+//           type: 'text',
+//           text: message,
+//         },
+//       ],
+//     });
+
+//     const prompt = ChatPromptTemplate.fromMessages([humanMessage]);
+
+//     const chain = prompt.pipe(llm);
+//     const aiMsg = await chain.invoke({});
+
+//     const content = aiMsg.content.toString();
+
+//     // const usageMetadata = aiMsg.usage_metadata;
+//     // console.log('[Debug] askAI: aiMsg', aiMsg);
+//     // console.log('[Debug] askAI: usageMetadata', usageMetadata);
+
+//     return {
+//       success: true,
+//       data: content,
+//     };
+//   } catch (err: unknown) {
+//     console.error(`testLLM: ${err}`);
+//     return configureCasualServerActionError(err);
+//   }
+// };

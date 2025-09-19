@@ -2,6 +2,10 @@
 export const CHAT_MEDIA_MIN_KEY = 'chat-media-min';
 export const USER_ID_KEY = 'user';
 
+export const TYPING_ANIMATION_DELAY_MSEC = 1000;
+
+export const AI_RESPONSE_WAITING_TIME_SEC = 15; // should be at least 10 sec
+
 // Number of memory nodes (elements of the human message context) that need to be sent to the client
 export const MEMORY_LENGTH_FOR_CLIENT = 20;
 

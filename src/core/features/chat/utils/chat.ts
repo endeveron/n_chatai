@@ -229,12 +229,11 @@ export const extractEmotionFromAIMessageContent = ({
       personKey,
     });
 
-    // console.log('[Debug] personKey:', personKey);
-    // console.log('[Debug] heatIndex:', heatIndex);
-    // console.log('[Debug] initialEmotionKey:', initialEmotionKey);
-    // console.log('[Debug] emotionKey:', emotionKey);
-    // console.log('[Debug] emotion:', emotion);
-    // console.log('\n');
+    // console.group('[Debug] Extract emotion');
+    // console.log('initialEmotionKey:', initialEmotionKey);
+    // console.log('emotionKey:', emotionKey);
+    // console.log('emotion:', emotion);
+    // console.groupEnd();
 
     return {
       aiMsgText,

@@ -11,6 +11,7 @@ import {
   RetrievalConfig,
 } from '@/core/features/chat/types/person';
 import { mongoDB } from '@/core/lib/mongo';
+import { AI_RESPONSE_WAITING_TIME_SEC } from '@/core/features/chat/constants';
 
 export const personDataMap = new Map<PersonKey, PersonDataForLLM>([]);
 export const vectorStoreMap = new Map<string, MongoDBAtlasVectorSearch>();
@@ -697,8 +698,12 @@ export const getContextFromVectorStore = async ({
   // console.log(`[Debug] getContextFromVectorStore: retrival`, retrival);
 
   // Retrieve the documents using metadata 'category' tag
+  const timeout = AI_RESPONSE_WAITING_TIME_SEC - 5;
   const timeoutPromise = new Promise((_, reject) =>
-    setTimeout(() => reject(new Error('Timeout after 10 seconds')), 10000)
+    setTimeout(
+      () => reject(new Error(`Timeout after ${timeout} seconds`)),
+      timeout * 1000
+    )
   );
 
   try {
