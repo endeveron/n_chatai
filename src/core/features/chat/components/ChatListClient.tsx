@@ -52,7 +52,7 @@ const ChatListClient = ({ chatItems, userData }: ChatListClientProps) => {
 
   return (
     <div
-      className="chat-list"
+      className="chat-list fade"
       data-chat={isChat && 'xs'}
       data-new-chat={isNewChat}
     >

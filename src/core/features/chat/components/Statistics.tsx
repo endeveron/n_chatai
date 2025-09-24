@@ -36,10 +36,10 @@ const Statistics = () => {
   if (userRole !== UserRole.admin) return null;
 
   return (
-    <div className="relative w-6 h-9">
+    <div className="relative w-0 h-9">
       <div
         className={cn(
-          'absolute left-0 flex-center gap-2 text-muted text-sm cursor-default trans-o',
+          'absolute left-4 flex-center gap-2 text-muted text-sm cursor-default trans-o',
           fetching && 'opacity-20 pointer-events-none'
         )}
       >

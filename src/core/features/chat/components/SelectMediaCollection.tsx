@@ -35,7 +35,7 @@ const SelectMediaCollection = ({
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <div
-              className="p-2 rounded-full bg-popover text-muted opacity-40 hover:opacity-100 trans-o cursor-pointer"
+              className="p-2 rounded-full bg-popover text-muted opacity-60 hover:opacity-100 trans-o cursor-pointer"
               title="Avaliable collections"
             >
               <CollectionIcon />

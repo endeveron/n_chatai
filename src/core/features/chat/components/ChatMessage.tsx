@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { toast } from 'sonner';
 
+import { CopyIcon } from '@/core/components/icons/CopyIcon';
 import { TranslateIcon } from '@/core/components/icons/TranslateIcon';
 import Loading from '@/core/components/ui/Loading';
 import { saveMessageTranslation } from '@/core/features/chat/actions/chat';
@@ -77,9 +78,7 @@ const ChatMessage = ({
     }
   };
 
-  const handleContextClick = (e: React.MouseEvent) => {
-    e.preventDefault(); // Prevent the default context menu
-
+  const handleCopy = () => {
     copy(content);
     toast('Message text copied to clipboard');
   };
@@ -102,22 +101,23 @@ const ChatMessage = ({
       {avatar}
 
       <div className="flex items-center">
-        <div
-          onContextMenu={handleContextClick}
-          className="chat-message_content"
-        >
-          {/* Translate button */}
+        <div className="chat-message_content">
+          {/* Toolbar */}
           {isPremium &&
             isAi &&
             content &&
             !translation &&
             !localTranslation && (
-              <div
-                onClick={handleTranslate}
-                className="chat-message_translate-button"
-                title="Translate message"
-              >
-                <TranslateIcon className="icon--action" />
+              <div className="chat-message_toolbar">
+                {/* Copy button */}
+                <div onClick={handleCopy} title="Copy message">
+                  <CopyIcon className="icon--action" />
+                </div>
+
+                {/* Translate button */}
+                <div onClick={handleTranslate} title="Translate">
+                  <TranslateIcon className="icon--action" />
+                </div>
               </div>
             )}
 
@@ -125,10 +125,7 @@ const ChatMessage = ({
 
           {/* Translated text, if exists */}
           {isAi && !translating && (translation || localTranslation) ? (
-            <div
-              onContextMenu={handleContextClick}
-              className="chat-message_translation"
-            >
+            <div className="chat-message_translation">
               {translation || localTranslation}
             </div>
           ) : null}

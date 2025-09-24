@@ -870,7 +870,7 @@ const ChatMedia = ({ heatLevel, avatarKey }: ChatMediaProps) => {
 
                 <div
                   className={cn(
-                    'absolute translate-x-12 p-1.5 rounded-full bg-btn-secondary-background trans-o ease-out',
+                    'absolute translate-x-12 p-1.5 rounded-full bg-btn-secondary-background trans-a',
                     (minimized || expanded) && 'opacity-0'
                   )}
                 >
@@ -909,6 +909,7 @@ const ChatMedia = ({ heatLevel, avatarKey }: ChatMediaProps) => {
 
               {/* Clickable area (expand / collapse) */}
               <div
+                data-active={expanded}
                 onClick={toggleExpanded}
                 className="chat-media_clickable-area"
               >
@@ -953,7 +954,7 @@ const ChatMedia = ({ heatLevel, avatarKey }: ChatMediaProps) => {
                 expanded && imgSrcArrLength === 2 && '-translate-x-60!'
               )}
             >
-              <div className="opacity-85 chat-media_image-wrapper">
+              <div className="opacity-90 chat-media_image-wrapper">
                 {getCurrentImageSrc(1) && (
                   <Image
                     src={getCurrentImageSrc(1)!}
@@ -979,7 +980,7 @@ const ChatMedia = ({ heatLevel, avatarKey }: ChatMediaProps) => {
                   : 'chat-media_item--inactive'
               )}
             >
-              <div className="opacity-70 chat-media_image-wrapper">
+              <div className="opacity-75 chat-media_image-wrapper">
                 {getCurrentImageSrc(2) && (
                   <Image
                     src={getCurrentImageSrc(2)!}

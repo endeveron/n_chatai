@@ -10,6 +10,10 @@ import '@/core/globals.css';
 export const viewport: Viewport = {
   interactiveWidget: 'resizes-content',
   viewportFit: 'cover',
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#f9fafa' },
+    { media: '(prefers-color-scheme: dark)', color: '#17181c' },
+  ],
 };
 
 const mulishSans = Mulish({
