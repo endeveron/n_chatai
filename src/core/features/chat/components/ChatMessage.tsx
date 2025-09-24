@@ -103,23 +103,21 @@ const ChatMessage = ({
       <div className="flex items-center">
         <div className="chat-message_content">
           {/* Toolbar */}
-          {isPremium &&
-            isAi &&
-            content &&
-            !translation &&
-            !localTranslation && (
-              <div className="chat-message_toolbar">
-                {/* Copy button */}
-                <div onClick={handleCopy} title="Copy message">
-                  <CopyIcon className="icon--action" />
-                </div>
+          {isPremium && isAi && content && (
+            <div className="chat-message_toolbar">
+              {/* Copy button */}
+              <div onClick={handleCopy} title="Copy message">
+                <CopyIcon className="icon--action" />
+              </div>
 
-                {/* Translate button */}
+              {/* Translate button */}
+              {!translation && !localTranslation && (
                 <div onClick={handleTranslate} title="Translate">
                   <TranslateIcon className="icon--action" />
                 </div>
-              </div>
-            )}
+              )}
+            </div>
+          )}
 
           {content}
 

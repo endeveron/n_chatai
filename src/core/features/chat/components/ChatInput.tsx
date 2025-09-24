@@ -75,6 +75,12 @@ const ChatInput = ({ onSubmit, isPending, isPremium }: TChatInputProps) => {
                   <FormInput
                     placeholder="Type something..."
                     className="rounded-3xl p-6 bg-card trans-c"
+                    type="search" // To disable Chrome's extra bar
+                    // inputMode="text"
+                    // autoComplete="off"
+                    // autoCorrect="off"
+                    // autoCapitalize="off"
+                    // spellCheck={false}
                     {...field}
                   />
                 </FormControl>
