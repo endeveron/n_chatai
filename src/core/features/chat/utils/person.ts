@@ -12,6 +12,7 @@ import {
 } from '@/core/features/chat/types/person';
 import { mongoDB } from '@/core/lib/mongo';
 import { AI_RESPONSE_WAITING_TIME_SEC } from '@/core/features/chat/constants';
+import { runWithTimeoutAsync, TimeoutError } from '@/core/utils';
 
 export const personDataMap = new Map<PersonKey, PersonDataForLLM>([]);
 export const vectorStoreMap = new Map<string, MongoDBAtlasVectorSearch>();
@@ -698,32 +699,27 @@ export const getContextFromVectorStore = async ({
   // console.log(`[Debug] getContextFromVectorStore: retrival`, retrival);
 
   // Retrieve the documents using metadata 'category' tag
-  const timeout = AI_RESPONSE_WAITING_TIME_SEC - 5;
-  const timeoutPromise = new Promise((_, reject) =>
-    setTimeout(
-      () => reject(new Error(`Timeout after ${timeout} seconds`)),
-      timeout * 1000
-    )
-  );
+  const getCategoryDocs = async (): Promise<Document[]> =>
+    vectorStore.similaritySearch(query, retrival.k, {
+      preFilter: {
+        $and: [
+          { category: { $in: retrival.categories } },
+          { personKey: personKey },
+        ],
+      },
+    });
 
   try {
-    categoryDocuments = (await Promise.race([
-      vectorStore.similaritySearch(query, retrival.k, {
-        preFilter: {
-          $and: [
-            { category: { $in: retrival.categories } },
-            { personKey: personKey },
-          ],
-        },
-      }),
-      timeoutPromise,
-    ])) as Document[];
-  } catch (error: unknown) {
-    console.error(
-      `Vector search failed/timed out, returning empty results.`,
-      error
-    );
-    categoryDocuments = [];
+    categoryDocuments = await runWithTimeoutAsync(getCategoryDocs, {
+      timeoutMs: (AI_RESPONSE_WAITING_TIME_SEC - 5) * 1000,
+      errorMessage: 'Vector search timed out',
+    });
+  } catch (error) {
+    if (error instanceof TimeoutError) {
+      console.error(`Vector search timed out after ${error.timeoutMs}ms`);
+    } else {
+      console.error('Vector search failed:', error);
+    }
   }
 
   return categoryDocuments.length

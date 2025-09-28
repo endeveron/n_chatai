@@ -13,12 +13,12 @@ import { AvatarKey } from '@/core/features/chat/types/person';
 import { translateText } from '@/core/features/translate/actions';
 import { useClipboard } from '@/core/hooks/useClipboard';
 
-type ChatMessageProps = BaseChatMessage & {
+export interface ChatMessageProps extends BaseChatMessage {
   avatarKey: AvatarKey;
   avatarBlur: string;
   isPremium: boolean;
   onScroll: () => void;
-};
+}
 
 const ChatMessage = ({
   id,

@@ -556,6 +556,10 @@
     @apply bg-ai-message ml-11 sm:mr-10 rounded-tl-3xl!;
   }
 
+  .chat-preview .chat-message[data-role='ai'] .chat-message_content {
+    @apply sm:mr-0;
+  }
+
   .dark .chat-message[data-role='ai'] .chat-message_content {
     @apply bg-ai-message;
   }

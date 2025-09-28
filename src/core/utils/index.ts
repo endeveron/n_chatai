@@ -6,6 +6,46 @@ import { LangCode, Phrase } from '@/core/types';
 
 const alphanumCharset = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
 
+// Custom error class for timeout scenarios
+export class TimeoutError extends Error {
+  constructor(message: string, public readonly timeoutMs: number) {
+    super(message);
+    this.name = 'TimeoutError';
+  }
+}
+// Configuration interface for the timeout function
+interface TimeoutConfig {
+  timeoutMs: number;
+  errorMessage?: string;
+}
+// Generic utility function that works with any async operation
+export async function runWithTimeoutAsync<T>(
+  operation: () => Promise<T>,
+  config: TimeoutConfig
+): Promise<T> {
+  const { timeoutMs, errorMessage } = config;
+
+  const timeoutPromise = new Promise<never>((_, reject) => {
+    setTimeout(
+      () =>
+        reject(
+          new TimeoutError(
+            errorMessage ?? `Operation timed out after ${timeoutMs}ms`,
+            timeoutMs
+          )
+        ),
+      timeoutMs
+    );
+  });
+
+  try {
+    return await Promise.race([operation(), timeoutPromise]);
+  } catch (error) {
+    // Re-throw the error to let the caller handle it
+    throw error;
+  }
+}
+
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }

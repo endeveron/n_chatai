@@ -31,6 +31,7 @@ import { mongoDB } from '@/core/lib/mongo';
 import { ServerActionResult } from '@/core/types/common';
 import { handleActionError } from '@/core/utils/error';
 import { AI_RESPONSE_WAITING_TIME_SEC } from '@/core/features/chat/constants';
+import { runWithTimeoutAsync } from '@/core/utils';
 
 export const askAI = async ({
   chatId,
@@ -57,16 +58,6 @@ export const askAI = async ({
   if (!chatId || !message.content || !personKey) {
     return configureCasualServerActionError(`askAI: Invalid arguments.`);
   }
-
-  const timeoutPromise = new Promise<never>((_, reject) =>
-    setTimeout(
-      () =>
-        reject(
-          new Error(`Timeout after ${AI_RESPONSE_WAITING_TIME_SEC} seconds`)
-        ),
-      AI_RESPONSE_WAITING_TIME_SEC * 1000
-    )
-  );
 
   const mainLogic = async (): Promise<
     ServerActionResult<{
@@ -245,7 +236,9 @@ export const askAI = async ({
   };
 
   try {
-    return await Promise.race([mainLogic(), timeoutPromise]);
+    return await runWithTimeoutAsync(mainLogic, {
+      timeoutMs: AI_RESPONSE_WAITING_TIME_SEC * 1000,
+    });
   } catch (err: unknown) {
     console.error(`askAI: ${err}`);
     return configureCasualServerActionError(err);

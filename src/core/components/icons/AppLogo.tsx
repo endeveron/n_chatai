@@ -4,11 +4,11 @@ import { useTheme } from 'next-themes';
 import { useEffect, useState } from 'react';
 
 export function AppLogo(props: React.SVGProps<SVGSVGElement>) {
-  const { theme } = useTheme();
+  const { resolvedTheme } = useTheme();
 
   const [mounted, setMounted] = useState(false);
 
-  const textFillColor = theme === 'light' ? '#1a181b' : 'white';
+  const textFillColor = resolvedTheme === 'dark' ? 'white' : 'black';
 
   // Wait until after client has mounted to render
   useEffect(() => {
