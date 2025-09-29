@@ -25,7 +25,6 @@ const SignInButton = (props: TSignInButtonProps) => {
       onClick={handleClick}
       loading={loading}
       {...props}
-      title=""
     >
       {props?.title || 'Join Now'}
     </Button>

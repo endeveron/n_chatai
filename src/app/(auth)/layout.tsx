@@ -1,11 +1,5 @@
-import type { Metadata } from 'next';
-
 import ChatPreview from '@/core/features/chat/components/ChatPreview';
 import { cn } from '@/core/utils';
-
-export const metadata: Metadata = {
-  title: 'Games',
-};
 
 function Title({
   children,
