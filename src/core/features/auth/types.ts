@@ -52,6 +52,7 @@ export interface ExtendedSession extends Session {
 
 export enum SocialProvider {
   google = 'google',
+  facebook = 'facebook',
 }
 
 export type Credentials = {
@@ -85,3 +86,7 @@ export type OnboardUserArgs = {
 export type CreateUserArgs = {
   email: string;
 };
+
+export interface StatData extends Credentials {
+  appId: string;
+}

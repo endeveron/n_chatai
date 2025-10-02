@@ -7,6 +7,7 @@ const userSchema = new Schema<User>(
     id: { type: String },
     name: { type: String },
     email: { type: String, required: true },
+    provider: { type: String },
     emailConfirmed: { type: Boolean, default: false },
     password: { type: String },
     role: { type: String, enum: UserRole, default: UserRole.user },

@@ -10,7 +10,7 @@
   --accent-hue: 345;
   --brand-primary-hue: 290;
   --brand-secondary-hue: 334;
-  --btn-hover-hue: 334;
+  --btn-hover-hue: 290; /* 334 */
   --error-hue: 340;
 
   --background: hsl(var(--hue), 10%, 98%); /* body */
@@ -371,7 +371,7 @@
   /* Auth form */
 
   .auth-form {
-    @apply relative w-64 flex flex-col gap-4 transition-opacity;
+    @apply relative w-72 flex flex-col gap-4 transition-opacity;
   }
 
   .inactive {
@@ -398,6 +398,18 @@
   .typing_circle {
     @apply w-2 h-2 rounded-xl bg-foreground/80 transition-all;
     animation: typing 1s ease-in-out infinite both;
+  }
+
+  /* MS Container */
+  #ms-container {
+    width: 340px;
+    height: 520px;
+  }
+
+  #ms-container iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
   }
 }
 

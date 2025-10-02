@@ -91,7 +91,7 @@ const ChatPreview = () => {
           I like your drop-dead sexy style!
         </div>
 
-        <div className="absolute z-30 bottom-28 -right-12 lg:-right-20 p-6 rounded-xs bg-accent shadow-2xl rotate-6">
+        <div className="absolute z-30 bottom-28 -right-16 lg:-right-20 p-6 rounded-3xl bg-accent shadow-2xl rotate-6">
           <div className="text-white text-2xl leading-tight font-black tracking-wide">
             Incredible
             <br />

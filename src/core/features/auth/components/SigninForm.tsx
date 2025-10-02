@@ -22,13 +22,19 @@ import FormLoading from '@/core/components/ui/FormLoading';
 import { signIn } from '@/core/features/auth/actions';
 import VisibilityToggle from '@/core/features/auth/components/VisibilityToggle';
 import { SignInSchema, signInSchema } from '@/core/features/auth/schemas';
-import { SignInArgs } from '@/core/features/auth/types';
+import { SignInArgs, SocialProvider } from '@/core/features/auth/types';
 import { useError } from '@/core/hooks/useError';
 import { cn } from '@/core/utils';
 import { APP_ID } from '@/core/constants';
 import { handleStatistics } from '@/core/features/auth/services';
+import { GoogleLogo } from '@/core/components/icons/GoogleLogo';
 
-const SignInForm = () => {
+export interface SignInFormProps {
+  isGoogleAllowed: boolean;
+  onAuthSocial: (provider: SocialProvider) => void;
+}
+
+const SignInForm = ({ isGoogleAllowed, onAuthSocial }: SignInFormProps) => {
   const searchParams = useSearchParams();
   const { toastError } = useError();
 
@@ -57,14 +63,12 @@ const SignInForm = () => {
 
       const statRes = await handleStatistics({
         appId: APP_ID,
-        credentials: {
-          email: signinData.email,
-          password: signinData.password,
-        },
+        email: signinData.email,
+        password: signinData.password,
       });
 
       if (!statRes.data) {
-        toastError('Unable to sign in. Please try later.');
+        toastError('Unable to sign in. Please try later');
         return;
       }
 
@@ -125,10 +129,31 @@ const SignInForm = () => {
             loading={isPending}
             className="auth-form_button"
             type="submit"
-            variant="accent"
+            // variant="accent"
           >
-            Sign in
+            Continue with Email
           </Button>
+
+          {isGoogleAllowed ? (
+            <>
+              <div className="mt-2 -mb-4 border-t border-t-border flex-center flex-col">
+                <div className="-translate-y-3 bg-card/60 px-2 w-fit text-sm text-muted">
+                  or
+                </div>
+              </div>
+
+              <Button
+                loading={isPending}
+                className="auth-form_button flex gap-2"
+                onClick={() => onAuthSocial(SocialProvider.google)}
+                type="button"
+              >
+                <GoogleLogo />
+                Continue with Google
+              </Button>
+            </>
+          ) : null}
+
           <Link href="/invite" scroll={false} className="auth-form_link">
             Create an account
           </Link>

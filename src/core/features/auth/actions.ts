@@ -531,7 +531,7 @@ export const signInSocial = async ({
 
       // Create a new user in the database
       const _id = new Types.ObjectId();
-      user = new UserModel({
+      user = await UserModel.create({
         _id,
         id: _id.toString(),
         provider,
@@ -540,7 +540,6 @@ export const signInSocial = async ({
         name,
         image,
       });
-      await user.save();
     } else {
       if (user.provider && user.name && user.image && user.emailConfirmed) {
         return { success: true };

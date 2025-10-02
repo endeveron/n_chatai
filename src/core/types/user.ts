@@ -1,3 +1,4 @@
+import { SocialProvider } from '@/core/features/auth/types';
 import { Types } from 'mongoose';
 
 export enum UserRole {
@@ -13,6 +14,7 @@ export type User = {
   emailConfirmed?: boolean;
   password?: string;
   role: UserRole;
+  provider?: SocialProvider;
   image?: string;
   premium?: {
     transactionId: string;

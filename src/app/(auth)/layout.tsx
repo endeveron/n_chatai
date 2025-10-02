@@ -27,7 +27,7 @@ export default function AuthLayout({
 }>) {
   return (
     <div className="size-full flex bg-area trans-c">
-      <div className="w-full md:w-sm lg:w-1/3 flex-center">{children}</div>
+      <div className="relative w-full md:w-[400px] flex-center">{children}</div>
       <div className="relative max-md:hidden flex-1 flex-center bg-brand overflow-hidden select-none">
         <Title className="-translate-y-[340px]">18+ nsfw chat</Title>
         <div className="absolute bg-area/5 inset-x-0 h-80"></div>

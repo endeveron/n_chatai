@@ -1,12 +1,11 @@
 const APP_ID = process.env.NEXT_PUBLIC_APP_ID as string;
 
-// const API_URL = process.env.NEXT_PUBLIC_API_URL as string;
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL as string;
 const ASSET_URL = process.env.NEXT_PUBLIC_ASSET_URL as string;
 const STATS_URL = process.env.NEXT_PUBLIC_STATS_URL as string;
+const AUTH_URL = process.env.NEXT_PUBLIC_AUTH_URL as string;
 
 const STATE_KEY = process.env.NEXT_PUBLIC_STATE_KEY as string;
-
 const DB_CONNECTION_STRING = process.env.DB_CONNECTION_STRING as string;
 
 const AUTH_SECRET = process.env.DB_CONNECTION_STRING as string;
@@ -25,13 +24,14 @@ const LANG_CODE_KEY = 'lang-code';
 // Routes
 const SIGNIN_REDIRECT = '/signin';
 const SIGNUP_REDIRECT = '/signup';
-const DEFAULT_REDIRECT = '/'; // after user signed in.
+const DEFAULT_REDIRECT = '/'; // Redirect URL after successful sign-in
 
 export {
   APP_ID,
-  STATS_URL,
   BASE_URL,
   ASSET_URL,
+  STATS_URL,
+  AUTH_URL,
   STATE_KEY,
   DB_CONNECTION_STRING,
   AUTH_SECRET,

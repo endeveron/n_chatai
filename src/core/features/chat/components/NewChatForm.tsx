@@ -37,7 +37,7 @@ const NewChatForm = ({
   const form = useForm<CreateChatSchema>({
     resolver: zodResolver(createChatSchema),
     defaultValues: {
-      userName: userName ?? '',
+      userName: userName ? userName.split(' ')[0] : '',
       personName: '',
     },
   });
@@ -67,7 +67,7 @@ const NewChatForm = ({
             render={({ field }) => (
               <FormItem>
                 <FormLabel className="new-chat-form_label">
-                  Your name
+                  Your name for chat
                   <span className="text-title">required</span>
                 </FormLabel>
                 <FormControl>

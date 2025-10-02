@@ -54,10 +54,12 @@
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^20.19.9",
     "@types/nodemailer": "^6.4.17",
+    "@types/postmate": "^1.5.4",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "15.4.5",
+    "postmate": "^1.5.2",
     "tailwindcss": "^4",
     "tw-animate-css": "^1.3.6",
     "typescript": "^5.8.3"
