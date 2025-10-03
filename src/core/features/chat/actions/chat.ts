@@ -5,6 +5,7 @@ import { Types } from 'mongoose';
 import { revalidatePath } from 'next/cache';
 
 import { getUserIdByEmail } from '@/core/features/auth/actions';
+import UserModel from '@/core/features/auth/models/user';
 import {
   CHAT_MESSAGE_LIFETIME,
   MEMORY_LENGTH_FOR_CLIENT,
@@ -16,6 +17,7 @@ import MessageModel from '@/core/features/chat/models/message';
 import PersonModel from '@/core/features/chat/models/person';
 import {
   Chat,
+  ChatItem,
   ChatMessageDb,
   ChatMessageItem,
   ChatResponseData,
@@ -23,17 +25,16 @@ import {
   MemoryMessage,
   MemoryNode,
 } from '@/core/features/chat/types/chat';
-import { AvatarKey } from '@/core/features/chat/types/person';
+import { normalizeText } from '@/core/features/chat/utils/chat';
 import { createSummaryMessage } from '@/core/features/chat/utils/llm';
 import { mongoDB } from '@/core/lib/mongo';
-import UserModel from '@/core/features/auth/models/user';
-import { ServerActionResult } from '@/core/types/common';
+import { ServerActionResult } from '@/core/types';
 import { handleActionError } from '@/core/utils/error';
-import { normalizeText } from '@/core/features/chat/utils/chat';
 
 export const createChat = async ({
   userId,
   userName,
+  language,
   personId,
   personName,
   path,
@@ -41,7 +42,7 @@ export const createChat = async ({
   try {
     await mongoDB.connect();
 
-    const chat = await ChatModel.create({
+    const chat = new ChatModel({
       user: userId,
       person: personId,
       personName,
@@ -55,6 +56,12 @@ export const createChat = async ({
         total: 0,
       },
     });
+
+    if (language) {
+      chat.language = language;
+    }
+
+    await chat.save();
 
     // Update cache
     if (path) revalidatePath(path);
@@ -138,25 +145,11 @@ export const getUserChats = async ({
   userEmail,
 }: {
   userEmail: string;
-}): Promise<
-  ServerActionResult<
-    {
-      chatId: string;
-      title: string;
-      heatLevel: number;
-      person: {
-        name: string;
-        status: string;
-        avatarBlur: string;
-        avatarKey: AvatarKey;
-      };
-    }[]
-  >
-> => {
+}): Promise<ServerActionResult<ChatItem[]>> => {
   try {
     await mongoDB.connect();
 
-    // Find user by email
+    // Find a user by email
     const user = await UserModel.findOne({ email: userEmail });
     if (!user) {
       return handleActionError(
@@ -173,17 +166,24 @@ export const getUserChats = async ({
     });
 
     // Configure output data
-    const chats = fetchedChats.map((c) => ({
-      chatId: c._id.toString(),
-      title: c.title || c.personName,
-      heatLevel: c.heatLevel,
-      person: {
-        name: c.personName,
-        status: c.person.status,
-        avatarBlur: c.person.avatarBlur,
-        avatarKey: c.person.avatarKey,
-      },
-    }));
+    const chats = fetchedChats.map((c) => {
+      const chatItem: ChatItem = {
+        chatId: c._id.toString(),
+        title: c.title || c.personName,
+        heatLevel: c.heatLevel,
+        person: {
+          name: c.personName,
+          status: c.person.status,
+          avatarBlur: c.person.avatarBlur,
+          avatarKey: c.person.avatarKey,
+        },
+      };
+      if (c.language) {
+        chatItem.language = c.language;
+      }
+
+      return chatItem;
+    });
 
     return {
       success: true,
@@ -291,6 +291,10 @@ export const getChat = async ({
       memory: parsedMemory,
       messages: parsedMessages,
     };
+
+    if (chat.language) {
+      data.language = chat.language;
+    }
 
     return {
       success: true,

@@ -5,12 +5,11 @@ const ASSET_URL = process.env.NEXT_PUBLIC_ASSET_URL as string;
 const STATS_URL = process.env.NEXT_PUBLIC_STATS_URL as string;
 const AUTH_URL = process.env.NEXT_PUBLIC_AUTH_URL as string;
 
-const STATE_KEY = process.env.NEXT_PUBLIC_STATE_KEY as string;
+const API_ACCESS_TOKEN = process.env.API_ACCESS_TOKEN as string;
 const DB_CONNECTION_STRING = process.env.DB_CONNECTION_STRING as string;
 
 const AUTH_SECRET = process.env.DB_CONNECTION_STRING as string;
 const ENCRYPTION_PASSPHRASE = process.env.ENCRYPTION_PASSPHRASE as string;
-// const FIXED_SALT = process.env.FIXED_SALT as string;
 
 const EMAIL_JWT = process.env.EMAIL_JWT as string;
 const NODEMAILER_USER = process.env.NODEMAILER_USER as string;
@@ -32,11 +31,10 @@ export {
   ASSET_URL,
   STATS_URL,
   AUTH_URL,
-  STATE_KEY,
+  API_ACCESS_TOKEN,
   DB_CONNECTION_STRING,
   AUTH_SECRET,
   ENCRYPTION_PASSPHRASE,
-  // FIXED_SALT,
   EMAIL_JWT,
   NODEMAILER_USER,
   NODEMAILER_PASSWORD,

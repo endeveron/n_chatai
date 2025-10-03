@@ -25,7 +25,7 @@ import {
   Gender,
   PersonKey,
 } from '@/core/features/chat/types/person';
-import { ServerActionError } from '@/core/types/common';
+import { ServerActionError } from '@/core/types';
 import { getRandom } from '@/core/utils';
 import { MessageContent, MessageContentText } from '@langchain/core/messages';
 

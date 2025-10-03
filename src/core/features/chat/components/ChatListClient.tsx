@@ -72,6 +72,7 @@ const ChatListClient = ({ chatItems, userData }: ChatListClientProps) => {
               person={c.person}
               heatLevel={c.heatLevel}
               key={c.chatId}
+              language={c.language}
             />
           ))}
         </ScrollArea>

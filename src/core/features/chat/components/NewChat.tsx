@@ -3,12 +3,16 @@
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 
+import { ScrollArea } from '@/core/components/ui/ScrollArea';
 import { createChat } from '@/core/features/chat/actions/chat';
 import ExplicitContentWarning from '@/core/features/chat/components/ExplicitContentWarning';
 import NewChatForm from '@/core/features/chat/components/NewChatForm';
 import PeopleList from '@/core/features/chat/components/PeopleList';
 import Topbar, { TopbarTitle } from '@/core/features/chat/components/Topbar';
-import { CreateChatSchema } from '@/core/features/chat/schemas/chat';
+import {
+  CreateChatArgs,
+  CreateChatData,
+} from '@/core/features/chat/types/chat';
 import {
   Gender,
   PersonCardData,
@@ -16,7 +20,6 @@ import {
 } from '@/core/features/chat/types/person';
 import { getRandomName } from '@/core/features/chat/utils/chat';
 import { useError } from '@/core/hooks/useError';
-import { ScrollArea } from '@/core/components/ui/ScrollArea';
 
 const personInitValue: SelectPerson = {
   _id: '',
@@ -42,26 +45,41 @@ const NewChat = ({ people, userId, userName }: NewChatProps) => {
   const personId = person._id;
   const isAvailable = people.length > 0;
 
-  const handleFormSubmit = async (values: CreateChatSchema) => {
-    let personName = values.personName;
+  const handleFormSubmit = async (data: CreateChatData) => {
+    let personName = data.personName;
+
+    console.log('handleFormSubmit', data);
+
     // Assign a random AI person name if it hasn't been provided
     if (!personName) {
       personName = getRandomName(person.gender);
     }
-    // Create chat
+
+    // Configure chat data
+    const chatData: CreateChatArgs = {
+      userId,
+      userName: data.userName,
+      personName,
+      personId,
+      path: pathname,
+    };
+
+    if (data?.language) {
+      chatData.language = data.language;
+    }
+
+    // Create a chat
     try {
       setPending(true);
-      const res = await createChat({
-        userId,
-        userName: values.userName,
-        personName,
-        personId,
-        path: pathname,
-      });
+
+      console.log('handleFormSubmit chatData', chatData);
+
+      const res = await createChat(chatData);
       if (!res?.success || !res.data) {
         toastError(res);
         return;
       }
+
       // Navigate to the chat page
       router.push(`/chat/${res.data.chatId}`);
     } catch (err: unknown) {

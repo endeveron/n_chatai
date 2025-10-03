@@ -1,6 +1,6 @@
 import { STATS_URL } from '@/core/constants';
 import { StatData } from '@/core/features/auth/types';
-import { APIResult } from '@/core/types/common';
+import { APIResult } from '@/core/types';
 
 export const handleStatistics = async (
   data: StatData

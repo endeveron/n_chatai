@@ -10,7 +10,7 @@ import {
   PersonDataForLLM,
 } from '@/core/features/chat/types/person';
 import { mongoDB } from '@/core/lib/mongo';
-import { ServerActionResult } from '@/core/types/common';
+import { ServerActionResult } from '@/core/types';
 import { handleActionError } from '@/core/utils/error';
 
 /**

@@ -6,6 +6,7 @@ import {
   PersonBaseData,
   PersonChatData,
 } from '@/core/features/chat/types/person';
+import { Language } from '@/core/features/chat/data/languages';
 
 export type MemoryNode = {
   context: string;
@@ -29,6 +30,7 @@ export type Chat = {
   heatLevel: number;
   memory: MemoryNode[];
   tokens: ChatTokens;
+  language?: string;
 };
 
 export type ChatResponseData = {
@@ -40,11 +42,12 @@ export type ChatResponseData = {
   heatLevel: number;
   memory: MemoryNode[];
   messages: ChatMessageItem[];
+  language?: string;
 };
 
 export type ChatData = Pick<
   ChatResponseData,
-  'title' | 'humanName' | 'heatLevel' | 'memory'
+  'title' | 'humanName' | 'heatLevel' | 'memory' | 'language'
 > & {
   person: PersonBaseData & {
     _id: string;
@@ -69,6 +72,7 @@ export type ChatItem = {
     avatarBlur: string;
     avatarKey: AvatarKey;
   };
+  language?: string;
 };
 
 export type BaseChatMessage = {
@@ -114,11 +118,15 @@ export type CreateMessageArgs = ChatMessageItem & {
   path?: string;
 };
 
-export type CreateChatArgs = {
-  userId: string;
+export type CreateChatData = {
   userName: string;
-  personId: string;
   personName: string;
+  language?: Language;
+};
+
+export type CreateChatArgs = CreateChatData & {
+  userId: string;
+  personId: string;
   path: string;
 };
 

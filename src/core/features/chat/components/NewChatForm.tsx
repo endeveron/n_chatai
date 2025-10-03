@@ -1,7 +1,7 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
 import { Button } from '@/core/components/ui/Button';
@@ -15,17 +15,27 @@ import {
   FormMessage,
 } from '@/core/components/ui/Form';
 import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/core/components/ui/Select';
+import { CHAT_LANGUAGES, Language } from '@/core/features/chat/data/languages';
+import {
   createChatSchema,
   CreateChatSchema,
 } from '@/core/features/chat/schemas/chat';
+import { CreateChatData } from '@/core/features/chat/types/chat';
 
-type TCreateChatProps = {
+interface CreateChatProps {
   isPending: boolean;
   isActive: boolean;
   onSubmit: (values: CreateChatSchema) => void;
   onCancel: () => void;
   userName?: string | null;
-};
+}
 
 const NewChatForm = ({
   isActive,
@@ -33,7 +43,7 @@ const NewChatForm = ({
   onCancel,
   onSubmit,
   userName,
-}: TCreateChatProps) => {
+}: CreateChatProps) => {
   const form = useForm<CreateChatSchema>({
     resolver: zodResolver(createChatSchema),
     defaultValues: {
@@ -42,8 +52,14 @@ const NewChatForm = ({
     },
   });
 
+  const [language, setLanguage] = useState<Language>('English');
+
   const handleSubmit = async (values: CreateChatSchema) => {
-    onSubmit(values);
+    const data: CreateChatData = { ...values };
+    if (language !== 'English') {
+      data.language = language;
+    }
+    onSubmit(data);
     form.reset();
   };
 
@@ -60,6 +76,33 @@ const NewChatForm = ({
         data-active={!isPending && isActive}
         className="new-chat-form"
       >
+        <div className="flex items-center justify-between sm:w-1/2">
+          <div className="text-sm font-semibold leading-tight">
+            Preferred language
+          </div>
+
+          <Select
+            value={language}
+            onValueChange={(value) => setLanguage(value as Language)}
+          >
+            <SelectTrigger className="w-34">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                {CHAT_LANGUAGES.map((lang) => (
+                  <SelectItem
+                    value={lang}
+                    key={lang}
+                    defaultChecked={lang === 'English'}
+                  >
+                    {lang}
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+        </div>
         <div className="new-chat-form_fields">
           <FormField
             control={form.control}

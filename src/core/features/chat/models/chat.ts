@@ -36,6 +36,7 @@ const chatSchema = new Schema<Chat>(
       output: { type: Number },
       total: { type: Number },
     },
+    language: { type: String },
   },
   {
     versionKey: false,

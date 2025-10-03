@@ -25,7 +25,7 @@ import {
   sendEmail,
   SendEmailArgs,
 } from '@/core/lib/nodemailer';
-import { EmailType, ServerActionResult } from '@/core/types/common';
+import { EmailType, ServerActionResult } from '@/core/types';
 import { User, UserRole } from '@/core/types/user';
 import { generateCode } from '@/core/utils';
 import { handleActionError } from '@/core/utils/error';

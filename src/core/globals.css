@@ -182,14 +182,10 @@
   --radius-xl: calc(var(--radius) + 4px);
 }
 
-.fade-circle {
-  mask: radial-gradient(
-    circle,
-    black 25%,
-    rgba(0, 0, 0, 0.1) 50%,
-    rgba(0, 0, 0, 0) 60%,
-    transparent 100%
-  );
+html,
+body {
+  color: var(--foreground);
+  background: var(--background);
 }
 
 @layer base {
@@ -899,6 +895,10 @@
       width: 100%;
     }
 
+    .new-chat-form_fields {
+      @apply flex-row items-start;
+    }
+
     /* Chat Notification */
 
     .chat-notification {
@@ -927,33 +927,7 @@
         hsla(0, 0%, 85%, 0)
       );
     }
-
-    /* .chat-notification_label {
-      @apply absolute m-0 p-2 text-muted bg-background transition-colors;
-      inset-block-start: 50%;
-      inset-inline-start: 50%;
-      transform: translate(-50%, -50%);
-      text-align: center;
-      inline-size: max-content;
-      max-inline-size: 90vw;
-    } */
   }
-
-  /* @media only screen and (min-width: 600px) and (max-width: 767px) {
-    .chat-item {
-      padding-top: var(--gap);
-      padding-bottom: var(--gap);
-    }
-
-    .chat-item_avatar-wrapper {
-      width: calc(var(--avatar) / 4 * 3);
-      height: calc(var(--avatar) / 4 * 3);
-    }
-
-    .new-chat-button {
-      @apply px-6 translate-x-2;
-    }
-  } */
 
   @media only screen and (min-width: 768px) {
     .chat,
@@ -971,10 +945,6 @@
 
     .chat .topbar_navback {
       @apply hidden pointer-events-none;
-    }
-
-    .new-chat-form_fields {
-      @apply flex-row items-start;
     }
 
     .new-chat-button {
@@ -1047,6 +1017,16 @@
       opacity: 1;
     }
   }
+}
+
+.fade-circle {
+  mask: radial-gradient(
+    circle,
+    black 25%,
+    rgba(0, 0, 0, 0.1) 50%,
+    rgba(0, 0, 0, 0) 60%,
+    transparent 100%
+  );
 }
 
 @keyframes fade {

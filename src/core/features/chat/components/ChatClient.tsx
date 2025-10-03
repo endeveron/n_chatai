@@ -59,6 +59,7 @@ const ChatClient = ({
   heatLevel: fetchedHeatLevel,
   memory,
   isPremium,
+  language,
 }: ChatClientData) => {
   const router = useRouter();
   const pathname = usePathname();
@@ -72,15 +73,6 @@ const ChatClient = ({
   const memoryMessagesRef = useRef<MemoryMessage[]>([]);
   const memoryInitRef = useRef(false);
   const prevHeatLevelRef = useRef(0);
-
-  // const handleDev = async () => {
-  //   try {
-  //     const res = await createInvite();
-  //     console.log('res', res);
-  //   } catch (err: unknown) {
-  //     console.error(err);
-  //   }
-  // };
 
   const handleNavBack = () => {
     router.push('/');
@@ -125,6 +117,7 @@ const ChatClient = ({
         personKey: person.personKey,
         path: pathname,
         isChatStart: messages.length === 0,
+        language,
       });
       if (!res?.success) {
         console.error(res?.error.message ?? 'Unable to get answer from AI.');
@@ -320,9 +313,6 @@ const ChatClient = ({
           <Topbar>
             <NavBack onClick={handleNavBack} className="topbar_navback" />
             <Statistics />
-            {/* <Button onClick={handleDev} size="sm" variant="default">
-              DEV
-            </Button> */}
             <TopbarContent>
               <div onClick={handleUpHeat}>
                 <HeatHeart heatLevel={heatLevel} />

@@ -2,7 +2,7 @@ import { redirect } from 'next/navigation';
 
 import { verifyEmailToken } from '@/core/features/auth/actions';
 import { DEFAULT_REDIRECT } from '@/core/constants';
-import { SearchParams } from '@/core/types/common';
+import { SearchParams } from '@/core/types';
 
 export default async function EmailResultPage({
   searchParams,

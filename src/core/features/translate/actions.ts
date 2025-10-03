@@ -3,7 +3,7 @@
 import * as deepl from 'deepl-node';
 
 import { deepL } from '@/core/features/translate/lib';
-import { ServerActionResult } from '@/core/types/common';
+import { ServerActionResult } from '@/core/types';
 import { glossaryEntries } from '@/core/features/translate/glossary';
 
 // Server action for text translation

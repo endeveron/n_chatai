@@ -28,7 +28,7 @@ import {
   getPersonData,
 } from '@/core/features/chat/utils/person';
 import { mongoDB } from '@/core/lib/mongo';
-import { ServerActionResult } from '@/core/types/common';
+import { ServerActionResult } from '@/core/types';
 import { handleActionError } from '@/core/utils/error';
 import { AI_RESPONSE_WAITING_TIME_SEC } from '@/core/features/chat/constants';
 import { runWithTimeoutAsync } from '@/core/utils';
@@ -40,6 +40,7 @@ export const askAI = async ({
   message,
   personKey,
   isChatStart,
+  language,
   path,
 }: {
   chatId: string;
@@ -48,6 +49,7 @@ export const askAI = async ({
   message: ChatMessageItem;
   personKey: PersonKey;
   isChatStart: boolean;
+  language?: string;
   path?: string;
 }): Promise<
   ServerActionResult<{
@@ -126,6 +128,7 @@ export const askAI = async ({
       personalityContext: '',
       isChatStart,
       isEmojiPermitted: true,
+      language,
     });
 
     const humanMessage = new HumanMessage({

@@ -8,7 +8,7 @@ import {
   CardDescription,
   CardTitle,
 } from '@/core/components/ui/Card';
-import { SearchParams } from '@/core/types/common';
+import { SearchParams } from '@/core/types';
 import { APP_NAME } from '@/core/constants';
 
 export const metadata: Metadata = {

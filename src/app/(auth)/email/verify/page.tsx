@@ -7,7 +7,7 @@ import {
 } from '@/core/components/ui/Card';
 import { APP_NAME } from '@/core/constants';
 import GenerateTokenButton from '@/core/features/auth/components/GenerateTokenButton';
-import { SearchParams } from '@/core/types/common';
+import { SearchParams } from '@/core/types';
 
 export const metadata: Metadata = {
   title: `Verify Email — ${APP_NAME}`,

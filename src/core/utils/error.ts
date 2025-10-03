@@ -1,5 +1,5 @@
 import { SpeechType } from '@/core/features/speech/useSpeech';
-import { ErrorWithCode, ServerActionError } from '@/core/types/common';
+import { ErrorWithCode, ServerActionError } from '@/core/types';
 
 export async function logErrorAndSpeak(
   error: unknown,

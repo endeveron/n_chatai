@@ -19,6 +19,7 @@ export const configureBaseSystemMessage = ({
   personalityContext,
   chatContext,
   isChatStart,
+  language,
 }: {
   humanName: string;
   person: PersonDataForPrompt;
@@ -26,6 +27,7 @@ export const configureBaseSystemMessage = ({
   chatContext: string;
   isChatStart: boolean;
   isEmojiPermitted?: boolean;
+  language?: string;
 }): SystemMessage => {
   const personName = person.name;
   const personInstructions = person.instructions;
@@ -47,8 +49,9 @@ export const configureBaseSystemMessage = ({
   const context = `\n\n[CONTEXT]\nThe name of your chat partner is ${humanName}.\n\n[About you]\n${personalityContext}${chatContext}`;
 
   const instructionsGreet = isChatStart ? ' Cheerful greet.' : ` No greet.`;
+  const instructionsLang = language ? ` Use ${language} language.` : '';
 
-  const instructions = `[INSTRUCTIONS]\n${baseInstructions} Play a role of ${personName} using relevant details from the provided context. ${INSTRUCTIONS.base}${instructionsGreet}${accuracyInstructions}\n${INSTRUCTIONS.extractEmotion}${context}`;
+  const instructions = `[INSTRUCTIONS]\n${baseInstructions} Play a role of ${personName} using relevant details from the provided context. ${INSTRUCTIONS.base}${instructionsLang}${instructionsGreet}${accuracyInstructions}\n${INSTRUCTIONS.extractEmotion}${context}`;
 
   // console.log(`\n\n[Debug] configureBaseSystemMessage: ${instructions}\n`);
 
