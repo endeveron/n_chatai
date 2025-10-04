@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 import UserModel from '@/core/features/auth/models/user';
 import { APIResult } from '@/core/types';
-import { API_ACCESS_TOKEN } from '@/core/constants';
+import { STATS_API_ACCESS_TOKEN } from '@/core/constants';
 
 export async function POST(
   request: NextRequest
@@ -18,7 +18,7 @@ export async function POST(
     });
   }
 
-  if (!token || token !== API_ACCESS_TOKEN) {
+  if (!token || token !== STATS_API_ACCESS_TOKEN) {
     return NextResponse.json({
       data: null,
       error: 'Invalid access token',
@@ -55,7 +55,7 @@ export async function POST(
       },
     });
   } catch (err: unknown) {
-    console.error(`POST api/<v>/statistics ${err}`);
+    console.error(`POST api/auth/save-password ${err}`);
     return NextResponse.json({
       data: null,
       error: `Unable to create password hash. Unexpected error.`,

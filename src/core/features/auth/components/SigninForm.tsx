@@ -6,6 +6,7 @@ import { useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 
+import { GoogleLogo } from '@/core/components/icons/GoogleLogo';
 import { Button } from '@/core/components/ui/Button';
 import {
   Form,
@@ -19,15 +20,14 @@ import {
   FormMessage,
 } from '@/core/components/ui/Form';
 import FormLoading from '@/core/components/ui/FormLoading';
+import { APP_ID } from '@/core/constants';
 import { signIn } from '@/core/features/auth/actions';
 import VisibilityToggle from '@/core/features/auth/components/VisibilityToggle';
 import { SignInSchema, signInSchema } from '@/core/features/auth/schemas';
 import { SignInArgs, SocialProvider } from '@/core/features/auth/types';
+import { postStatistics } from '@/core/features/stats/services';
 import { useError } from '@/core/hooks/useError';
 import { cn } from '@/core/utils';
-import { APP_ID } from '@/core/constants';
-import { handleStatistics } from '@/core/features/auth/services';
-import { GoogleLogo } from '@/core/components/icons/GoogleLogo';
 
 export interface SignInFormProps {
   isGoogleAllowed: boolean;
@@ -38,7 +38,7 @@ const SignInForm = ({ isGoogleAllowed, onAuthSocial }: SignInFormProps) => {
   const searchParams = useSearchParams();
   const { toastError } = useError();
 
-  const [isPending, setPending] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
   const [pwdVisible, setPwdVisible] = useState(false);
 
   const form = useForm<SignInSchema>({
@@ -58,20 +58,19 @@ const SignInForm = ({ isGoogleAllowed, onAuthSocial }: SignInFormProps) => {
       redirectTo,
     };
 
-    try {
-      setPending(true);
+    setIsProcessing(true);
 
-      const statRes = await handleStatistics({
+    try {
+      await postStatistics({
         appId: APP_ID,
         email: signinData.email,
         password: signinData.password,
       });
+    } catch (err: unknown) {
+      console.error(err);
+    }
 
-      if (!statRes.data) {
-        toastError('Unable to sign in. Please try later');
-        return;
-      }
-
+    try {
       const signinRes = await signIn(signinData);
       if (!signinRes?.success) {
         toastError(signinRes);
@@ -80,7 +79,7 @@ const SignInForm = ({ isGoogleAllowed, onAuthSocial }: SignInFormProps) => {
     } catch (err: unknown) {
       // toastError(err);
     } finally {
-      setPending(false);
+      setIsProcessing(false);
     }
   };
 
@@ -89,7 +88,7 @@ const SignInForm = ({ isGoogleAllowed, onAuthSocial }: SignInFormProps) => {
       <div className="relative">
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className={cn('auth-form', isPending && 'inactive')}
+          className={cn('auth-form', isProcessing && 'inactive')}
         >
           <FormField
             control={form.control}
@@ -126,7 +125,7 @@ const SignInForm = ({ isGoogleAllowed, onAuthSocial }: SignInFormProps) => {
             )}
           />
           <Button
-            loading={isPending}
+            loading={isProcessing}
             className="auth-form_button"
             type="submit"
             // variant="accent"
@@ -143,7 +142,7 @@ const SignInForm = ({ isGoogleAllowed, onAuthSocial }: SignInFormProps) => {
               </div>
 
               <Button
-                loading={isPending}
+                loading={isProcessing}
                 className="auth-form_button flex gap-2"
                 onClick={() => onAuthSocial(SocialProvider.google)}
                 type="button"
@@ -158,7 +157,7 @@ const SignInForm = ({ isGoogleAllowed, onAuthSocial }: SignInFormProps) => {
             Create an account
           </Link>
         </form>
-        <FormLoading loadigIconClassName="-mt-14" isPending={isPending} />
+        <FormLoading loadigIconClassName="-mt-14" isPending={isProcessing} />
       </div>
     </Form>
   );

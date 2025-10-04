@@ -5,8 +5,6 @@ import jwt from 'jsonwebtoken';
 import { Types } from 'mongoose';
 import { AuthError } from 'next-auth';
 
-import { signIn as nextSignIn } from '~/auth';
-
 import { BASE_URL, DEFAULT_REDIRECT, EMAIL_JWT } from '@/core/constants';
 import InviteModel from '@/core/features/auth/models/invite';
 import UserModel from '@/core/features/auth/models/user';
@@ -30,6 +28,7 @@ import { User, UserRole } from '@/core/types/user';
 import { generateCode } from '@/core/utils';
 import { handleActionError } from '@/core/utils/error';
 import { configureUser } from '@/core/utils/user';
+import { signIn as nextSignIn } from '~/auth';
 
 export const createInviteCode = async (): Promise<ServerActionResult> => {
   try {
@@ -527,7 +526,7 @@ export const signInSocial = async ({
     let user = await UserModel.findOne({ email: email });
 
     if (!user) {
-      if (!email) return handleActionError('No email provided', null, true);
+      if (!email) return handleActionError('No email provided');
 
       // Create a new user in the database
       const _id = new Types.ObjectId();

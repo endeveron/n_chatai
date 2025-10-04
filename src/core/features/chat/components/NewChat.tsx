@@ -48,8 +48,6 @@ const NewChat = ({ people, userId, userName }: NewChatProps) => {
   const handleFormSubmit = async (data: CreateChatData) => {
     let personName = data.personName;
 
-    console.log('handleFormSubmit', data);
-
     // Assign a random AI person name if it hasn't been provided
     if (!personName) {
       personName = getRandomName(person.gender);
