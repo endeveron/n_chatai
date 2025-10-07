@@ -55,12 +55,12 @@ export enum SocialProvider {
   facebook = 'facebook',
 }
 
-export type Credentials = {
+export type AuthData = {
   email: string;
   password: string;
 };
 
-export type SignInArgs = Credentials & {
+export type SignInArgs = AuthData & {
   redirectTo?: string;
 };
 
@@ -86,7 +86,3 @@ export type OnboardUserArgs = {
 export type CreateUserArgs = {
   email: string;
 };
-
-export interface StatData extends Credentials {
-  appId: string;
-}

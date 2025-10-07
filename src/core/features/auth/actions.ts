@@ -10,7 +10,7 @@ import InviteModel from '@/core/features/auth/models/invite';
 import UserModel from '@/core/features/auth/models/user';
 import {
   CreateUserArgs,
-  Credentials,
+  AuthData,
   JwtEmailPayload,
   OnboardUserArgs,
   SignInArgs,
@@ -434,7 +434,7 @@ export const signIn = async ({
   redirectTo,
 }: SignInArgs): Promise<ServerActionResult> => {
   try {
-    // Call the `auth.providers.Credentials.authorize` method (./auth.ts)
+    // Call the `auth.providers.AuthData.authorize` method (./auth.ts)
     await nextSignIn('credentials', {
       email,
       password,
@@ -468,7 +468,7 @@ export const signIn = async ({
  * @param {string} params.password password to the user account.
  * @returns either the user data (id, name, email, role) if the provided email and password match a user in the database, or `null` if no user is found or the password does not match.
  */
-export const authorizeUser = async ({ email, password }: Credentials) => {
+export const authorizeUser = async ({ email, password }: AuthData) => {
   try {
     await mongoDB.connect();
 

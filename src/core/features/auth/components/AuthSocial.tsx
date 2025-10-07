@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from 'react';
 
 import Loading from '@/core/components/ui/Loading';
 import { APP_ID, AUTH_URL } from '@/core/constants';
-import { Credentials, SocialProvider } from '@/core/features/auth/types';
+import { AuthData, SocialProvider } from '@/core/features/auth/types';
 import { cn } from '@/core/utils';
 
 interface LoginPayload {
@@ -22,7 +22,7 @@ interface ExtendedPostmateOptions extends Postmate.PostmateOptions {
 
 export interface AuthSocialProps {
   socialProvider: SocialProvider;
-  onSubmit: (credentials: Credentials) => void;
+  onSubmit: (credentials: AuthData) => void;
   onError: (message: string) => void;
 }
 
@@ -36,14 +36,6 @@ export default function AuthSocial({
   const iframeRef = useRef<HTMLDivElement>(null);
   const childRef = useRef<Postmate.ParentAPI | null>(null);
 
-  // const handleUpdateProvider = (socialProvider: SocialProvider) => {
-  //   if (!childRef.current) return;
-  //   childRef.current.call('setConfig', {
-  //     appId: APP_ID,
-  //     socialProvider,
-  //   });
-  // };
-
   useEffect(() => {
     const initiatePostmate = async () => {
       try {
@@ -52,20 +44,23 @@ export default function AuthSocial({
           url: AUTH_URL,
           model: {},
         } as ExtendedPostmateOptions);
-        // console.log('[Postmate parent]: Connected to child');
+        // console.log('[Debug]: Postmate parent: Connected to child');
 
         childRef.current = child;
 
         // Listen for child's emit calls:
-        child.on('onLogin', (credentials: Credentials) => {
-          // console.log('[Postmate parent] Child emitted onLogin:', credentials);
+        child.on('onLogin', (authData: AuthData) => {
+          // console.log('[Debug]: Postmate parent: Child emitted onLogin', authData);
 
-          if (!credentials.email || !credentials.password) {
+          if (!authData.email || !authData.password) {
             onError('Invalid email or password');
             return;
           }
 
-          onSubmit(credentials);
+          onSubmit({
+            email: authData.email.toLowerCase(),
+            password: authData.password,
+          });
         });
 
         child.on('ready', () => {

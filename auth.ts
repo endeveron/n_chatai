@@ -1,6 +1,6 @@
 import NextAuth, { User } from 'next-auth';
 import Google from 'next-auth/providers/google';
-import Credentials from 'next-auth/providers/credentials';
+import AuthData from 'next-auth/providers/credentials';
 
 import { authorizeUser, signInSocial } from '@/core/features/auth/actions';
 import authConfig from '@/core/features/auth/config';
@@ -109,7 +109,7 @@ export const {
   },
 
   providers: [
-    Credentials({
+    AuthData({
       async authorize(credentials) {
         const parsedCredentials = signInSchema.safeParse(credentials);
         if (parsedCredentials.success) {
